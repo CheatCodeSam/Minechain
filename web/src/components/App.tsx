@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 
-import axios from "axios"
 import { ethers } from "ethers"
 
 import JwtAxios from "../JwtAxios"
