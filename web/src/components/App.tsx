@@ -3,6 +3,8 @@ import React, { useState } from "react"
 import axios from "axios"
 import { ethers } from "ethers"
 
+import JwtAxios from "../JwtAxios"
+
 const App = () => {
   const [connectedAccount, setConnectedAccount] = useState()
 
@@ -13,7 +15,7 @@ const App = () => {
     const connectedAccounts = await provider.send("eth_requestAccounts", [])
     setConnectedAccount(connectedAccounts[0])
 
-    const res = await axios.post("api/v1/auth/signin", {
+    const res = await JwtAxios.post("api/v1/auth/signin", {
       publicAddress: connectedAccounts[0]
     })
 
@@ -21,7 +23,7 @@ const App = () => {
     const sign = provider.getSigner(connectedAccounts[0])
     const signature = await sign.signMessage(nonce)
 
-    const res2 = await axios.post("api/v1/auth/verify", {
+    const res2 = await JwtAxios.post("api/v1/auth/verify", {
       publicAddress: connectedAccounts[0],
       signedNonce: signature
     })
@@ -30,13 +32,30 @@ const App = () => {
     console.log(window.sessionStorage.getItem("accessToken"))
   }
 
+  const whoami = async () => {
+    const res = await JwtAxios.get("api/v1/users/whoami")
+    console.log(res.data)
+  }
+
+  const refresh = async () => {
+    const res = await JwtAxios.post("api/v1/auth/refresh")
+    window.sessionStorage.setItem("accessToken", res.data.accessToken)
+    console.log(res)
+  }
+
   return (
-    <div>
-      <button className="btn btn-primary gap-2 m-2" onClick={connectWallet}>
+    <div className="gap-2 flex m-2">
+      <button className="btn btn-primary gap-2" onClick={connectWallet}>
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 fill-white" viewBox="0 0 32 32">
           <path d="M15.927 23.959l-9.823-5.797 9.817 13.839 9.828-13.839-9.828 5.797zM16.073 0l-9.819 16.297 9.819 5.807 9.823-5.801z" />
         </svg>
         Login with MetaMask
+      </button>
+      <button onClick={whoami} className="btn">
+        whoami
+      </button>
+      <button onClick={refresh} className="btn">
+        refresh
       </button>
     </div>
   )
