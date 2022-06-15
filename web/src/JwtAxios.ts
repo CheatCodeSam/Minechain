@@ -1,41 +1,45 @@
-import axios from "axios"
+import { Store } from "@reduxjs/toolkit"
+import axios, { AxiosInstance } from "axios"
 
-import history from "./router/history"
+import { logout } from "./features/auth/authSlice"
 
 const JwtAxios = axios.create()
 
-JwtAxios.interceptors.request.use(
-  async (config) => {
-    const accessToken = window.sessionStorage.getItem("accessToken")
-    config.headers = {
-      Accept: "application/json"
+export const setupInterceptor = (instance: AxiosInstance, store: Store) => {
+  JwtAxios.interceptors.request.use(
+    async (config) => {
+      const accessToken = window.sessionStorage.getItem("accessToken")
+      config.headers = {
+        Accept: "application/json"
+      }
+      if (accessToken)
+        config.headers = { ...config.headers, Authorization: `Bearer ${accessToken}` }
+      return config
+    },
+    (error) => {
+      Promise.reject(error)
     }
-    if (accessToken) config.headers = { ...config.headers, Authorization: `Bearer ${accessToken}` }
-    return config
-  },
-  (error) => {
-    Promise.reject(error)
-  }
-)
+  )
 
-JwtAxios.interceptors.response.use(
-  (response) => {
-    return response
-  },
-  async function (error) {
-    const originalRequest = error.config
-    if (error.response.status === 401 && originalRequest.url === "/api/v1/auth/refresh") {
-      history.push("/foo")
+  JwtAxios.interceptors.response.use(
+    (response) => {
+      return response
+    },
+    async function (error) {
+      const originalRequest = error.config
+      if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true
+        try {
+          const response = await axios.post("/api/v1/auth/refresh")
+          window.sessionStorage.setItem("accessToken", response.data.accessToken)
+          return JwtAxios(originalRequest)
+        } catch (error) {
+          store.dispatch(logout())
+        }
+      }
       return Promise.reject(error)
     }
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
-      const response = await JwtAxios.post("/api/v1/auth/refresh")
-      window.sessionStorage.setItem("accessToken", response.data.accessToken)
-      return JwtAxios(originalRequest)
-    }
-    return Promise.reject(error)
-  }
-)
+  )
+}
 
 export default JwtAxios
