@@ -27,6 +27,7 @@ export class AuthController {
     response.cookie("refreshToken", retVal.refreshToken, {
       httpOnly: true,
       sameSite: true,
+      path: "/api/v1/auth/refresh",
       expires: new Date(Date.now() + ms("14d"))
     })
     return retVal
@@ -40,6 +41,7 @@ export class AuthController {
     response.cookie("refreshToken", retVal.refreshToken, {
       httpOnly: true,
       sameSite: true,
+      path: "/api/v1/auth/refresh",
       expires: new Date(Date.now() + ms("14d"))
     })
     return retVal

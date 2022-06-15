@@ -37,12 +37,6 @@ const App = () => {
     console.log(res.data)
   }
 
-  const refresh = async () => {
-    const res = await JwtAxios.post("api/v1/auth/refresh")
-    window.sessionStorage.setItem("accessToken", res.data.accessToken)
-    console.log(res)
-  }
-
   return (
     <div className="gap-2 flex m-2">
       <button className="btn btn-primary gap-2" onClick={connectWallet}>
@@ -53,9 +47,6 @@ const App = () => {
       </button>
       <button onClick={whoami} className="btn">
         whoami
-      </button>
-      <button onClick={refresh} className="btn">
-        refresh
       </button>
     </div>
   )
