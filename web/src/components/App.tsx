@@ -1,9 +1,7 @@
-import React, { useState } from "react"
+import React from "react"
 
-import { ethers } from "ethers"
 import { Route, Routes } from "react-router-dom"
 
-import JwtAxios from "../JwtAxios"
 import Test from "./Test"
 
 const App = () => {
