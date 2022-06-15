@@ -1,0 +1,14 @@
+{
+    "trailingComma": "none",
+    "printWidth": 100,
+    "semi": false,
+    "importOrder": [
+      "^react$",
+      "<THIRD_PARTY_MODULES>",
+      "^[./].*(?<!\\.(c|le|sc)ss)$",
+      "\\.(c|le|sc)ss$"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true
+  }
+  
