@@ -1,5 +1,7 @@
 import axios from "axios"
 
+import history from "./router/history"
+
 const JwtAxios = axios.create()
 
 JwtAxios.interceptors.request.use(
@@ -22,9 +24,13 @@ JwtAxios.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config
+    if (error.response.status === 401 && originalRequest.url === "/api/v1/auth/refresh") {
+      history.push("/foo")
+      return Promise.reject(error)
+    }
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
-      const response = await axios.post("/api/v1/auth/refresh")
+      const response = await JwtAxios.post("/api/v1/auth/refresh")
       window.sessionStorage.setItem("accessToken", response.data.accessToken)
       return JwtAxios(originalRequest)
     }

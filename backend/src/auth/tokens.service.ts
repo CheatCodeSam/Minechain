@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, UnprocessableEntityException } from "@nestjs/common"
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException
+} from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { InjectRepository } from "@nestjs/typeorm"
 import { User } from "../users/entities/user.entity"
@@ -19,8 +24,8 @@ export class TokensService {
     const decodedToken = this.decodeToken(token)
     const storedToken = await this.refreshTokenRepo.findOneBy({ id: decodedToken.jti })
 
-    if (!storedToken) throw new UnprocessableEntityException("Refresh token not found")
-    if (storedToken.blacklisted) throw new ForbiddenException("Token is blacklisted.")
+    if (!storedToken) throw new UnauthorizedException("Refresh token not found")
+    if (storedToken.blacklisted) throw new UnauthorizedException("Token is blacklisted.")
     storedToken.blacklisted = true
     this.refreshTokenRepo.save(storedToken)
 
@@ -80,9 +85,9 @@ export class TokensService {
       return this.jwtService.verify<jwt>(token)
     } catch (e) {
       if (e instanceof TokenExpiredError) {
-        throw new UnprocessableEntityException("Refresh token expired.")
+        throw new UnauthorizedException("Refresh token expired.")
       } else {
-        throw new UnprocessableEntityException("Refresh token malformed.")
+        throw new UnauthorizedException("Refresh token malformed.")
       }
     }
   }
