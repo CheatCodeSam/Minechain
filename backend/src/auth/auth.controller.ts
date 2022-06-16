@@ -27,7 +27,7 @@ export class AuthController {
     const retVal = await this.authService.verify(verification)
     response.cookie("refreshToken", retVal.refreshToken, {
       httpOnly: true,
-      sameSite: true,
+      sameSite: "strict",
       path: "/api/v1/auth/",
       expires: new Date(Date.now() + ms("14d"))
     })
@@ -41,7 +41,7 @@ export class AuthController {
     const retVal = await this.tokenService.refresh(refreshToken)
     response.cookie("refreshToken", retVal.refreshToken, {
       httpOnly: true,
-      sameSite: true,
+      sameSite: "strict",
       path: "/api/v1/auth/",
       expires: new Date(Date.now() + ms("14d"))
     })
