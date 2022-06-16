@@ -1,11 +1,12 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { createAsyncThunk } from "@reduxjs/toolkit"
+import axios from "axios"
 import { ethers } from "ethers"
 
 import JwtAxios from "../../JwtAxios"
 
-export const whoAmI = createAsyncThunk("auth/whoAmI", async () => {
-  const res = await JwtAxios.get("api/v1/users/whoami")
-  return res.data
+export const initialize = createAsyncThunk("auth/initalize", async () => {
+  const response = await axios.post("api/v1/auth/refresh")
+  window.sessionStorage.setItem("accessToken", response.data.accessToken)
 })
 
 export const login = createAsyncThunk("auth/login", async () => {
@@ -36,31 +37,3 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   )
   return res.data
 })
-
-export const authSlice = createSlice({
-  name: "auth",
-  initialState: {
-    isLoggedIn: true,
-    id: -1
-  },
-  reducers: {},
-  extraReducers: {
-    [whoAmI.fulfilled.type]: (state, action) => {
-      state.isLoggedIn = true
-      state.id = action.payload.id
-    },
-    [whoAmI.rejected.type]: (state) => {
-      state.isLoggedIn = false
-    },
-    [login.fulfilled.type]: (state) => {
-      state.isLoggedIn = true
-    },
-    [logout.fulfilled.type]: (state) => {
-      state.isLoggedIn = false
-      state.id = -1
-    }
-  }
-})
-
-const { reducer } = authSlice
-export default reducer

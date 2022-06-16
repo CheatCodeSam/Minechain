@@ -1,10 +1,11 @@
 import axios, { AxiosInstance } from "axios"
 
-import { logout } from "./features/auth/authSlice"
+import { logout } from "./features/auth/auth.actions"
+import { Store } from "./store"
 
 const JwtAxios = axios.create()
 
-export const setupInterceptor = (instance: AxiosInstance, store: any) => {
+export const setupInterceptor = (instance: AxiosInstance, store: Store) => {
   JwtAxios.interceptors.request.use(
     async (config) => {
       const accessToken = window.sessionStorage.getItem("accessToken")
