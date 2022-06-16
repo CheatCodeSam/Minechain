@@ -35,6 +35,7 @@ export const setupInterceptor = (instance: AxiosInstance, store: any) => {
             return JwtAxios(originalRequest)
           } catch (error) {
             store.dispatch(logout())
+            return Promise.reject(error)
           }
         }
       }
