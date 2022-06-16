@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import axios from "axios"
 import { ethers } from "ethers"
 
 import JwtAxios from "../../JwtAxios"
@@ -32,9 +31,9 @@ export const login = createAsyncThunk("auth/login", async () => {
 })
 
 export const logout = createAsyncThunk("auth/logout", async () => {
-  const res = await axios
-    .post("api/v1/auth/logout")
-    .finally(() => window.sessionStorage.removeItem("accessToken"))
+  const res = await JwtAxios.post("api/v1/auth/logout").finally(() =>
+    window.sessionStorage.removeItem("accessToken")
+  )
   return res.data
 })
 
@@ -50,11 +49,11 @@ export const authSlice = createSlice({
       state.isLoggedIn = true
       state.id = action.payload.id
     },
+    [whoAmI.rejected.type]: (state) => {
+      state.isLoggedIn = false
+    },
     [login.fulfilled.type]: (state) => {
       state.isLoggedIn = true
-    },
-    [login.rejected.type]: (state) => {
-      state.isLoggedIn = false
     },
     [logout.fulfilled.type]: (state) => {
       state.isLoggedIn = false
