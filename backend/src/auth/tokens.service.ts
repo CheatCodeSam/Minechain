@@ -40,12 +40,8 @@ export class TokensService {
   }
 
   async blacklistToken(token: string) {
-    if (!token) throw new UnauthorizedException("Refresh token not found")
-
     const decodedToken = this.decodeToken(token)
     const storedToken = await this.refreshTokenRepo.findOneBy({ id: decodedToken.jti })
-
-    if (!storedToken) throw new UnauthorizedException("Refresh token not found")
 
     storedToken.blacklisted = true
     this.refreshTokenRepo.save(storedToken)

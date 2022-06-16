@@ -1,9 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res } from "@nestjs/common"
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common"
 import { AuthService } from "./auth.service"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
 import { VerificationDto } from "./dto/verification.dto"
 import { TokensService } from "./tokens.service"
 import { Request, Response } from "express"
+import { JwtAuthGuard } from "./guards/jwt.guard"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ms = require("ms")
 
@@ -48,6 +49,7 @@ export class AuthController {
   }
 
   @Post("logout")
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async logout(@Req() request: Request) {
     const refreshToken = request.cookies["refreshToken"]
