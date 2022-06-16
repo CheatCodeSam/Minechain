@@ -6,7 +6,8 @@ import { login, logout } from "../features/auth/auth.actions"
 import { AppDispatch, State } from "../store"
 
 const Test = () => {
-  const loggedIn = useSelector((state: State) => state.auth.isLoggedIn)
+  const { isLoggedIn } = useSelector((state: State) => state.auth)
+  const { user } = useSelector((state: State) => state.auth)
   const dispatch = useDispatch<AppDispatch>()
 
   return (
@@ -17,7 +18,8 @@ const Test = () => {
         </svg>
         Login with MetaMask
       </button>
-      <p>{loggedIn ? "You are logged in" : "You are not logged in"}</p>
+
+      <p>{isLoggedIn ? "You are logged in as " + user?.publicAddress : "You are not logged in"}</p>
       <button onClick={() => dispatch(logout())}>Logout</button>
     </div>
   )

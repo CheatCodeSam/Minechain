@@ -7,6 +7,7 @@ import JwtAxios from "../../JwtAxios"
 export const initialize = createAsyncThunk("auth/initalize", async () => {
   const response = await axios.post("api/v1/auth/refresh")
   window.sessionStorage.setItem("accessToken", response.data.accessToken)
+  return response.data
 })
 
 export const login = createAsyncThunk("auth/login", async () => {
@@ -29,6 +30,7 @@ export const login = createAsyncThunk("auth/login", async () => {
   })
 
   window.sessionStorage.setItem("accessToken", res2.data.accessToken)
+  return res2.data
 })
 
 export const logout = createAsyncThunk("auth/logout", async () => {
