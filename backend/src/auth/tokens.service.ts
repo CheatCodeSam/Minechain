@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException
-} from "@nestjs/common"
+import { Injectable, UnauthorizedException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { InjectRepository } from "@nestjs/typeorm"
 import { User } from "../users/entities/user.entity"
@@ -42,6 +37,18 @@ export class TokensService {
       accessToken,
       refreshToken
     }
+  }
+
+  async blacklistToken(token: string) {
+    if (!token) throw new UnauthorizedException("Refresh token not found")
+
+    const decodedToken = this.decodeToken(token)
+    const storedToken = await this.refreshTokenRepo.findOneBy({ id: decodedToken.jti })
+
+    if (!storedToken) throw new UnauthorizedException("Refresh token not found")
+
+    storedToken.blacklisted = true
+    this.refreshTokenRepo.save(storedToken)
   }
 
   private async generateAccessToken(user: User): Promise<string> {

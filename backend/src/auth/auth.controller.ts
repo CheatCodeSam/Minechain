@@ -27,7 +27,7 @@ export class AuthController {
     response.cookie("refreshToken", retVal.refreshToken, {
       httpOnly: true,
       sameSite: true,
-      path: "/api/v1/auth/refresh",
+      path: "/api/v1/auth/",
       expires: new Date(Date.now() + ms("14d"))
     })
     return retVal
@@ -41,9 +41,16 @@ export class AuthController {
     response.cookie("refreshToken", retVal.refreshToken, {
       httpOnly: true,
       sameSite: true,
-      path: "/api/v1/auth/refresh",
+      path: "/api/v1/auth/",
       expires: new Date(Date.now() + ms("14d"))
     })
     return retVal
+  }
+
+  @Post("logout")
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() request: Request) {
+    const refreshToken = request.cookies["refreshToken"]
+    this.tokenService.blacklistToken(refreshToken)
   }
 }
