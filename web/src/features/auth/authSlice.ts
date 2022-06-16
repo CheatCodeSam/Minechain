@@ -34,15 +34,13 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   const res = await JwtAxios.post("api/v1/auth/logout").finally(() =>
     window.sessionStorage.removeItem("accessToken")
   )
-  console.log(res)
-
   return res.data
 })
 
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    isLoggedIn: false,
+    isLoggedIn: true,
     id: -1
   },
   reducers: {},
@@ -50,6 +48,9 @@ export const authSlice = createSlice({
     [whoAmI.fulfilled.type]: (state, action) => {
       state.isLoggedIn = true
       state.id = action.payload.id
+    },
+    [whoAmI.rejected.type]: (state) => {
+      state.isLoggedIn = false
     },
     [login.fulfilled.type]: (state) => {
       state.isLoggedIn = true
