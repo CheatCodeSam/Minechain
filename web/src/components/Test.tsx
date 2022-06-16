@@ -14,7 +14,6 @@ const Test = () => {
   return (
     <div className="gap-2 flex m-2">
       <LoginButton />
-
       <p>{isLoggedIn ? "You are logged in as " + user?.publicAddress : "You are not logged in"}</p>
       <button onClick={() => dispatch(logout())} className="btn">
         Logout
