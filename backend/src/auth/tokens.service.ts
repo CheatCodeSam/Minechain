@@ -34,6 +34,7 @@ export class TokensService {
       this.generateRefreshToken(user)
     ])
     return {
+      user,
       accessToken,
       refreshToken
     }
