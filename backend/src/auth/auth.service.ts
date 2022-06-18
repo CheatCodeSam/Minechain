@@ -1,12 +1,13 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common"
-import { InjectRepository } from "@nestjs/typeorm"
 import { ethers } from "ethers"
 import { generate as generateShortUuid } from "short-uuid"
-import { User } from "../users/entities/user.entity"
 import { Repository } from "typeorm"
+
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+
+import { User } from "../users/entities/user.entity"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
 import { VerificationDto } from "./dto/verification.dto"
-
 import { TokensService } from "./tokens.service"
 
 @Injectable()

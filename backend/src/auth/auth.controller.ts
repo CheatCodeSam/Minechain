@@ -1,11 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from "@nestjs/common"
+import { Response } from "express"
+
+import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from "@nestjs/common"
+
 import { AuthService } from "./auth.service"
+import { Cookies } from "./decorators/cookies.decorator"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
 import { VerificationDto } from "./dto/verification.dto"
-import { TokensService } from "./tokens.service"
-import { Request, Response } from "express"
 import { JwtAuthGuard } from "./guards/jwt.guard"
-import { Cookies } from "./decorators/cookies.decorator"
+import { TokensService } from "./tokens.service"
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ms = require("ms")
 

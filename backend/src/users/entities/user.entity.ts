@@ -1,12 +1,12 @@
 import { generate as generateShortUuid } from "short-uuid"
 import { RefreshToken } from "src/auth/entities/refreshtoken.entity"
 import {
-  Entity,
+  BeforeInsert,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
+  Entity,
   OneToMany,
-  BeforeInsert
+  PrimaryGeneratedColumn
 } from "typeorm"
 
 @Entity()

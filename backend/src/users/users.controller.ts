@@ -1,5 +1,7 @@
-import { Controller, Get, UseGuards } from "@nestjs/common"
 import { JwtAuthGuard } from "src/auth/guards/jwt.guard"
+
+import { Controller, Get, UseGuards } from "@nestjs/common"
+
 import { CurrentUser } from "./decorators/current-user.decorator"
 import { User } from "./entities/user.entity"
 
