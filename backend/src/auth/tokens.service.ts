@@ -6,6 +6,8 @@ import { Repository } from "typeorm"
 import { RefreshToken } from "./entities/refreshtoken.entity"
 import { jwt } from "./types/jwt.type"
 import { TokenExpiredError } from "jsonwebtoken"
+import { generate } from "short-uuid"
+import * as crypto from "crypto"
 
 @Injectable()
 export class TokensService {
@@ -29,11 +31,13 @@ export class TokensService {
   }
 
   async issueTokens(user: User) {
+    const fingerprint = generate()
     const [accessToken, refreshToken] = await Promise.all([
-      this.generateAccessToken(user),
+      this.generateAccessToken(user, fingerprint),
       this.generateRefreshToken(user)
     ])
     return {
+      fingerprint,
       user,
       accessToken,
       refreshToken
@@ -48,13 +52,13 @@ export class TokensService {
     this.refreshTokenRepo.save(storedToken)
   }
 
-  private async generateAccessToken(user: User): Promise<string> {
+  private async generateAccessToken(user: User, fingerprint: string): Promise<string> {
     const expiration = "5m"
     const domain = "localhost"
     const userId = user.id
 
     return this.jwtService.signAsync(
-      {},
+      { fingerprint: crypto.createHash("sha256").update(fingerprint).digest("base64") },
       {
         expiresIn: expiration,
         issuer: domain,

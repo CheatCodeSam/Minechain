@@ -31,6 +31,11 @@ export class AuthController {
       path: "/api/v1/auth/",
       expires: new Date(Date.now() + ms("14d"))
     })
+    response.cookie("fingerprint", retVal.fingerprint, {
+      httpOnly: true,
+      sameSite: "strict",
+      path: "/"
+    })
     return retVal
   }
 
@@ -44,6 +49,11 @@ export class AuthController {
       sameSite: "strict",
       path: "/api/v1/auth/",
       expires: new Date(Date.now() + ms("14d"))
+    })
+    response.cookie("fingerprint", retVal.fingerprint, {
+      httpOnly: true,
+      sameSite: "strict",
+      path: "/"
     })
     return retVal
   }

@@ -33,6 +33,10 @@ export const authSlice = createSlice({
     [logout.fulfilled.type]: (state) => {
       state.isLoggedIn = false
       state.user = null
+    },
+    [logout.rejected.type]: (state) => {
+      state.isLoggedIn = false
+      state.user = null
     }
   }
 })

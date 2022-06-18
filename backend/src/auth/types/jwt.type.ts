@@ -6,5 +6,6 @@ export type jwt = {
   sub: number
   exp: number
   iat: number
+  fingerprint: string
   context?: object
 }
