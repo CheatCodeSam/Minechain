@@ -8,9 +8,8 @@ import { logout } from "../features/auth/auth.actions"
 import { AppDispatch, State } from "../store"
 
 const UserHeader = () => {
-  const { user } = useSelector((state: State) => state.auth)
+  const user = useSelector((state: State) => state.auth.user!)
   const dispatch = useDispatch<AppDispatch>()
-  if (!user) return <></>
 
   return (
     <div className="dropdown">

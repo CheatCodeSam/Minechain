@@ -5,6 +5,7 @@ import { VerificationDto } from "./dto/verification.dto"
 import { TokensService } from "./tokens.service"
 import { Request, Response } from "express"
 import { JwtAuthGuard } from "./guards/jwt.guard"
+import { Cookies } from "./decorators/cookies.decorator"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ms = require("ms")
 
@@ -41,8 +42,10 @@ export class AuthController {
 
   @Post("refresh")
   @HttpCode(HttpStatus.ACCEPTED)
-  async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
-    const refreshToken = request.cookies["refreshToken"]
+  async refresh(
+    @Cookies("refreshToken") refreshToken: string,
+    @Res({ passthrough: true }) response: Response
+  ) {
     const retVal = await this.tokenService.refresh(refreshToken)
     response.cookie("refreshToken", retVal.refreshToken, {
       httpOnly: true,
@@ -61,8 +64,7 @@ export class AuthController {
   @Post("logout")
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() request: Request) {
-    const refreshToken = request.cookies["refreshToken"]
+  async logout(@Cookies("refreshToken") refreshToken: string) {
     this.tokenService.blacklistToken(refreshToken)
   }
 }
