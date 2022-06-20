@@ -1,8 +1,9 @@
 import React from "react"
 
-import { LogoutIcon } from "@heroicons/react/outline"
+import { CogIcon, LogoutIcon, UserIcon } from "@heroicons/react/outline"
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon"
 import { useDispatch, useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 
 import { logout } from "../features/auth/auth.actions"
 import { AppDispatch, State } from "../store"
@@ -21,6 +22,13 @@ const UserHeader = () => {
       </label>
       <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
         <li>
+          <Link to="/account">
+            <UserIcon className="h-5 w-5" /> Account
+          </Link>
+          <Link to="/settings">
+            <CogIcon className="h-5 w-5" />
+            Settings
+          </Link>
           <button onClick={() => dispatch(logout())}>
             <LogoutIcon className="h-5 w-5" /> Logout
           </button>

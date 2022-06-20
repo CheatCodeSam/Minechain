@@ -1,15 +1,20 @@
 import React from "react"
 
-import { Route, Routes } from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 
 import Test from "./Test"
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Test />} />
-      <Route path="/foo" element={<div>Foo</div>} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Test />}>
+          <Route path="account" element={<div>Account</div>} />
+          <Route path="settings" element={<div>Settings</div>} />
+        </Route>
+        <Route path="*" element={<p>Theres nothing here!</p>} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
