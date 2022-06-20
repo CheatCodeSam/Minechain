@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios"
 
 import { logout } from "./features/auth/auth.actions"
+import { AuthStatus } from "./features/auth/auth.types"
 import { Store } from "./store"
 
 const JwtAxios = axios.create()
@@ -29,7 +30,7 @@ export const setupInterceptor = (instance: AxiosInstance, store: Store) => {
       const originalRequest = error.config
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
-        if (store.getState().auth.isLoggedIn) {
+        if (store.getState().auth.authStatus == AuthStatus.LoggedIn) {
           try {
             const response = await axios.post("/api/v1/auth/refresh")
             window.sessionStorage.setItem("accessToken", response.data.accessToken)
