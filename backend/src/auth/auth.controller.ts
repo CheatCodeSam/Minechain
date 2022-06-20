@@ -1,12 +1,19 @@
 import { Response } from "express"
 
-import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+  UnauthorizedException
+} from "@nestjs/common"
 
 import { AuthService } from "./auth.service"
 import { Cookies } from "./decorators/cookies.decorator"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
 import { VerificationDto } from "./dto/verification.dto"
-import { JwtAuthGuard } from "./guards/jwt.guard"
 import { TokensService } from "./tokens.service"
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -65,9 +72,9 @@ export class AuthController {
   }
 
   @Post("logout")
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async logout(@Cookies("refreshToken") refreshToken: string) {
+    if (!refreshToken) throw new UnauthorizedException("Missing Refresh Token.")
     this.tokenService.blacklistToken(refreshToken)
   }
 }

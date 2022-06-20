@@ -22,6 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(request: Request, payload: jwt): Promise<User | never> {
+    if (!request.cookies.fingerprint) throw new UnauthorizedException("Fingerprint required.")
     const hashedFingerprint = crypto
       .createHash("sha256")
       .update(request.cookies.fingerprint)

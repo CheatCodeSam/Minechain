@@ -5,7 +5,7 @@ import useAuthenticatedRoute from "../hooks/useAuthenticatedRoute"
 const Settings = () => {
   useAuthenticatedRoute()
 
-  return <div className="">settings</div>
+  return <div>settings</div>
 }
 
 export default Settings

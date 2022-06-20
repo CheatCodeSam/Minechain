@@ -2,6 +2,7 @@ import React from "react"
 
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 
+import Account from "./Account"
 import Settings from "./Settings"
 import Test from "./Test"
 
@@ -10,7 +11,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Test />}>
-          <Route path="account" element={<div>Account</div>} />
+          <Route path="account" element={<Account />} />
           <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<p>Theres nothing here!</p>} />

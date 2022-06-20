@@ -34,8 +34,8 @@ export const login = createAsyncThunk("auth/login", async () => {
 })
 
 export const logout = createAsyncThunk("auth/logout", async () => {
-  const res = await JwtAxios.post("api/v1/auth/logout").finally(() =>
-    window.sessionStorage.removeItem("accessToken")
-  )
+  const res = await axios
+    .post("api/v1/auth/logout")
+    .finally(() => window.sessionStorage.removeItem("accessToken"))
   return res.data
 })
