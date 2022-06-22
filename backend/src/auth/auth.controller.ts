@@ -1,14 +1,6 @@
 import { Response } from "express"
 
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Res,
-  UnauthorizedException
-} from "@nestjs/common"
+import { Body, Controller, HttpCode, HttpStatus, Post, Res } from "@nestjs/common"
 
 import { AuthService } from "./auth.service"
 import { Cookies } from "./decorators/cookies.decorator"
@@ -74,7 +66,6 @@ export class AuthController {
   @Post("logout")
   @HttpCode(HttpStatus.OK)
   async logout(@Cookies("refreshToken") refreshToken: string) {
-    if (!refreshToken) throw new UnauthorizedException("Missing Refresh Token.")
-    this.tokenService.blacklistToken(refreshToken)
+    return this.tokenService.blacklistToken(refreshToken)
   }
 }
