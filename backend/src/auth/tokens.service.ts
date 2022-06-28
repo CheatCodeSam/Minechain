@@ -91,7 +91,6 @@ export class TokensService {
   }
 
   private decodeToken(token: string) {
-    if (!token) throw new UnauthorizedException("Missing Token")
     try {
       return this.jwtService.verify<jwt>(token)
     } catch (e) {

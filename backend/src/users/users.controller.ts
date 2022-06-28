@@ -11,10 +11,11 @@ export class UsersController {
   @Get("whoami")
   @UseGuards(JwtAuthGuard)
   async whoami(@CurrentUser() user: User) {
-    const price = await Moralis.Web3API.account.getNFTs({
-      chain: "rinkeby",
-      address: "0x2061dd3a9f09186b5CD82436467dDB79dC737227"
-    })
-    return price
+    // const price = await Moralis.Web3API.account.getNFTs({
+    //   chain: "rinkeby",
+    //   address: "0x2061dd3a9f09186b5CD82436467dDB79dC737227"
+    // })
+    // return price
+    return user
   }
 }
