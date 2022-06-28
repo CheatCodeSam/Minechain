@@ -1,3 +1,4 @@
+import Moralis from "src/Moralis.import"
 import { JwtAuthGuard } from "src/auth/guards/jwt.guard"
 
 import { Controller, Get, UseGuards } from "@nestjs/common"
@@ -10,6 +11,10 @@ export class UsersController {
   @Get("whoami")
   @UseGuards(JwtAuthGuard)
   async whoami(@CurrentUser() user: User) {
-    return user
+    const price = await Moralis.Web3API.account.getNFTs({
+      chain: "rinkeby",
+      address: "0x2061dd3a9f09186b5CD82436467dDB79dC737227"
+    })
+    return price
   }
 }

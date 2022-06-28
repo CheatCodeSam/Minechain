@@ -3,7 +3,10 @@ import helmet from "helmet"
 
 import { NestFactory } from "@nestjs/core"
 
+import Moralis from "./Moralis.import"
 import { AppModule } from "./app.module"
+
+// Moralis.start({ moralisSecret: "" })
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
