@@ -1,9 +1,0 @@
-FROM node:17.4.0-alpine3.15
-
-WORKDIR /usr/app
-
-COPY package*.json ./
-RUN npm install
-ADD . .
-
-CMD ["npm", "run", "dev"]
