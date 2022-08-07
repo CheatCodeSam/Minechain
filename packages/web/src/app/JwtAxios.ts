@@ -30,7 +30,7 @@ export const setupInterceptor = (instance: AxiosInstance, store: Store) => {
       const originalRequest = error.config
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true
-        if (store.getState().auth.authStatus == AuthStatus.LoggedIn) {
+        if (store.getState().auth.authStatus === AuthStatus.LoggedIn) {
           try {
             const response = await axios.post("/api/v1/auth/refresh")
             window.sessionStorage.setItem("accessToken", response.data.accessToken)

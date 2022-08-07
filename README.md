@@ -1,3 +1,3 @@
 Minechain
 
-Minecraft! but on the blockchain
+Minecraft! but on the blockchain.
