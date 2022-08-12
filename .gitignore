@@ -38,3 +38,4 @@ Thumbs.db
 coverage.json
 
 db
+.env
