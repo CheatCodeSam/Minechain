@@ -9,6 +9,7 @@ import { AuthController } from "./auth.controller"
 import { AuthService } from "./auth.service"
 import { RefreshToken } from "./entities/refreshtoken.entity"
 import { JwtStrategy } from "./strategies/jwt.strategy"
+import { Web3Strategy } from "./strategies/web3.strategy"
 import { TokensService } from "./tokens.service"
 
 @Module({
@@ -18,7 +19,7 @@ import { TokensService } from "./tokens.service"
     JwtModule.register({ secret: "secret" }),
     TypeOrmModule.forFeature([User, RefreshToken])
   ],
-  providers: [AuthService, TokensService, JwtStrategy],
+  providers: [AuthService, TokensService, JwtStrategy, Web3Strategy],
   exports: [AuthService],
   controllers: [AuthController]
 })
