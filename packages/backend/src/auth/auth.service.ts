@@ -31,7 +31,7 @@ export class AuthService {
 
     const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce)
 
-    if (publicAddress.toLowerCase() === decodedAddress.toLocaleLowerCase()) {
+    if (publicAddress.toLowerCase() === decodedAddress.toLowerCase()) {
       user.isActive = true
       user.nonce = generateShortUuid()
       return this.userRepo.save(user)

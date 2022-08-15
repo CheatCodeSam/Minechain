@@ -4,9 +4,6 @@ import { AuthService } from "./auth.service"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
 import { Web3Guard } from "./guards/web3.guard"
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const ms = require("ms")
-
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -26,8 +23,6 @@ export class AuthController {
 
   @Post("/logout")
   logout(@Request() req): any {
-    console.log(req.session)
-
     req.session.destroy()
     return { msg: "The user session has ended" }
   }

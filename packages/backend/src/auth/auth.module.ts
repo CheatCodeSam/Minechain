@@ -7,6 +7,7 @@ import { User } from "../users/entities/user.entity"
 import { UsersModule } from "../users/users.module"
 import { AuthController } from "./auth.controller"
 import { AuthService } from "./auth.service"
+import { Session } from "./session.entity"
 import { SessionSerializer } from "./session.serializer"
 import { Web3Strategy } from "./strategies/web3.strategy"
 
@@ -15,7 +16,7 @@ import { Web3Strategy } from "./strategies/web3.strategy"
     UsersModule,
     PassportModule.register({ session: true }),
     JwtModule.register({ secret: "secret" }),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User, Session])
   ],
   providers: [AuthService, Web3Strategy, SessionSerializer],
   exports: [AuthService],
