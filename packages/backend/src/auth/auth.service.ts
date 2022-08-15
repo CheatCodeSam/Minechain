@@ -8,14 +8,10 @@ import { InjectRepository } from "@nestjs/typeorm"
 import { User } from "../users/entities/user.entity"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
 import { VerificationDto } from "./dto/verification.dto"
-import { TokensService } from "./tokens.service"
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User) private userRepo: Repository<User>,
-    private tokensService: TokensService
-  ) {}
+  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
   async signIn({ publicAddress }: PublicAddressDto) {
     const existingUser = await this.userRepo.findOneBy({ publicAddress })
@@ -38,8 +34,7 @@ export class AuthService {
     if (publicAddress.toLowerCase() === decodedAddress.toLocaleLowerCase()) {
       user.isActive = true
       user.nonce = generateShortUuid()
-      await this.userRepo.save(user)
-      return this.tokensService.issueTokens(user)
+      return this.userRepo.save(user)
     } else {
       throw new ForbiddenException("Invalid public address.")
     }

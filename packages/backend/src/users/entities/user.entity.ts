@@ -1,14 +1,5 @@
 import { generate as generateShortUuid } from "short-uuid"
-import {
-  BeforeInsert,
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn
-} from "typeorm"
-
-import { RefreshToken } from "../../auth/entities/refreshtoken.entity"
+import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity()
 export class User {
@@ -32,9 +23,6 @@ export class User {
 
   @Column({ default: false })
   isSuperUser: boolean
-
-  @OneToMany(() => RefreshToken, (token) => token.user)
-  refreshTokens: RefreshToken[]
 
   @BeforeInsert()
   private addNonce() {

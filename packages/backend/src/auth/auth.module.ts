@@ -7,19 +7,17 @@ import { User } from "../users/entities/user.entity"
 import { UsersModule } from "../users/users.module"
 import { AuthController } from "./auth.controller"
 import { AuthService } from "./auth.service"
-import { RefreshToken } from "./entities/refreshtoken.entity"
-import { JwtStrategy } from "./strategies/jwt.strategy"
+import { SessionSerializer } from "./session.serializer"
 import { Web3Strategy } from "./strategies/web3.strategy"
-import { TokensService } from "./tokens.service"
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    PassportModule.register({ session: true }),
     JwtModule.register({ secret: "secret" }),
-    TypeOrmModule.forFeature([User, RefreshToken])
+    TypeOrmModule.forFeature([User])
   ],
-  providers: [AuthService, TokensService, JwtStrategy, Web3Strategy],
+  providers: [AuthService, Web3Strategy, SessionSerializer],
   exports: [AuthService],
   controllers: [AuthController]
 })

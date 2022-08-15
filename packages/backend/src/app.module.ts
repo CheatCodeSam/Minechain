@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config"
 import { TypeOrmModule } from "@nestjs/typeorm"
 
 import { AuthModule } from "./auth/auth.module"
-import { RefreshToken } from "./auth/entities/refreshtoken.entity"
 import { User } from "./users/entities/user.entity"
 import { UsersModule } from "./users/users.module"
 
@@ -26,7 +25,7 @@ import { UsersModule } from "./users/users.module"
           //   password: process.env.PGPASSWORD,
           //   database: process.env.PGDATABASE,
           synchronize: true,
-          entities: [User, RefreshToken]
+          entities: [User]
         }
       }
     }),

@@ -2,6 +2,7 @@ import * as cookieParser from "cookie-parser"
 import "dotenv/config"
 import * as session from "express-session"
 import helmet from "helmet"
+import * as passport from "passport"
 
 import { NestFactory } from "@nestjs/core"
 
@@ -19,6 +20,7 @@ async function bootstrap() {
       saveUninitialized: false
     })
   )
+  app.use(passport.initialize())
   app.use(cookieParser())
   app.use(helmet())
   app.setGlobalPrefix("api/v1")
