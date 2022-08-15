@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-import { initialize, login, logout } from "./auth.actions"
+import { getAuth, login, logout } from "./auth.actions"
 import { AuthStatus } from "./auth.types"
 
 export interface AuthState {
@@ -23,11 +23,11 @@ export const authSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [initialize.fulfilled.type]: (state, action) => {
+    [getAuth.fulfilled.type]: (state, action) => {
       state.authStatus = AuthStatus.LoggedIn
       state.user = action.payload.user
     },
-    [initialize.rejected.type]: (state) => {
+    [getAuth.rejected.type]: (state) => {
       state.authStatus = AuthStatus.AnonymousUser
     },
     [login.fulfilled.type]: (state, action) => {

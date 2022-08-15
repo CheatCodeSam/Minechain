@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { ethers } from "ethers"
 
-export const initialize = createAsyncThunk("auth/initalize", async () => {
+export const getAuth = createAsyncThunk("auth/getAuth", async () => {
   const response = await axios.get("api/v1/users/whoami")
   return { user: response.data }
 })

@@ -1,12 +1,21 @@
-import React from "react"
+import React, { useEffect } from "react"
 
+import { useDispatch } from "react-redux"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 
+import { getAuth } from "../features/auth/auth.actions"
+import { AppDispatch } from "../store"
 import Account from "./Account"
 import Settings from "./Settings"
 import Test from "./Test"
 
 const App = () => {
+  const dispatch = useDispatch<AppDispatch>()
+
+  useEffect(() => {
+    dispatch(getAuth())
+  }, [dispatch])
+
   return (
     <BrowserRouter>
       <Routes>
