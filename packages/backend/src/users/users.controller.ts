@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from "@nestjs/common"
 
 import Moralis from "../Moralis.import"
-import { AuthenticatedGuard } from "../auth/strategies/authenticated.guard"
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard"
 import { CurrentUser } from "./decorators/current-user.decorator"
 import { User } from "./entities/user.entity"
 
