@@ -5,6 +5,7 @@
     "backend": "packages/backend",
     "hardhat": "packages/hardhat",
     "web": "packages/web",
-    "web-e2e": "packages/web-e2e"
+    "web-e2e": "packages/web-e2e",
+    "minecraft": "packages/minecraft"
   }
 }
