@@ -1,0 +1,10 @@
+name: HelloWorld
+author: jaguth
+description: An Example of how to create a simple Spigot plugin
+version: 1.0
+main: minechain.App
+api-version: 1.19
+commands:
+  echo:
+    description: Echos a message to everyone
+    usage: "Usage: /echo <your message>"
