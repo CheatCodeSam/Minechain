@@ -1,6 +1,8 @@
+import { EvmChain } from "@moralisweb3/evm-utils"
+import Moralis from "moralis"
+
 import { Controller, Get, UseGuards } from "@nestjs/common"
 
-import Moralis from "../Moralis.import"
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard"
 import { CurrentUser } from "./decorators/current-user.decorator"
 import { User } from "./entities/user.entity"
@@ -16,8 +18,8 @@ export class UsersController {
   @Get("nfts")
   @UseGuards(AuthenticatedGuard)
   async nfts(@CurrentUser() user: User) {
-    const price = await Moralis.Web3API.account.getNFTs({
-      chain: "rinkeby",
+    const price = await Moralis.EvmApi.account.getNFTs({
+      chain: EvmChain.RINKEBY,
       address: user.publicAddress
     })
     return price

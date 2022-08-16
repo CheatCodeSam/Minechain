@@ -96,7 +96,7 @@
     "core-js": "^3.6.5",
     "express-session": "^1.17.3",
     "helmet": "^5.1.0",
-    "moralis": "^1.8.1",
+    "moralis": "^2.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-web3": "^0.1.7",

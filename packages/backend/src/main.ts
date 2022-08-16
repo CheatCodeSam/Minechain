@@ -2,15 +2,15 @@ import { TypeormStore } from "connect-typeorm"
 import "dotenv/config"
 import * as session from "express-session"
 import helmet from "helmet"
+import Moralis from "moralis"
 import * as passport from "passport"
 
 import { NestFactory } from "@nestjs/core"
 
-import Moralis from "./Moralis.import"
 import { AppModule } from "./app.module"
 import { Session } from "./auth/session.entity"
 
-Moralis.start({ moralisSecret: process.env.MORALIS_SECRET })
+Moralis.start({ apiKey: process.env.MORALIS_SECRET })
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
