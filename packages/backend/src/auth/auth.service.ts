@@ -2,7 +2,8 @@ import { ethers } from "ethers"
 import { generate as generateShortUuid } from "short-uuid"
 import { Repository } from "typeorm"
 
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common"
+import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common"
+import { ClientProxy } from "@nestjs/microservices"
 import { InjectRepository } from "@nestjs/typeorm"
 
 import { User } from "../users/entities/user.entity"
@@ -11,7 +12,10 @@ import { VerificationDto } from "./dto/verification.dto"
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    @Inject("me2") private client: ClientProxy
+  ) {}
 
   async signIn({ publicAddress }: PublicAddressDto) {
     const existingUser = await this.userRepo.findOneBy({ publicAddress })
@@ -30,7 +34,7 @@ export class AuthService {
     if (!user) throw new NotFoundException("User with public address does not exist.")
 
     const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce)
-
+    this.client.emit("greeting ", "Progressive Coder")
     if (publicAddress.toLowerCase() === decodedAddress.toLowerCase()) {
       user.isActive = true
       user.nonce = generateShortUuid()

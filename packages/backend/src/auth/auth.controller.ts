@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Request, UseGuards } from "@nestjs/common"
+import { EventPattern, MessagePattern } from "@nestjs/microservices"
 
 import { AuthService } from "./auth.service"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
@@ -25,5 +26,11 @@ export class AuthController {
   logout(@Request() req): any {
     req.session.destroy()
     return { msg: "The user session has ended" }
+  }
+
+  @MessagePattern("greeting ")
+  getGreetingMessage(name: string): string {
+    console.log(`Hello ${name}`)
+    return ""
   }
 }
