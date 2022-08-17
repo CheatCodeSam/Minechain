@@ -27,10 +27,4 @@ export class AuthController {
     req.session.destroy()
     return { msg: "The user session has ended" }
   }
-
-  @MessagePattern("greeting ")
-  getGreetingMessage(name: string): string {
-    console.log(`Hello ${name}`)
-    return ""
-  }
 }

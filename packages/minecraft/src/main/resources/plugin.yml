@@ -5,6 +5,7 @@ version: 1.0
 main: minechain.App
 api-version: 1.19
 commands:
-  echo:
-    description: Echos a message to everyone
-    usage: "Usage: /echo <your message>"
+commands:
+   mq:
+      description: "Made things"
+

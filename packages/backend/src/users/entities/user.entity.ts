@@ -15,6 +15,9 @@ export class User {
   @Column({ unique: true })
   publicAddress: string
 
+  @Column({ nullable: true })
+  mojangId: string
+
   @CreateDateColumn()
   dateJoined: Date
 

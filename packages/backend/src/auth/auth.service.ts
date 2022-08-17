@@ -53,4 +53,8 @@ export class AuthService {
     }
     return true
   }
+
+  async getUserByUUID(uuid: string): Promise<User> {
+    return this.userRepo.findOne({ where: { mojangId: uuid } })
+  }
 }
