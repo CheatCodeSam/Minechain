@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module"
 import { Session } from "./auth/session.entity"
 import { User } from "./users/entities/user.entity"
 import { UsersModule } from "./users/users.module"
+import { MinecraftModule } from './minecraft/minecraft.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { UsersModule } from "./users/users.module"
       }
     }),
     AuthModule,
-    UsersModule
+    UsersModule,
+    MinecraftModule
   ]
 })
 export class AppModule {

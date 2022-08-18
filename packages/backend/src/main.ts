@@ -31,17 +31,6 @@ async function bootstrap() {
   app.use(helmet())
   app.setGlobalPrefix("api/v1")
 
-  app.connectMicroservice<RmqOptions>({
-    transport: Transport.RMQ,
-    options: {
-      urls: [`amqp://guest:guest@localhost`],
-      queue: "me",
-      queueOptions: {
-        durable: true
-      }
-    }
-  })
-
   await app.startAllMicroservices()
   await app.listen(3001)
 }

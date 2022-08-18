@@ -12,10 +12,7 @@ import { VerificationDto } from "./dto/verification.dto"
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User) private userRepo: Repository<User>,
-    @Inject("me2") private client: ClientProxy
-  ) {}
+  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
   async signIn({ publicAddress }: PublicAddressDto) {
     const existingUser = await this.userRepo.findOneBy({ publicAddress })
@@ -34,7 +31,6 @@ export class AuthService {
     if (!user) throw new NotFoundException("User with public address does not exist.")
 
     const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce)
-    this.client.emit("greeting ", "Progressive Coder")
     if (publicAddress.toLowerCase() === decodedAddress.toLowerCase()) {
       user.isActive = true
       user.nonce = generateShortUuid()

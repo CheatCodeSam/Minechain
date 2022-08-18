@@ -14,7 +14,7 @@ public class Rabbit {
 
   private Connection connection;
   private Channel channel;
-  private String queueName = "me";
+  private String EXCHANGE_NAME = "registration";
 
   private Rabbit() throws IOException, TimeoutException {
     ConnectionFactory factory = new ConnectionFactory();
@@ -23,7 +23,7 @@ public class Rabbit {
 
     this.connection = factory.newConnection();
     this.channel = this.connection.createChannel();
-    this.join(this.queueName);
+    this.join();
   }
 
   public static Rabbit getInstance() throws IOException, TimeoutException {
@@ -32,13 +32,19 @@ public class Rabbit {
     return single_instance;
   }
 
-  private void join(String queueName) throws IOException {
-    this.channel.queueDeclare(queueName, true, false, false, null);
+  private void join() throws IOException {
+    this.channel.exchangeDeclare("registration", "fanout", true);
+    String queueName = this.channel.queueDeclare().getQueue();
+    this.channel.queueBind(queueName, EXCHANGE_NAME, "");
 
     DeliverCallback deliverCallback = (consumerTag, delivery) -> {
       String message = new String(delivery.getBody(), "UTF-8");
-      Bukkit.getLogger().info(message);
+      System.out.println(" [x] Received '" + message + "'");
     };
     channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
+  }
+
+  public void publish(String msg) throws IOException {
+    channel.basicPublish("registration", "", null, msg.getBytes());
   }
 }

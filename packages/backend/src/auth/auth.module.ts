@@ -17,20 +17,7 @@ import { Web3Strategy } from "./strategies/web3.strategy"
     UsersModule,
     PassportModule.register({ session: true }),
     JwtModule.register({ secret: "secret" }),
-    TypeOrmModule.forFeature([User, Session]),
-    ClientsModule.register([
-      {
-        name: "me2",
-        transport: Transport.RMQ,
-        options: {
-          urls: ["amqp://localhost:5672"],
-          queue: "me",
-          queueOptions: {
-            durable: true
-          }
-        }
-      }
-    ])
+    TypeOrmModule.forFeature([User, Session])
   ],
   providers: [AuthService, Web3Strategy, SessionSerializer],
   exports: [AuthService],
