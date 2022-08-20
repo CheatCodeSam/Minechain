@@ -1,11 +1,16 @@
 package minechain;
 
+import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 
 public class Rabbit {
@@ -33,18 +38,31 @@ public class Rabbit {
   }
 
   private void join() throws IOException {
-    this.channel.exchangeDeclare("registration", "fanout", true);
+    this.channel.exchangeDeclare("registration", "direct", true);
     String queueName = this.channel.queueDeclare().getQueue();
-    this.channel.queueBind(queueName, EXCHANGE_NAME, "");
+    this.channel.queueBind(queueName, EXCHANGE_NAME, "registerToken");
 
     DeliverCallback deliverCallback = (consumerTag, delivery) -> {
       String message = new String(delivery.getBody(), "UTF-8");
-      System.out.println(" [x] Received '" + message + "'");
+      Gson gson = new Gson();
+      Map map = gson.fromJson(message, Map.class);
+
+      TextComponent msg = new TextComponent("Click here to register your account.");
+      msg.setClickEvent(
+        new ClickEvent(
+          ClickEvent.Action.OPEN_URL,
+          "http://localhost:4200/register/" + map.get("token")
+        )
+      );
+      msg.setColor(ChatColor.RED);
+      msg.setUnderlined(true);
+
+      Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
     };
     channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
   }
 
-  public void publish(String msg) throws IOException {
-    channel.basicPublish("registration", "", null, msg.getBytes());
+  public void publish(String exchange, String routingKey, String json) throws IOException {
+    channel.basicPublish(exchange, routingKey, null, json.getBytes());
   }
 }

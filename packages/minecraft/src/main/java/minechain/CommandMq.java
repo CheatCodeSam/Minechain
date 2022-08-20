@@ -12,15 +12,15 @@ public class CommandMq implements CommandExecutor {
   @Override
   public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     String msg = String.join(" ", args);
-    try {
-      Rabbit.getInstance().publish(msg);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (TimeoutException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    // try {
+    //   Rabbit.getInstance().publish(msg);
+    // } catch (IOException e) {
+    //   // TODO Auto-generated catch block
+    //   e.printStackTrace();
+    // } catch (TimeoutException e) {
+    //   // TODO Auto-generated catch block
+    //   e.printStackTrace();
+    // }
     return false;
   }
 }

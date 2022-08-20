@@ -9,7 +9,7 @@ import { RegistrationService } from "./registration.service"
   imports: [
     RabbitMQModule.forRoot(RabbitMQModule, {
       uri: "amqp://localhost:5672",
-      exchanges: [{ name: "registration", type: "fanout" }]
+      exchanges: [{ name: "registration", type: "direct" }]
     })
   ],
   controllers: [RegistrationController],
