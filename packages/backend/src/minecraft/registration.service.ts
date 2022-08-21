@@ -6,7 +6,7 @@ import * as jose from "jose"
 import Moralis from "moralis"
 import { Repository } from "typeorm"
 
-import { Injectable } from "@nestjs/common"
+import { ForbiddenException, Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 
 import { User } from "../users/entities/user.entity"
@@ -17,6 +17,7 @@ export class RegistrationService {
     private readonly amqpConnection: AmqpConnection,
     @InjectRepository(User) private userRepo: Repository<User>
   ) {}
+
   @RabbitSubscribe({
     exchange: "registration",
     routingKey: "playerJoin",
@@ -26,12 +27,18 @@ export class RegistrationService {
     allowNonJsonMessages: false
   })
   public async pubSubHandler(msg: { uuid: string; displayName: string }) {
-    const registrationToken = await this.createJwt(msg.uuid, msg.displayName)
-    this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
-    console.log(`Received message: ${JSON.stringify(msg)}`)
+    const user = await this.userRepo.findOne({ where: { mojangId: msg.uuid } })
+    if (user) {
+      this.amqpConnection.publish("registration", "success", {
+        msg: `Minecraft user "${msg.displayName}" is linked to address "${user.publicAddress}"`
+      })
+    } else {
+      const registrationToken = await this.createJwt(msg.uuid, msg.displayName)
+      this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
+    }
   }
 
-  public async createJwt(mojangId: string, displayName: string): Promise<string> {
+  private async createJwt(mojangId: string, displayName: string): Promise<string> {
     const privatekey = createSecretKey(process.env.JWT_SECRET, "utf-8")
 
     const jwt = await new jose.SignJWT({ mojangId, displayName })
@@ -47,16 +54,22 @@ export class RegistrationService {
   public async validateRegistration(token: string, user: User) {
     const privatekey = createSecretKey(process.env.JWT_SECRET, "utf-8")
 
-    const { payload } = await jose.jwtVerify(token, privatekey, {
-      issuer: "minechain:backend",
-      audience: "minechain:backend"
-    })
+    let payload: jose.JWTPayload
+    try {
+      const verification = await jose.jwtVerify(token, privatekey, {
+        issuer: "minechain:backend",
+        audience: "minechain:backend"
+      })
+      payload = verification.payload
+    } catch (error) {
+      throw new ForbiddenException("Token is invalid")
+    }
 
     user.mojangId = payload.mojangId as string
     this.userRepo.save(user)
 
     this.amqpConnection.publish("registration", "success", {
-      msg: `Minecraft user "${payload.displayName}" is now linked to address "${user.publicAddress}"`
+      msg: `Minecraft user "${payload.displayName}" is linked to address "${user.publicAddress}"`
     })
   }
 }

@@ -1,6 +1,4 @@
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq"
-
-import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common"
+import { Body, Controller, Post, UseGuards } from "@nestjs/common"
 
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard"
 import { CurrentUser } from "../users/decorators/current-user.decorator"
@@ -10,10 +8,7 @@ import { RegistrationService } from "./registration.service"
 
 @Controller("registration")
 export class RegistrationController {
-  constructor(
-    private readonly amqpConnection: AmqpConnection,
-    private readonly registrationService: RegistrationService
-  ) {}
+  constructor(private readonly registrationService: RegistrationService) {}
 
   @Post()
   @UseGuards(AuthenticatedGuard)
