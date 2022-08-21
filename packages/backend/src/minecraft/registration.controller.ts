@@ -14,7 +14,6 @@ export class RegistrationController {
   @HttpCode(202)
   @UseGuards(AuthenticatedGuard)
   async register(@Body() test: registerToken, @CurrentUser() user: User) {
-    this.registrationService.validateRegistration(test.token, user)
-    return
+    return this.registrationService.validateRegistration(test.token, user)
   }
 }
