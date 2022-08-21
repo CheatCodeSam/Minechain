@@ -1,7 +1,11 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq"
 
-import { Controller, Get, Post } from "@nestjs/common"
+import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common"
 
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard"
+import { CurrentUser } from "../users/decorators/current-user.decorator"
+import { User } from "../users/entities/user.entity"
+import { registerToken } from "./registerToken.dto"
 import { RegistrationService } from "./registration.service"
 
 @Controller("registration")
@@ -11,10 +15,10 @@ export class RegistrationController {
     private readonly registrationService: RegistrationService
   ) {}
 
-  @Get("send")
-  async send() {
-    this.amqpConnection.publish("registration", "hello", { pattern: "join", msg: "hello world" })
-    // this.registrationService.createJwt("hello")
-    return ""
+  @Post()
+  @UseGuards(AuthenticatedGuard)
+  async register(@Body() test: registerToken, @CurrentUser() user: User) {
+    this.registrationService.validateRegistration(test.token, user)
+    return
   }
 }

@@ -40,7 +40,9 @@ public class Rabbit {
   private void join() throws IOException {
     this.channel.exchangeDeclare("registration", "direct", true);
     String queueName = this.channel.queueDeclare().getQueue();
+    String otherQueueName = this.channel.queueDeclare().getQueue();
     this.channel.queueBind(queueName, EXCHANGE_NAME, "registerToken");
+    this.channel.queueBind(otherQueueName, EXCHANGE_NAME, "success");
 
     DeliverCallback deliverCallback = (consumerTag, delivery) -> {
       String message = new String(delivery.getBody(), "UTF-8");
@@ -60,6 +62,15 @@ public class Rabbit {
       Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
     };
     channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
+
+    DeliverCallback otherDeliverCallback = (consumerTag, delivery) -> {
+      String message = new String(delivery.getBody(), "UTF-8");
+      Gson gson = new Gson();
+      Map map = gson.fromJson(message, Map.class);
+      String msg = "" + map.get("msg");
+      Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
+    };
+    channel.basicConsume(otherQueueName, true, otherDeliverCallback, consumerTag -> {});
   }
 
   public void publish(String exchange, String routingKey, String json) throws IOException {

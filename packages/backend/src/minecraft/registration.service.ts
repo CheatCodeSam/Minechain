@@ -3,12 +3,20 @@ import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 import { createSecretKey } from "crypto"
 import "dotenv/config"
 import * as jose from "jose"
+import Moralis from "moralis"
+import { Repository } from "typeorm"
 
 import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+
+import { User } from "../users/entities/user.entity"
 
 @Injectable()
 export class RegistrationService {
-  constructor(private readonly amqpConnection: AmqpConnection) {}
+  constructor(
+    private readonly amqpConnection: AmqpConnection,
+    @InjectRepository(User) private userRepo: Repository<User>
+  ) {}
   @RabbitSubscribe({
     exchange: "registration",
     routingKey: "playerJoin",
@@ -30,9 +38,25 @@ export class RegistrationService {
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setIssuer("minechain:backend")
-      .setAudience("minechain:minecraft")
+      .setAudience("minechain:backend")
       .setExpirationTime("15m")
       .sign(privatekey)
     return jwt
+  }
+
+  public async validateRegistration(token: string, user: User) {
+    const privatekey = createSecretKey(process.env.JWT_SECRET, "utf-8")
+
+    const { payload } = await jose.jwtVerify(token, privatekey, {
+      issuer: "minechain:backend",
+      audience: "minechain:backend"
+    })
+
+    user.mojangId = payload.mojangId as string
+    this.userRepo.save(user)
+
+    this.amqpConnection.publish("registration", "success", {
+      msg: `Minecraft user "${payload.displayName}" is now linked to address "${user.publicAddress}"`
+    })
   }
 }
