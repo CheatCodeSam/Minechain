@@ -29,9 +29,7 @@ export class RegistrationService {
   public async pubSubHandler(msg: { uuid: string; displayName: string }) {
     const user = await this.userRepo.findOne({ where: { mojangId: msg.uuid } })
     if (user) {
-      this.amqpConnection.publish("registration", "success", {
-        msg: `Minecraft user "${msg.displayName}" is linked to address "${user.publicAddress}"`
-      })
+      this.publishWelcome(msg.displayName, user.publicAddress)
     } else {
       const registrationToken = await this.createJwt(msg.uuid, msg.displayName)
       this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
@@ -41,14 +39,26 @@ export class RegistrationService {
   private async createJwt(mojangId: string, displayName: string): Promise<string> {
     const privatekey = createSecretKey(process.env.JWT_SECRET, "utf-8")
 
-    const jwt = await new jose.SignJWT({ mojangId, displayName })
+    return new jose.SignJWT({ mojangId, displayName })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setIssuer("minechain:backend")
       .setAudience("minechain:backend")
       .setExpirationTime("15m")
       .sign(privatekey)
-    return jwt
+  }
+
+  private async publishWelcome(displayName: string, publicAddress: string) {
+    let address: string
+    try {
+      const moralisEns = await Moralis.EvmApi.resolve.resolveAddress({ address: publicAddress })
+      address = moralisEns.raw.name
+    } catch (error) {
+      address = publicAddress
+    }
+    this.amqpConnection.publish("registration", "success", {
+      msg: `Minecraft user "${displayName}" is linked to address "${address}"`
+    })
   }
 
   public async validateRegistration(token: string, user: User) {
@@ -64,12 +74,8 @@ export class RegistrationService {
     } catch (error) {
       throw new ForbiddenException("Token is invalid")
     }
-
     user.mojangId = payload.mojangId as string
     this.userRepo.save(user)
-
-    this.amqpConnection.publish("registration", "success", {
-      msg: `Minecraft user "${payload.displayName}" is linked to address "${user.publicAddress}"`
-    })
+    this.publishWelcome(payload.displayName as string, user.publicAddress)
   }
 }
