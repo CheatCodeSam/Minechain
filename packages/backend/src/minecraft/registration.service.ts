@@ -27,13 +27,13 @@ export class RegistrationService {
     allowNonJsonMessages: false
   })
   public async pubSubHandler(msg: { uuid: string; displayName: string }) {
-    const user = await this.userRepo.findOne({ where: { mojangId: msg.uuid } })
-    if (user) {
-      this.publishWelcome(msg.displayName, user.publicAddress)
-    } else {
-      const registrationToken = await this.createJwt(msg.uuid, msg.displayName)
-      this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
-    }
+    // const user = await this.userRepo.findOne({ where: { mojangId: msg.uuid } })
+    // if (user) {
+    //   this.publishWelcome(msg.displayName, user.publicAddress)
+    // } else {
+    const registrationToken = await this.createJwt(msg.uuid, msg.displayName)
+    this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
+    // }
   }
 
   private async createJwt(mojangId: string, displayName: string): Promise<string> {

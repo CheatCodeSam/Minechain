@@ -5,6 +5,7 @@ import { AuthStatus } from "./auth.types"
 
 export interface AuthState {
   authStatus: AuthStatus
+  loginRedirect: string
   user: {
     id: number
     publicAddress: string
@@ -15,13 +16,18 @@ export interface AuthState {
 
 const initialState: AuthState = {
   authStatus: AuthStatus.Pending,
+  loginRedirect: "/",
   user: null
 }
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    setLoginRedirect(state, action) {
+      state.loginRedirect = action.payload
+    }
+  },
   extraReducers: {
     [getAuth.fulfilled.type]: (state, action) => {
       state.authStatus = AuthStatus.LoggedIn
@@ -45,5 +51,6 @@ export const authSlice = createSlice({
   }
 })
 
+export const { setLoginRedirect } = authSlice.actions
 const { reducer } = authSlice
 export default reducer
