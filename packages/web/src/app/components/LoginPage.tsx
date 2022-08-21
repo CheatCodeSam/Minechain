@@ -12,7 +12,7 @@ const LoginPage = () => {
   const state = useLocation().state as { redirect?: string }
 
   if (authStatus === AuthStatus.LoggedIn) {
-    return <Navigate to={state?.redirect ? state.redirect : "/"} />
+    return <Navigate to={state?.redirect || "/"} />
   } else {
     return (
       <div>

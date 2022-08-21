@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 
 import { getAuth, login, logout, registerMojang } from "./auth.actions"
 import { AuthStatus } from "./auth.types"
