@@ -1,17 +1,18 @@
 import React from "react"
 
 import { useSelector } from "react-redux"
-import { Navigate } from "react-router-dom"
+import { Navigate, useLocation } from "react-router-dom"
 
 import { AuthStatus } from "../features/auth/auth.types"
 import { State } from "../store"
 import LoginButton from "./LoginButton"
 
 const LoginPage = () => {
-  const { authStatus, loginRedirect } = useSelector((state: State) => state.auth)
+  const { authStatus } = useSelector((state: State) => state.auth)
+  const state = useLocation().state as { redirect?: string }
 
   if (authStatus === AuthStatus.LoggedIn) {
-    return <Navigate to={loginRedirect}></Navigate>
+    return <Navigate to={state?.redirect ? state.redirect : "/"} />
   } else {
     return (
       <div>

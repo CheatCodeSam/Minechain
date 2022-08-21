@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
+import toast, { Toaster } from "react-hot-toast"
 
-import { getAuth, login, logout } from "./auth.actions"
+import { getAuth, login, logout, registerMojang } from "./auth.actions"
 import { AuthStatus } from "./auth.types"
 
 export interface AuthState {
@@ -23,11 +24,7 @@ const initialState: AuthState = {
 export const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    setLoginRedirect(state, action) {
-      state.loginRedirect = action.payload
-    }
-  },
+  reducers: {},
   extraReducers: {
     [getAuth.fulfilled.type]: (state, action) => {
       state.authStatus = AuthStatus.LoggedIn
@@ -37,6 +34,7 @@ export const authSlice = createSlice({
       state.authStatus = AuthStatus.AnonymousUser
     },
     [login.fulfilled.type]: (state, action) => {
+      toast.success("Successfully logged in.")
       state.authStatus = AuthStatus.LoggedIn
       state.user = action.payload.user
     },
@@ -47,10 +45,15 @@ export const authSlice = createSlice({
     [logout.rejected.type]: (state) => {
       state.authStatus = AuthStatus.AnonymousUser
       state.user = null
+    },
+    [registerMojang.rejected.type]: (state) => {
+      toast.error("There was an error registering the user")
+    },
+    [registerMojang.fulfilled.type]: (state) => {
+      toast.success("Successfully registered user")
     }
   }
 })
 
-export const { setLoginRedirect } = authSlice.actions
 const { reducer } = authSlice
 export default reducer

@@ -4,24 +4,21 @@ import axios from "axios"
 import { useDispatch, useSelector } from "react-redux"
 import { Navigate, useParams } from "react-router-dom"
 
-import { setLoginRedirect } from "../features/auth/auth.slice"
+import { registerMojang } from "../features/auth/auth.actions"
 import { AuthStatus } from "../features/auth/auth.types"
 import { AppDispatch, State } from "../store"
 
 const Registration = () => {
-  const params = useParams()
+  const { jwt } = useParams()
   const dispatch = useDispatch<AppDispatch>()
   const { authStatus } = useSelector((state: State) => state.auth)
 
   useEffect(() => {
-    if (authStatus === AuthStatus.LoggedIn)
-      axios.post("api/v1/registration", { token: params["jwt"] })
-    else if (authStatus === AuthStatus.AnonymousUser)
-      dispatch(setLoginRedirect("/register/" + params["jwt"]))
-  }, [authStatus, params, dispatch])
+    if (authStatus === AuthStatus.LoggedIn) dispatch(registerMojang(jwt!))
+  }, [authStatus, jwt, dispatch])
 
   if (authStatus === AuthStatus.AnonymousUser) {
-    return <Navigate to={"/login"} replace={true} />
+    return <Navigate to={"/login"} replace={true} state={{ redirect: `/register/${jwt}` }} />
   } else if (authStatus === AuthStatus.LoggedIn) {
     return <Navigate to={"/"} replace={true} />
   } else {

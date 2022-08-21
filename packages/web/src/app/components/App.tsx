@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 
+import { Toaster } from "react-hot-toast"
 import { useDispatch } from "react-redux"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 
@@ -20,6 +21,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <Toaster />
       <Routes>
         <Route path="login" element={<LoginPage />} />
         <Route path="register/:jwt" element={<Registration />} />

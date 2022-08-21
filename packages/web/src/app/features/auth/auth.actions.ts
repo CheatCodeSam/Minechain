@@ -33,3 +33,8 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   const res = await axios.post("api/v1/auth/logout")
   return res.data
 })
+
+export const registerMojang = createAsyncThunk("auth/registerMojang", async (token: string) => {
+  const response = await axios.post("api/v1/registration", { token })
+  return { user: response.status }
+})
