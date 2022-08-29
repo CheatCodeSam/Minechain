@@ -11,6 +11,8 @@
     "@metamask/providers": "^9.0.0",
     "@nestjs/schematics": "^9.0.1",
     "@nestjs/testing": "^9.0.9",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.4",
+    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nrwl/cli": "14.3.6",
     "@nrwl/cypress": "14.3.6",
