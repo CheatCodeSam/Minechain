@@ -1,6 +1,7 @@
 import React from "react"
 
-import { CogIcon, LogoutIcon, UserIcon } from "@heroicons/react/outline"
+import { CogIcon, UserIcon } from "@heroicons/react/24/outline"
+import { ArrowLeftOnRectangleIcon } from "@heroicons/react/24/solid"
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
@@ -13,7 +14,7 @@ const UserHeader = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   return (
-    <div className="dropdown">
+    <div className="dropdown dropdown-end">
       <label tabIndex={0} className="btn btn-ghost m-1 gap-3 normal-case">
         <Jazzicon diameter={30} seed={jsNumberForAddress(user.publicAddress)} />
         {user.publicAddress.substring(0, 5) +
@@ -30,7 +31,7 @@ const UserHeader = () => {
             Settings
           </Link>
           <button onClick={() => dispatch(logout())}>
-            <LogoutIcon className="h-5 w-5" /> Logout
+            <ArrowLeftOnRectangleIcon className="h-5 w-5" /> Logout
           </button>
         </li>
       </ul>
