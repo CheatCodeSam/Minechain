@@ -2,6 +2,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { ethers } from "ethers"
 
+import Minechain from "./Minechain.json"
+
 export const getAuth = createAsyncThunk("auth/getAuth", async () => {
   const response = await axios.get("api/v1/users/whoami")
   return { user: response.data }
@@ -38,3 +40,21 @@ export const registerMojang = createAsyncThunk("auth/registerMojang", async (tok
   const response = await axios.post("api/v1/registration", { token })
   return { user: response.status }
 })
+
+// @ts-ignore
+window.buyNft = async () => {
+  const provider = new ethers.providers.Web3Provider(
+    window.ethereum as unknown as ethers.providers.ExternalProvider
+  )
+  // get the end user
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+
+  // get the smart contract
+  const contract = new ethers.Contract(
+    "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    Minechain.abi,
+    signer
+  )
+  await contract["safeMint"](address, 0, { value: ethers.utils.parseEther("0.01") })
+}

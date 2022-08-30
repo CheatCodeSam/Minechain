@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "compile": "hardhat compile",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
     "node": "hardhat node",
     "test": "hardhat test",
     "coverage": "hardhat coverage"

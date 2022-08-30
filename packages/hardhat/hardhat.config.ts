@@ -16,6 +16,11 @@ const config: HardhatUserConfig = {
   paths: {
     cache: "../../dist/hardhat/cache",
     artifacts: "../../dist/hardhat/artifacts"
+  },
+  networks: {
+    hardhat: {
+      chainId: 1337
+    }
   }
 }
 
