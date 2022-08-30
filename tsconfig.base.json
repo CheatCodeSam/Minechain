@@ -14,7 +14,9 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@./abi-typings": ["packages/abi-typings/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

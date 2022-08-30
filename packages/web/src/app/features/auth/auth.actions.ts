@@ -1,8 +1,7 @@
+import { Minechain, minechainJson } from "@./abi-typings"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { ethers } from "ethers"
-
-import Minechain from "./Minechain.json"
 
 export const getAuth = createAsyncThunk("auth/getAuth", async () => {
   const response = await axios.get("api/v1/users/whoami")
@@ -52,9 +51,12 @@ window.buyNft = async () => {
 
   // get the smart contract
   const contract = new ethers.Contract(
-    "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    Minechain.abi,
+    "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    minechainJson,
     signer
-  )
-  await contract["safeMint"](address, 0, { value: ethers.utils.parseEther("0.01") })
+  ) as Minechain
+  const tx = await contract.safeMint(address, 102, { value: ethers.utils.parseEther("0.01") })
+  await tx.wait()
+  console.log(await contract.ownerOf(102))
+  console.log(await contract.balanceOf(address))
 }
