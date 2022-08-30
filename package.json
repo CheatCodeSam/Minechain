@@ -2,7 +2,9 @@
   "name": "minechain",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "nx compile hardhat"
+  },
   "private": true,
   "workspaces": [
     "packages/*"

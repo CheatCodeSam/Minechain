@@ -58,5 +58,5 @@ window.buyNft = async () => {
   const tx = await contract.safeMint(address, 102, { value: ethers.utils.parseEther("0.01") })
   await tx.wait()
   console.log(await contract.ownerOf(102))
-  console.log(await contract.balanceOf(address))
+  console.log((await contract.balanceOf(address)).toNumber)
 }
