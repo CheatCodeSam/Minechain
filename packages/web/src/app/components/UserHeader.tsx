@@ -13,10 +13,11 @@ const UserHeader = () => {
 
   return (
     <div className="navbar bg-base-100">
+      <div className="flex-none">
+        <SugarCubeIcon classes="w-9 h-9 inline-block" />
+      </div>
       <div className="flex-1">
-        <div className="normal-case text-xl">
-          <SugarCubeIcon classes="w-5 h-5 span " /> Minechain
-        </div>
+        <span className="normal-case text-xl pl-2">Minechain</span>
       </div>
       <div className="flex-0">
         {authStatus === AuthStatus.LoggedIn ? <UserDetails /> : <LoginButton />}

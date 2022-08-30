@@ -51,12 +51,12 @@ window.buyNft = async () => {
 
   // get the smart contract
   const contract = new ethers.Contract(
-    "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     minechainJson,
     signer
   ) as Minechain
-  const tx = await contract.safeMint(address, 102, { value: ethers.utils.parseEther("0.01") })
+  const tx = await contract.safeMint(address, 101, { value: ethers.utils.parseEther("0.01") })
   await tx.wait()
-  console.log(await contract.ownerOf(102))
-  console.log((await contract.balanceOf(address)).toNumber)
+  console.log(await contract.ownerOf(101))
+  console.log((await contract.balanceOf(address)).toNumber())
 }
