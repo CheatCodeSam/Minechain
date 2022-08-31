@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit"
 
 import authReducer from "../features/auth/auth.slice"
+import nftReducer from "../features/nft/nft.slice"
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer
+    auth: authReducer,
+    nft: nftReducer
   }
 })
 
