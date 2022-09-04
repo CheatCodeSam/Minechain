@@ -21,7 +21,7 @@ const UserHeader = () => {
           "..." +
           user.publicAddress.substring(user.publicAddress.length - 4)}
       </label>
-      <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+      <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-52">
         <li>
           <Link to="/account">
             <UserIcon className="h-5 w-5" /> Account

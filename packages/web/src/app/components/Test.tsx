@@ -6,9 +6,9 @@ import UserHeader from "./UserHeader"
 
 const Test = () => {
   return (
-    <div className="gap-2 flex m-2">
+    <div className="">
       <UserHeader />
-      <main>
+      <main className="m-2">
         <Outlet />
       </main>
     </div>

@@ -1,6 +1,5 @@
 import React from "react"
 
-import axios from "axios"
 import { useDispatch } from "react-redux"
 
 import { safeMint } from "../features/nft/nft.actions"
@@ -12,7 +11,7 @@ const Account = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   return (
-    <button className="btn" onClick={() => dispatch(safeMint(3))}>
+    <button className="btn" onClick={() => dispatch(safeMint(4))}>
       mint 1
     </button>
   )

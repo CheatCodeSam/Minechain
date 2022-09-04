@@ -12,15 +12,17 @@ const UserHeader = () => {
   const { authStatus } = useSelector((state: State) => state.auth)
 
   return (
-    <div className="navbar bg-base-100">
-      <div className="flex-none">
-        <SugarCubeIcon classes="w-9 h-9 inline-block" />
-      </div>
-      <div className="flex-1">
-        <span className="normal-case text-xl pl-2">Minechain</span>
-      </div>
-      <div className="flex-0">
-        {authStatus === AuthStatus.LoggedIn ? <UserDetails /> : <LoginButton />}
+    <div className="h-16 flex w-full top-0 justify-center">
+      <div className="navbar w-full bg-neutral">
+        <div className="flex-none">
+          <SugarCubeIcon classes="w-9 h-9 inline-block" />
+        </div>
+        <div className="flex-1">
+          <span className="normal-case text-xl pl-2">Minechain</span>
+        </div>
+        <div className="flex-0">
+          {authStatus === AuthStatus.LoggedIn ? <UserDetails /> : <LoginButton />}
+        </div>
       </div>
     </div>
   )
