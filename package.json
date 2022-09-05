@@ -33,6 +33,7 @@
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
     "@typechain/ethers-v5": "^10.1.0",
     "@typechain/hardhat": "^6.1.2",
+    "@types/amqplib": "^0.8.2",
     "@types/chai": "^4.3.1",
     "@types/cookie-parser": "^1.4.3",
     "@types/express-session": "^1.17.5",

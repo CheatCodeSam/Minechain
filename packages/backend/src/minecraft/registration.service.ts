@@ -36,6 +36,18 @@ export class RegistrationService {
     }
   }
 
+  @RabbitSubscribe({
+    exchange: "blockchain",
+    routingKey: "transfer",
+    queue: "",
+    createQueueIfNotExists: true,
+    queueOptions: { durable: true },
+    allowNonJsonMessages: false
+  })
+  public async other(msg: { from: string; to: string; value: string; data: any }) {
+    console.log(msg.from, msg.to, msg.value, msg.data)
+  }
+
   private async createJwt(mojangId: string, displayName: string): Promise<string> {
     const privatekey = createSecretKey(process.env.JWT_SECRET, "utf-8")
 

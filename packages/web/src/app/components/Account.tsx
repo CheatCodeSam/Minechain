@@ -11,7 +11,7 @@ const Account = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   return (
-    <button className="btn" onClick={() => dispatch(safeMint(4))}>
+    <button className="btn" onClick={() => dispatch(safeMint(100))}>
       mint 1
     </button>
   )
