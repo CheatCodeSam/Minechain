@@ -1,7 +1,6 @@
 import "@nomicfoundation/hardhat-chai-matchers"
 import "@nomiclabs/hardhat-ethers"
 import "@typechain/hardhat"
-import "hardhat-abi-exporter"
 import { HardhatUserConfig } from "hardhat/config"
 import "solidity-coverage"
 
@@ -22,14 +21,6 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 1337
     }
-  },
-  abiExporter: {
-    path: "../abi-typings/src/lib",
-    runOnCompile: true,
-    clear: true,
-    format: "json",
-    flat: true,
-    only: [":Minechain$"]
   }
 }
 

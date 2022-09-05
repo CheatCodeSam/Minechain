@@ -1,4 +1,4 @@
-import { Minechain, minechainJson } from "@./abi-typings"
+import { Minechain, abi } from "@./abi-typings"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { ethers } from "ethers"
 
@@ -19,7 +19,7 @@ export const safeMint = createAsyncThunk("nft/safeMint", async (tokenId: number,
 
   const contract = new ethers.Contract(
     "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    minechainJson,
+    abi,
     signer
   ) as Minechain
   const tx = await contract.safeMint(address, tokenId, { value: ethers.utils.parseEther("0.01") })
