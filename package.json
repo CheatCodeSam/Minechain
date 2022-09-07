@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@golevelup/ts-jest": "^0.3.3",
     "@metamask/providers": "^9.0.0",
     "@nestjs/schematics": "^9.0.1",
     "@nestjs/testing": "^9.0.9",
