@@ -2,10 +2,11 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "abi-typings": "packages/abi-typings",
     "backend": "packages/backend",
     "hardhat": "packages/hardhat",
+    "minecraft": "packages/minecraft",
     "web": "packages/web",
-    "web-e2e": "packages/web-e2e",
-    "minecraft": "packages/minecraft"
+    "web-e2e": "packages/web-e2e"
   }
 }

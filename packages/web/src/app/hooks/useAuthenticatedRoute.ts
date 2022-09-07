@@ -11,7 +11,7 @@ const useAuthenticatedRoute = (callback = "/") => {
   const { authStatus } = useSelector((state: State) => state.auth)
 
   useEffect(() => {
-    if (authStatus == AuthStatus.AnonymousUser) {
+    if (authStatus === AuthStatus.AnonymousUser) {
       navigate(callback)
     }
   }, [authStatus, callback, navigate])

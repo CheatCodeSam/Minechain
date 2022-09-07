@@ -1,16 +1,18 @@
 import React from "react"
 
-import axios from "axios"
+import { useDispatch } from "react-redux"
 
+import { safeMint } from "../features/nft/nft.actions"
 import useAuthenticatedRoute from "../hooks/useAuthenticatedRoute"
+import { AppDispatch } from "../store"
 
 const Account = () => {
   useAuthenticatedRoute()
-  const whoami = () => axios.get("api/v1/users/whoami")
+  const dispatch = useDispatch<AppDispatch>()
 
   return (
-    <button className="btn" onClick={whoami}>
-      whoami
+    <button className="btn" onClick={() => dispatch(safeMint(4))}>
+      mint 1
     </button>
   )
 }
