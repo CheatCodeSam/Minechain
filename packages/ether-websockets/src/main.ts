@@ -2,6 +2,8 @@ import { Minechain, abi } from "@./abi-typings"
 import * as amqplib from "amqplib"
 import * as ethers from "ethers"
 
+import { WebSocketProvider } from "./app"
+
 async function main() {
   const conn = await amqplib.connect("amqp://localhost")
 
@@ -10,7 +12,8 @@ async function main() {
 
   const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
-  const webSocketProvider = new ethers.providers.WebSocketProvider("ws://localhost:8545")
+  const webSocketProvider = new WebSocketProvider("ws://localhost:8545")
+
   const contract = new ethers.Contract(contractAddress, abi, webSocketProvider) as Minechain
 
   const filter = contract.filters.Transfer(null, null, null)
