@@ -27,7 +27,7 @@ const Account = () => {
   return (
     <Form
       onSubmit={onSubmit}
-      render={({ handleSubmit, form, submitting, pristine }) => (
+      render={({ handleSubmit, form, submitting, pristine, hasValidationErrors }) => (
         <form onSubmit={handleSubmit}>
           <div>
             <label>Token id</label>
@@ -51,7 +51,11 @@ const Account = () => {
             </Field>
           </div>
           <div className="buttons">
-            <button type="submit" className="btn btn-primary" disabled={submitting || pristine}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={submitting || pristine || hasValidationErrors}
+            >
               Submit
             </button>
           </div>
