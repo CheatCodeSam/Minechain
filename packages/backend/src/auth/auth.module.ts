@@ -1,6 +1,4 @@
 import { Module } from "@nestjs/common"
-import { JwtModule } from "@nestjs/jwt"
-import { ClientsModule, Transport } from "@nestjs/microservices"
 import { PassportModule } from "@nestjs/passport"
 import { TypeOrmModule } from "@nestjs/typeorm"
 
@@ -16,7 +14,6 @@ import { Web3Strategy } from "./strategies/web3.strategy"
   imports: [
     UsersModule,
     PassportModule.register({ session: true }),
-    JwtModule.register({ secret: "secret" }),
     TypeOrmModule.forFeature([User, Session])
   ],
   providers: [AuthService, Web3Strategy, SessionSerializer],

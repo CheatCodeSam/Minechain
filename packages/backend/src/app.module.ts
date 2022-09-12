@@ -6,9 +6,10 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 
 import { AuthModule } from "./auth/auth.module"
 import { Session } from "./auth/session.entity"
+import { BlockchainModule } from "./blockchain/blockchain.module"
+import { MinecraftModule } from "./minecraft/minecraft.module"
 import { User } from "./users/entities/user.entity"
 import { UsersModule } from "./users/users.module"
-import { MinecraftModule } from './minecraft/minecraft.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { MinecraftModule } from './minecraft/minecraft.module';
     }),
     AuthModule,
     UsersModule,
-    MinecraftModule
+    MinecraftModule,
+    BlockchainModule
   ]
 })
 export class AppModule {

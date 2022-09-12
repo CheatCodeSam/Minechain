@@ -1,12 +1,13 @@
+import { Minechain, abi } from "@./abi-typings"
 import { TypeormStore } from "connect-typeorm"
 import "dotenv/config"
+import * as ethers from "ethers"
 import * as session from "express-session"
 import helmet from "helmet"
 import Moralis from "moralis"
 import * as passport from "passport"
 
 import { NestFactory } from "@nestjs/core"
-import { RmqOptions, Transport } from "@nestjs/microservices"
 
 import { AppModule } from "./app.module"
 import { Session } from "./auth/session.entity"
