@@ -42,6 +42,8 @@ const Account = () => {
                   <input
                     className="input w-full max-w-xs input-bordered"
                     type="text"
+                    min={0}
+                    max={1024}
                     {...input}
                     placeholder="TokenId"
                   />
