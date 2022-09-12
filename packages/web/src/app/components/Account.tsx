@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux"
 import { safeMint } from "../features/nft/nft.actions"
 import useAuthenticatedRoute from "../hooks/useAuthenticatedRoute"
 import { AppDispatch } from "../store"
+import { composeValidators } from "../utils"
 
 const Account = () => {
   useAuthenticatedRoute()
@@ -19,15 +20,10 @@ const Account = () => {
     isNaN(value) || value >= min ? undefined : `Should be greater than ${min} `
   const maxValue = (max: number) => (value: number) =>
     isNaN(value) || value <= max ? undefined : `Should be less than ${max} `
-  const composeValidators =
-    (...validators: any[]) =>
-    (value: any) =>
-      validators.reduce((error, validator) => error || validator(value), undefined)
 
   return (
-    <Form
-      onSubmit={onSubmit}
-      render={({ handleSubmit, form, submitting, pristine, hasValidationErrors }) => (
+    <Form onSubmit={onSubmit}>
+      {({ handleSubmit, form, submitting, pristine, hasValidationErrors }) => (
         <form onSubmit={handleSubmit}>
           <div>
             <label>Token id</label>
@@ -42,6 +38,8 @@ const Account = () => {
                   <input
                     className="input w-full max-w-xs input-bordered"
                     type="text"
+                    min={0}
+                    max={1024}
                     {...input}
                     placeholder="TokenId"
                   />
@@ -61,7 +59,7 @@ const Account = () => {
           </div>
         </form>
       )}
-    />
+    </Form>
   )
 }
 
