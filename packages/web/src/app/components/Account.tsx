@@ -25,9 +25,8 @@ const Account = () => {
       validators.reduce((error, validator) => error || validator(value), undefined)
 
   return (
-    <Form
-      onSubmit={onSubmit}
-      render={({ handleSubmit, form, submitting, pristine, hasValidationErrors }) => (
+    <Form onSubmit={onSubmit}>
+      {({ handleSubmit, form, submitting, pristine, hasValidationErrors }) => (
         <form onSubmit={handleSubmit}>
           <div>
             <label>Token id</label>
@@ -63,7 +62,7 @@ const Account = () => {
           </div>
         </form>
       )}
-    />
+    </Form>
   )
 }
 
