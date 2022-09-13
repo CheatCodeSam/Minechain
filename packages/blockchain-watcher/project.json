@@ -1,16 +1,16 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/ether-websockets/src",
+  "sourceRoot": "packages/blockchain-watcher/src",
   "projectType": "application",
   "targets": {
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/ether-websockets",
-        "main": "packages/ether-websockets/src/main.ts",
-        "tsConfig": "packages/ether-websockets/tsconfig.app.json",
-        "assets": ["packages/ether-websockets/src/assets"]
+        "outputPath": "dist/packages/blockchain-watcher",
+        "main": "packages/blockchain-watcher/src/main.ts",
+        "tsConfig": "packages/blockchain-watcher/tsconfig.app.json",
+        "assets": ["packages/blockchain-watcher/src/assets"]
       },
       "configurations": {
         "production": {
@@ -19,8 +19,8 @@
           "inspect": false,
           "fileReplacements": [
             {
-              "replace": "packages/ether-websockets/src/environments/environment.ts",
-              "with": "packages/ether-websockets/src/environments/environment.prod.ts"
+              "replace": "packages/blockchain-watcher/src/environments/environment.ts",
+              "with": "packages/blockchain-watcher/src/environments/environment.prod.ts"
             }
           ]
         }
@@ -29,21 +29,21 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "ether-websockets:build"
+        "buildTarget": "blockchain-watcher:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/ether-websockets/**/*.ts"]
+        "lintFilePatterns": ["packages/blockchain-watcher/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/ether-websockets"],
+      "outputs": ["coverage/packages/blockchain-watcher"],
       "options": {
-        "jestConfig": "packages/ether-websockets/jest.config.ts",
+        "jestConfig": "packages/blockchain-watcher/jest.config.ts",
         "passWithNoTests": true
       }
     }

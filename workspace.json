@@ -4,7 +4,7 @@
   "projects": {
     "abi-typings": "packages/abi-typings",
     "backend": "packages/backend",
-    "ether-websockets": "packages/ether-websockets",
+    "blockchain-watcher": "packages/blockchain-watcher",
     "hardhat": "packages/hardhat",
     "minecraft": "packages/minecraft",
     "web": "packages/web",
