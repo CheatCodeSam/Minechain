@@ -2,8 +2,7 @@ import { ethers } from "ethers"
 import { generate as generateShortUuid } from "short-uuid"
 import { Repository } from "typeorm"
 
-import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common"
-import { ClientProxy } from "@nestjs/microservices"
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 
 import { User } from "../users/entities/user.entity"

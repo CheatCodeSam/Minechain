@@ -8,8 +8,6 @@ import { User } from "../users/entities/user.entity"
 import { AuthService } from "./auth.service"
 import { Session } from "./session.entity"
 
-type Entity = string | EntitySchema<any>
-
 export const createTestConfiguration = (): TypeOrmModuleOptions => ({
   type: "sqlite",
   database: ":memory:",
@@ -39,6 +37,14 @@ describe("User Service", () => {
 
   afterAll(() => {
     module.close()
+  })
+
+  beforeEach(async () => {
+    const connection = userRepo.manager.connection
+    const entities = connection.entityMetadatas
+    const tableNames = entities.map((entity) => `"${entity.tableName}"`)
+    console.log(tableNames)
+    tableNames.forEach(async (table) => await connection.query(`DELETE FROM ${table};`))
   })
 
   it("should create a new user", async () => {
