@@ -9,6 +9,8 @@ import { getRepositoryToken } from "@nestjs/typeorm"
 import { User } from "../users/entities/user.entity"
 import { AuthService } from "./auth.service"
 
+import exp = require("constants")
+
 describe("AuthService", () => {
   let repo: Repository<User>
   let service: AuthService
@@ -97,7 +99,7 @@ describe("AuthService", () => {
       const wallet = ethers.Wallet.createRandom()
       const nonce = "helloNonce"
       const signedNonce = await wallet.signMessage(nonce)
-      const publicAddress = wallet.publicKey
+      const publicAddress = await wallet.getAddress()
 
       const fakeUser: Partial<User> = {
         publicAddress: publicAddress,
@@ -106,7 +108,13 @@ describe("AuthService", () => {
       }
 
       // @ts-expect-error: just using a partial user
-      repo.findOneBy.mockResolvedValue(fakeUser)
+      repo.findOneBy.mockImplementationOnce(() => fakeUser)
+      // @ts-expect-error: just using a partial user
+      repo.save.mockResolvedValue({ ...fakeUser, isActive: true })
+
+      const user = await service.verify({ publicAddress, signedNonce })
+
+      expect(user.isActive).toEqual(false)
     })
   })
 })

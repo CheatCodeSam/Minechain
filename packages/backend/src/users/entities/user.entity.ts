@@ -1,5 +1,14 @@
 import { generate as generateShortUuid } from "short-uuid"
-import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from "typeorm"
+
+import { Token } from "../../blockchain/token.entity"
 
 @Entity()
 export class User {
@@ -26,6 +35,9 @@ export class User {
 
   @Column({ default: false })
   isSuperUser: boolean
+
+  @OneToMany(() => Token, (token) => token.user)
+  tokens: Token[]
 
   @BeforeInsert()
   private addNonce() {

@@ -7,6 +7,7 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 import { AuthModule } from "./auth/auth.module"
 import { Session } from "./auth/session.entity"
 import { BlockchainModule } from "./blockchain/blockchain.module"
+import { Token } from "./blockchain/token.entity"
 import { MinecraftModule } from "./minecraft/minecraft.module"
 import { User } from "./users/entities/user.entity"
 import { UsersModule } from "./users/users.module"
@@ -30,7 +31,7 @@ import { UsersModule } from "./users/users.module"
           //   password: process.env.PGPASSWORD,
           //   database: process.env.PGDATABASE,
           synchronize: true,
-          entities: [User, Session]
+          entities: [User, Session, Token]
         }
       }
     }),
