@@ -1,5 +1,4 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Request, UseGuards } from "@nestjs/common"
-import { EventPattern, MessagePattern } from "@nestjs/microservices"
 
 import { AuthService } from "./auth.service"
 import { PublicAddressDto } from "./dto/publicAddress.dto"

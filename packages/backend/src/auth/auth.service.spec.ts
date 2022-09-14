@@ -1,8 +1,6 @@
 import { ethers } from "ethers"
-import { DataSource, EntitySchema, Repository } from "typeorm"
-import { Connection } from "typeorm"
+import { Repository } from "typeorm"
 
-import { Inject, Injectable } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing"
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from "@nestjs/typeorm"
 
