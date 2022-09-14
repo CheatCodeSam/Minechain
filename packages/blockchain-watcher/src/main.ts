@@ -17,7 +17,6 @@ async function main() {
   const filter = contract.filters.Transfer(null, null, null)
   contract.queryFilter(filter)
   contract.on(filter, (from, to, value, event) => {
-    console.log(event.transactionHash)
     ch1.publish(
       "blockchain",
       "transfer",
