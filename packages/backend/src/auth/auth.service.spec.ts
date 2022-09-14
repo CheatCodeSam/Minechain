@@ -1,9 +1,12 @@
 import { ethers } from "ethers"
 import { DataSource, EntitySchema, Repository } from "typeorm"
+import { Connection } from "typeorm"
 
+import { Inject, Injectable } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing"
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from "@nestjs/typeorm"
 
+import { TestService } from "../test/test.service"
 import { User } from "../users/entities/user.entity"
 import { AuthService } from "./auth.service"
 import { Session } from "./session.entity"
@@ -21,6 +24,7 @@ describe("User Service", () => {
   let userRepo: Repository<User>
   let module: TestingModule
   let service: AuthService
+  let testService: TestService
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -28,10 +32,11 @@ describe("User Service", () => {
         TypeOrmModule.forRoot(createTestConfiguration()),
         TypeOrmModule.forFeature([User, Session])
       ],
-      providers: [AuthService]
+      providers: [AuthService, TestService]
     }).compile()
 
     service = module.get<AuthService>(AuthService)
+    testService = module.get<TestService>(TestService)
     userRepo = module.get<Repository<User>>(getRepositoryToken(User))
   })
 
@@ -40,11 +45,7 @@ describe("User Service", () => {
   })
 
   beforeEach(async () => {
-    const connection = userRepo.manager.connection
-    const entities = connection.entityMetadatas
-    const tableNames = entities.map((entity) => `"${entity.tableName}"`)
-    console.log(tableNames)
-    tableNames.forEach(async (table) => await connection.query(`DELETE FROM ${table};`))
+    await testService.cleanDatabase()
   })
 
   it("should create a new user", async () => {
