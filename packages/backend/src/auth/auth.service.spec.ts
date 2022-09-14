@@ -1,120 +1,72 @@
-import { createMock } from "@golevelup/ts-jest"
 import { ethers } from "ethers"
 import { Repository } from "typeorm"
 
-import { ForbiddenException } from "@nestjs/common"
-import { Test } from "@nestjs/testing"
-import { getRepositoryToken } from "@nestjs/typeorm"
+import { Test, TestingModule } from "@nestjs/testing"
+import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from "@nestjs/typeorm"
 
+import { TestService } from "../test/test.service"
 import { User } from "../users/entities/user.entity"
 import { AuthService } from "./auth.service"
+import { Session } from "./session.entity"
 
-import exp = require("constants")
+export const createTestConfiguration = (): TypeOrmModuleOptions => ({
+  type: "sqlite",
+  database: ":memory:",
+  entities: [User, Session],
+  dropSchema: true,
+  synchronize: true,
+  logging: false
+})
 
-describe("AuthService", () => {
-  let repo: Repository<User>
+describe("User Service", () => {
+  let userRepo: Repository<User>
+  let module: TestingModule
   let service: AuthService
+  let testService: TestService
 
-  beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        {
-          provide: getRepositoryToken(User),
-          useValue: createMock<Repository<User>>()
-        }
-      ]
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot(createTestConfiguration()),
+        TypeOrmModule.forFeature([User, Session])
+      ],
+      providers: [AuthService, TestService]
     }).compile()
 
-    repo = module.get<Repository<User>>(getRepositoryToken(User))
     service = module.get<AuthService>(AuthService)
+    testService = module.get<TestService>(TestService)
+    userRepo = module.get<Repository<User>>(getRepositoryToken(User))
   })
 
-  it("should have mocked the repo", () => {
-    expect(typeof repo.find).toBe("function")
+  afterAll(() => {
+    module.close()
   })
 
-  describe("AuthService using mock without DI", () => {
-    const repo = createMock<Repository<User>>()
-    let user: User
-    beforeEach(async () => {
-      await Test.createTestingModule({
-        providers: [
-          AuthService,
-          {
-            provide: getRepositoryToken(User),
-            useValue: repo
-          }
-        ]
-      }).compile()
+  beforeEach(async () => {
+    await testService.cleanDatabase()
+  })
 
-      // @ts-expect-error: just using a partial user
-      user = {
-        publicAddress: "0x0",
-        id: 0,
-        isActive: false,
-        nonce: "helloworld",
-        mojangId: "6e6e18ec-7c48-4ec5-881f-f26a28573568",
-        dateJoined: new Date("Jul 12 2011"),
-        lastLogin: new Date("Jul 12 2011"),
-        isSuperUser: false
-      }
-    })
+  it("should create a new user", async () => {
+    const wallet = ethers.Wallet.createRandom()
+    const publicAddress = wallet.address
+    const user = await userRepo.save(userRepo.create({ publicAddress }))
 
-    it("should have mocked the repo", async () => {
-      repo.find.mockResolvedValue([user])
+    const foundUser = await userRepo.findOneBy({ publicAddress })
 
-      const foundUser = await repo.find()
+    expect(foundUser).toBeDefined()
+    expect(foundUser.publicAddress).toEqual(publicAddress)
+  })
 
-      expect(foundUser.at(0) === user)
-    })
-    it("should call mock on signin", async () => {
-      repo.findOneBy.mockResolvedValue(user)
+  it("should verify user", async () => {
+    const wallet = ethers.Wallet.createRandom()
+    const publicAddress = wallet.address
+    const user = await userRepo.save(userRepo.create({ publicAddress }))
+    const nonce = user.nonce
 
-      const nonce = await service.signIn({ publicAddress: "0x0" })
+    const signedNonce = await wallet.signMessage(nonce)
 
-      expect(nonce === user.nonce)
-    })
-    it("it should create a new user on save", async () => {
-      const nonceOfUserToBeSaved = "testNonce"
-      // @ts-expect-error: just using a partial user
-      repo.save.mockResolvedValue({ nonce: nonceOfUserToBeSaved })
-      repo.findOneBy.mockResolvedValue(undefined)
+    const verifiedUser = await service.verify({ publicAddress, signedNonce })
 
-      const nonce = await service.signIn({ publicAddress: "0x0" })
-
-      expect(nonceOfUserToBeSaved === nonce)
-    })
-
-    it("shouldnt accept foreign signature", async () => {
-      try {
-        await service.verify({ publicAddress: "ss", signedNonce: "ss" })
-      } catch (error) {
-        expect(error).toBeInstanceOf(ForbiddenException)
-        expect(error.message).toEqual("Signature is invalid.")
-      }
-    })
-
-    it("should save valid user with valid nonce", async () => {
-      const wallet = ethers.Wallet.createRandom()
-      const nonce = "helloNonce"
-      const signedNonce = await wallet.signMessage(nonce)
-      const publicAddress = await wallet.getAddress()
-
-      const fakeUser: Partial<User> = {
-        publicAddress: publicAddress,
-        nonce: nonce,
-        isActive: false
-      }
-
-      // @ts-expect-error: just using a partial user
-      repo.findOneBy.mockImplementationOnce(() => fakeUser)
-      // @ts-expect-error: just using a partial user
-      repo.save.mockResolvedValue({ ...fakeUser, isActive: true })
-
-      const user = await service.verify({ publicAddress, signedNonce })
-
-      expect(user.isActive).toEqual(false)
-    })
+    expect(verifiedUser.isActive).toEqual(true)
   })
 })
