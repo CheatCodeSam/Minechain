@@ -19,7 +19,7 @@ export class BlockchainService {
     const tokenInt = parseInt(tokenId)
 
     let existingUser = await this.userRepo.findOneBy({ publicAddress: to })
-    if (existingUser === undefined) {
+    if (!existingUser) {
       const user = this.userRepo.create({ publicAddress: to })
       existingUser = await this.userRepo.save(user)
     }
