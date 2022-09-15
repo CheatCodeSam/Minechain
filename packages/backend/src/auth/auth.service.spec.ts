@@ -4,6 +4,7 @@ import { Repository } from "typeorm"
 import { Test, TestingModule } from "@nestjs/testing"
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from "@nestjs/typeorm"
 
+import { Token } from "../blockchain/token.entity"
 import { TestService } from "../test/test.service"
 import { User } from "../users/entities/user.entity"
 import { AuthService } from "./auth.service"
@@ -12,7 +13,7 @@ import { Session } from "./session.entity"
 export const createTestConfiguration = (): TypeOrmModuleOptions => ({
   type: "sqlite",
   database: ":memory:",
-  entities: [User, Session],
+  entities: [User, Session, Token],
   dropSchema: true,
   synchronize: true,
   logging: false
