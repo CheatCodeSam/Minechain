@@ -3,6 +3,7 @@ package minechain;
 import com.google.gson.Gson;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import minechain.exchange.BlockchainExchange;
 import minechain.exchange.RegistrationExchange;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ public class App extends JavaPlugin implements Listener {
     Rabbit.getInstance();
 
     Rabbit.getInstance().registerExchange(new RegistrationExchange());
+    Rabbit.getInstance().registerExchange(new BlockchainExchange());
   }
 
   @EventHandler
