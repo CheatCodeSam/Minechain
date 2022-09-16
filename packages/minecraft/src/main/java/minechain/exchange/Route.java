@@ -1,4 +1,4 @@
-package minechain.channels;
+package minechain.exchange;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

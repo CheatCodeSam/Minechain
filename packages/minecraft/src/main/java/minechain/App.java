@@ -3,7 +3,7 @@ package minechain;
 import com.google.gson.Gson;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import minechain.channels.RegistrationExchange;
+import minechain.exchange.RegistrationExchange;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +32,6 @@ public class App extends JavaPlugin implements Listener {
 
     stringMap.put("uuid", player.getUniqueId().toString());
     stringMap.put("displayName", player.getName());
-    System.out.println(player.getDisplayName());
 
     Rabbit.getInstance().publish("registration", "playerJoin", gson.toJson(stringMap));
   }

@@ -7,7 +7,7 @@ import com.rabbitmq.client.DeliverCallback;
 import java.io.IOException;
 import java.util.Vector;
 import java.util.concurrent.TimeoutException;
-import minechain.channels.Exchange;
+import minechain.exchange.Exchange;
 
 public class Rabbit {
 
@@ -52,6 +52,7 @@ public class Rabbit {
   }
 
   public void publish(String exchange, String routingKey, String json) {
+    System.out.println("routingKey " + exchange);
     try {
       channel.basicPublish(exchange, routingKey, null, json.getBytes());
     } catch (IOException e) {

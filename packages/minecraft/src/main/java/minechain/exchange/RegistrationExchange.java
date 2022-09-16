@@ -1,4 +1,4 @@
-package minechain.channels;
+package minechain.exchange;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.Delivery;

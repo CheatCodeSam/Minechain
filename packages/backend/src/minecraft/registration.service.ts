@@ -21,7 +21,7 @@ export class RegistrationService {
   @RabbitSubscribe({
     exchange: "registration",
     routingKey: "playerJoin",
-    queue: "",
+    queue: "test",
     createQueueIfNotExists: true,
     queueOptions: { durable: true },
     allowNonJsonMessages: false
