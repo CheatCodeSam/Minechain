@@ -5,7 +5,9 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+import com.rabbitmq.client.Delivery;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import net.md_5.bungee.api.ChatColor;
@@ -62,15 +64,16 @@ public class Rabbit {
       Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
     };
     channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});
+    channel.basicConsume(otherQueueName, true, this::otherCallBack, consumerTag -> {});
+  }
 
-    DeliverCallback otherDeliverCallback = (consumerTag, delivery) -> {
-      String message = new String(delivery.getBody(), "UTF-8");
-      Gson gson = new Gson();
-      Map map = gson.fromJson(message, Map.class);
-      String msg = "" + map.get("msg");
-      Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
-    };
-    channel.basicConsume(otherQueueName, true, otherDeliverCallback, consumerTag -> {});
+  public void otherCallBack(String consumerTag, Delivery delivery)
+    throws UnsupportedEncodingException {
+    String message = new String(delivery.getBody(), "UTF-8");
+    Gson gson = new Gson();
+    Map<String, Object> map = gson.fromJson(message, Map.class);
+    String msg = map.get("msg").toString();
+    Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }
 
   public void publish(String exchange, String routingKey, String json) throws IOException {
