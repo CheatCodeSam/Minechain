@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import minechain.channels.Exchange;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -30,17 +31,20 @@ public class Rabbit {
 
     this.connection = factory.newConnection();
     this.channel = this.connection.createChannel();
-    this.join();
   }
 
-  public static Rabbit getInstance() throws IOException, TimeoutException {
-    if (single_instance == null) single_instance = new Rabbit();
+  public static Rabbit getInstance() {
+    if (single_instance == null) try {
+      single_instance = new Rabbit();
+    } catch (IOException | TimeoutException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
     return single_instance;
   }
 
-  private void join() throws IOException {
-    this.channel.exchangeDeclare("registration", "direct", true);
+  public void join() throws IOException {
     String queueName = this.channel.queueDeclare().getQueue();
     String otherQueueName = this.channel.queueDeclare().getQueue();
     this.channel.queueBind(queueName, EXCHANGE_NAME, "registerToken");
@@ -67,6 +71,19 @@ public class Rabbit {
     channel.basicConsume(otherQueueName, true, this::otherCallBack, consumerTag -> {});
   }
 
+  public void registerExchange(Exchange exchange) {
+    System.out.println(exchange.getExchange());
+    try {
+      this.channel.exchangeDeclare(
+          exchange.getExchange(),
+          exchange.getType(),
+          exchange.isDurable()
+        );
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   public void otherCallBack(String consumerTag, Delivery delivery)
     throws UnsupportedEncodingException {
     String message = new String(delivery.getBody(), "UTF-8");
@@ -76,7 +93,12 @@ public class Rabbit {
     Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }
 
-  public void publish(String exchange, String routingKey, String json) throws IOException {
-    channel.basicPublish(exchange, routingKey, null, json.getBytes());
+  public void publish(String exchange, String routingKey, String json) {
+    try {
+      channel.basicPublish(exchange, routingKey, null, json.getBytes());
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 }

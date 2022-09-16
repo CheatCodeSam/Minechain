@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import minechain.channels.Exchange;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,19 +20,24 @@ public class App extends JavaPlugin implements Listener {
     Bukkit.getPluginManager().registerEvents(this, this);
     this.getCommand("mq").setExecutor(new CommandMq());
 
+    Rabbit.getInstance();
+
+    Rabbit.getInstance().registerExchange(new Exchange("registration", "direct", true));
     try {
-      Rabbit.getInstance();
-    } catch (IOException | TimeoutException e) {
+      Rabbit.getInstance().join();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) throws IOException, TimeoutException {
+  public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
     Player player = playerJoinEvent.getPlayer();
     player.getUniqueId();
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
+
     stringMap.put("uuid", player.getUniqueId().toString());
     stringMap.put("displayName", player.getName());
 
