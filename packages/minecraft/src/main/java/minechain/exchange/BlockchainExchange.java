@@ -2,6 +2,7 @@ package minechain.exchange;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.Delivery;
+import com.sk89q.worldedit.math.BlockVector3;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -20,6 +21,7 @@ public class BlockchainExchange extends Exchange {
     var value = Integer.parseInt(map.get("value").toString());
     var x = (value / 32) - 16;
     var y = (value % 32) - 16;
+
     var msg =
       "User: " +
       map.get("to").toString() +

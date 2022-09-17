@@ -1,6 +1,11 @@
 package minechain;
 
 import com.google.gson.Gson;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import minechain.exchange.BlockchainExchange;
@@ -23,6 +28,14 @@ public class App extends JavaPlugin implements Listener {
 
     Rabbit.getInstance().registerExchange(new RegistrationExchange());
     Rabbit.getInstance().registerExchange(new BlockchainExchange());
+
+    var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+    var world = Bukkit.getServer().getWorld("world");
+    var regions = container.get(BukkitAdapter.adapt(world));
+    var min = BlockVector3.at(0, -64, 0);
+    var max = BlockVector3.at(16, 319, 16);
+    var region = new ProtectedCuboidRegion("spawn", min, max);
+    regions.addRegion(region);
   }
 
   @EventHandler
