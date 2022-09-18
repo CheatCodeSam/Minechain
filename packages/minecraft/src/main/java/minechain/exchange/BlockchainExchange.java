@@ -38,6 +38,7 @@ public class BlockchainExchange extends Exchange {
     var regions = container.get(BukkitAdapter.adapt(world));
     var RegionPurchased = regions.getRegion(String.valueOf(value));
     RegionPurchased.setFlag(Flags.BUILD, StateFlag.State.ALLOW);
+    Bukkit.getLogger().info(String.valueOf(value));
 
     Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }

@@ -21,7 +21,6 @@ public class App extends JavaPlugin implements Listener {
   @Override
   public void onEnable() {
     Bukkit.getPluginManager().registerEvents(this, this);
-    this.getCommand("mq").setExecutor(new CommandMq());
 
     Rabbit.getInstance();
 
@@ -32,10 +31,20 @@ public class App extends JavaPlugin implements Listener {
     var world = Bukkit.getServer().getWorld("world");
     var regions = container.get(BukkitAdapter.adapt(world));
 
-    var min = BlockVector3.at(0, -64, 0);
-    var max = BlockVector3.at(16, 319, 16);
-    var region = new ProtectedCuboidRegion("528", min, max);
-    regions.addRegion(region);
+    for (var regionId : regions.getRegions().keySet()) {
+      regions.removeRegion(regionId);
+    }
+
+    Integer index = 0;
+    for (int y = -16; y < 16; y++) {
+      for (int x = -16; x < 16; x++) {
+        var min = BlockVector3.at(x * 16, -64, y * 16);
+        var max = BlockVector3.at(x * 16 + 16, 319, y * 16 + 16);
+        var region = new ProtectedCuboidRegion(String.valueOf(index), min, max);
+        regions.addRegion(region);
+        index++;
+      }
+    }
   }
 
   @EventHandler

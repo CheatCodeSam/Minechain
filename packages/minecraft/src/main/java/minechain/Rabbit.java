@@ -21,6 +21,7 @@ public class Rabbit {
     ConnectionFactory factory = new ConnectionFactory();
     factory.setAutomaticRecoveryEnabled(true);
     factory.setNetworkRecoveryInterval(5000);
+    factory.setTopologyRecoveryEnabled(true);
 
     this.exchanges = new Vector<Exchange>();
     this.connection = factory.newConnection();
@@ -52,11 +53,9 @@ public class Rabbit {
   }
 
   public void publish(String exchange, String routingKey, String json) {
-    System.out.println("routingKey " + exchange);
     try {
       channel.basicPublish(exchange, routingKey, null, json.getBytes());
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
