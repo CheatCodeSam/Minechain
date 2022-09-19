@@ -4,8 +4,7 @@ description: An Example of how to create a simple Spigot plugin
 version: 1.0
 main: minechain.App
 api-version: 1.19
+depend: [WorldGuard]
 commands:
-commands:
-   mq:
-      description: "Made things"
-
+  mq:
+    description: "Made things"
