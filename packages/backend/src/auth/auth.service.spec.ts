@@ -86,7 +86,7 @@ describe("User Service", () => {
     }
   })
 
-  it("throws and error if user public address is invalid ", async () => {
+  it("throws and error if user public address does not exist", async () => {
     const wallet = ethers.Wallet.createRandom()
     const publicAddress = wallet.address
     const user = await userRepo.save(userRepo.create({ publicAddress }))
@@ -96,6 +96,24 @@ describe("User Service", () => {
       await service.verify({ publicAddress: "dsfsfs", signedNonce: signedNonce })
     } catch (error) {
       expect(error).toEqual(new NotFoundException("User with public address does not exist."))
+    }
+  })
+
+  it("throws an error if user has invalid public address", async () => {
+    const wallet = ethers.Wallet.createRandom()
+    const publicAddress1 = wallet.address
+    const user1 = await userRepo.save(userRepo.create({ publicAddress: publicAddress1 }))
+    const nonce = user1.nonce
+
+    const wallet2 = ethers.Wallet.createRandom()
+    const publicAddress2 = wallet2.address
+    const user2 = await userRepo.save(userRepo.create({ publicAddress: publicAddress2 }))
+
+    const signedNonce = await wallet2.signMessage(nonce)
+    try {
+      await service.verify({ publicAddress: publicAddress1, signedNonce: signedNonce })
+    } catch (error) {
+      expect(error).toEqual(new ForbiddenException("Invalid public address."))
     }
   })
 })
