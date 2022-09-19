@@ -1,6 +1,9 @@
+import { IsUUID } from "class-validator"
 import { ethers } from "ethers"
+import { uuid } from "short-uuid"
 import { Repository } from "typeorm"
 
+import { ForbiddenException, NotFoundException } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing"
 import { TypeOrmModule, TypeOrmModuleOptions, getRepositoryToken } from "@nestjs/typeorm"
 
@@ -9,6 +12,8 @@ import { TestService } from "../test/test.service"
 import { User } from "../users/entities/user.entity"
 import { AuthService } from "./auth.service"
 import { Session } from "./session.entity"
+
+import shortUUID = require("short-uuid")
 
 export const createTestConfiguration = (): TypeOrmModuleOptions => ({
   type: "sqlite",
@@ -69,5 +74,28 @@ describe("User Service", () => {
     const verifiedUser = await service.verify({ publicAddress, signedNonce })
 
     expect(verifiedUser.isActive).toEqual(true)
+  })
+
+  it("throws an error is user signature is invalid", async () => {
+    const wallet = ethers.Wallet.createRandom()
+    const publicAddress = wallet.address
+    try {
+      await service.verify({ publicAddress: publicAddress, signedNonce: "hjhjhh" })
+    } catch (error) {
+      expect(error).toEqual(new ForbiddenException("Signature is invalid."))
+    }
+  })
+
+  it("throws and error if user public address is invalid ", async () => {
+    const wallet = ethers.Wallet.createRandom()
+    const publicAddress = wallet.address
+    const user = await userRepo.save(userRepo.create({ publicAddress }))
+    const nonce = user.nonce
+    const signedNonce = await wallet.signMessage(nonce)
+    try {
+      await service.verify({ publicAddress: "dsfsfs", signedNonce: signedNonce })
+    } catch (error) {
+      expect(error).toEqual(new NotFoundException("User with public address does not exist."))
+    }
   })
 })
