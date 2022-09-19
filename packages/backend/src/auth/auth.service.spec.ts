@@ -116,4 +116,11 @@ describe("User Service", () => {
       expect(error).toEqual(new ForbiddenException("Invalid public address."))
     }
   })
+
+  it("should return user by Mojang ID", async () => {
+    const wallet = ethers.Wallet.createRandom()
+    const publicAddress = wallet.address
+    const user = await userRepo.save(userRepo.create({ publicAddress, mojangId: "Hello World" }))
+    expect(user.mojangId).toEqual("Hello World")
+  })
 })
