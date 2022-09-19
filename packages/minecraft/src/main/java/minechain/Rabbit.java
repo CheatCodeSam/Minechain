@@ -32,7 +32,6 @@ public class Rabbit {
     if (single_instance == null) try {
       single_instance = new Rabbit();
     } catch (IOException | TimeoutException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 

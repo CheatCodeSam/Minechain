@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,7 +43,10 @@ public class App extends JavaPlugin implements Listener {
         var min = BlockVector3.at(x * 16, -64, y * 16);
         var max = BlockVector3.at(x * 16 + 16, 319, y * 16 + 16);
         var region = new ProtectedCuboidRegion(String.valueOf(index), min, max);
+        region.setFlag(Flags.BUILD, StateFlag.State.DENY);
+        region.setFlag(Flags.DENY_MESSAGE, "");
         regions.addRegion(region);
+
         index++;
       }
     }
