@@ -11,7 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import minechain.exchange.BlockchainExchange;
 import minechain.exchange.RegistrationExchange;
+import net.raidstone.wgevents.events.RegionEnteredEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -63,5 +66,15 @@ public class App extends JavaPlugin implements Listener {
     stringMap.put("displayName", player.getName());
 
     Rabbit.getInstance().publish("registration", "playerJoin", gson.toJson(stringMap));
+  }
+
+  @EventHandler
+  public void onRegionEntered(RegionEnteredEvent event) {
+    Player player = Bukkit.getPlayer(event.getUUID());
+    if (player == null) return;
+
+    String regionName = event.getRegionName();
+
+    player.sendMessage(regionName);
   }
 }

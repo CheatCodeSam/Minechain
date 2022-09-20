@@ -14,7 +14,7 @@ export class BlockchainController {
   @RabbitSubscribe({
     exchange: "blockchain",
     routingKey: "transfer",
-    queue: "",
+    queue: "nestTransfer",
     createQueueIfNotExists: true,
     queueOptions: { durable: true },
     allowNonJsonMessages: false
