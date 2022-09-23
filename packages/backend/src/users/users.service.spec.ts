@@ -52,7 +52,7 @@ describe("User Service", () => {
     await testService.cleanDatabase()
   })
 
-  it("save image that starts with http", async () => {
+  it("swaps ipfs with http", async () => {
     const httpImageFromIpfs =
       "https://ipfs.moralis.io:2053/ipfs/QmbiKLCpUBAEduAfzCpTMJXj4gEXCA7nLTNjjTH4sJjGWw"
     const images = await service.getNfts(publicAddress)
