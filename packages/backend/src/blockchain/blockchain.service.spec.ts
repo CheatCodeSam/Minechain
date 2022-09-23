@@ -78,4 +78,13 @@ describe("User Service", () => {
     expect(transferToken.user.publicAddress).toEqual(publicAddress2)
     console.log(toUser)
   })
+
+  it("creates user from public address", async () => {
+    const zeroAddress = "0x0000000000000000000000000000000000000000"
+    const wallet = ethers.Wallet.createRandom()
+    const publicAddress = wallet.address
+    await service.transfer(zeroAddress, publicAddress, "2")
+    const foundUser = await userRepo.findOneBy({ publicAddress })
+    expect(foundUser).toBeDefined()
+  })
 })
