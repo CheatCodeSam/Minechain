@@ -6,15 +6,12 @@ import { BlockchainService } from "./blockchain.service"
 
 @Controller("blockchain")
 export class BlockchainController {
-  constructor(
-    private readonly amqpConnection: AmqpConnection,
-    private blockchainService: BlockchainService
-  ) {}
+  constructor(private blockchainService: BlockchainService) {}
 
   @RabbitSubscribe({
     exchange: "blockchain",
     routingKey: "transfer",
-    queue: "",
+    queue: "nestTransfer",
     createQueueIfNotExists: true,
     queueOptions: { durable: true },
     allowNonJsonMessages: false

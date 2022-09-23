@@ -1,3 +1,4 @@
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq"
 import { Repository } from "typeorm"
 
 import { Injectable } from "@nestjs/common"
@@ -10,7 +11,8 @@ import { Token } from "./token.entity"
 export class BlockchainService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
-    @InjectRepository(Token) private tokenRepo: Repository<Token>
+    @InjectRepository(Token) private tokenRepo: Repository<Token>,
+    private readonly amqpConnection: AmqpConnection
   ) {}
   async transfer(from: string, to: string, tokenId: string, data?) {
     to = to.toLowerCase()
@@ -33,5 +35,13 @@ export class BlockchainService {
       transferToken.user = existingUser
       return this.tokenRepo.save(transferToken)
     }
+
+    const allocate = {
+      mojangId: existingUser.mojangId,
+      token: tokenId
+    }
+    this.amqpConnection.publish("minecraft", "allocate", allocate)
+
+    console.log(from, to, tokenId)
   }
 }

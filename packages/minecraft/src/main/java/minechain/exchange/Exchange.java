@@ -40,6 +40,7 @@ public abstract class Exchange {
     }
   }
 
+  //TODO write private method that turns gson into map
   public String getExchange() {
     return exchange;
   }

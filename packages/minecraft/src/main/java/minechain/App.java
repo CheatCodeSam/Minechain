@@ -4,11 +4,15 @@ import com.google.gson.Gson;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import minechain.exchange.BlockchainExchange;
+import minechain.exchange.MinecraftExchange;
 import minechain.exchange.RegistrationExchange;
+import net.raidstone.wgevents.events.RegionEnteredEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +29,8 @@ public class App extends JavaPlugin implements Listener {
     Rabbit.getInstance();
 
     Rabbit.getInstance().registerExchange(new RegistrationExchange());
-    Rabbit.getInstance().registerExchange(new BlockchainExchange());
+    // Rabbit.getInstance().registerExchange(new BlockchainExchange());
+    Rabbit.getInstance().registerExchange(new MinecraftExchange());
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     var world = Bukkit.getServer().getWorld("world");
@@ -41,7 +46,10 @@ public class App extends JavaPlugin implements Listener {
         var min = BlockVector3.at(x * 16, -64, y * 16);
         var max = BlockVector3.at(x * 16 + 16, 319, y * 16 + 16);
         var region = new ProtectedCuboidRegion(String.valueOf(index), min, max);
+        // region.setFlag(Flags.BUILD, StateFlag.State.DENY);
+        region.setFlag(Flags.DENY_MESSAGE, "");
         regions.addRegion(region);
+
         index++;
       }
     }
@@ -58,5 +66,15 @@ public class App extends JavaPlugin implements Listener {
     stringMap.put("displayName", player.getName());
 
     Rabbit.getInstance().publish("registration", "playerJoin", gson.toJson(stringMap));
+  }
+
+  @EventHandler
+  public void onRegionEntered(RegionEnteredEvent event) {
+    Player player = Bukkit.getPlayer(event.getUUID());
+    if (player == null) return;
+
+    String regionName = event.getRegionName();
+
+    player.sendMessage(regionName);
   }
 }
