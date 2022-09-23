@@ -10,11 +10,10 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import minechain.exchange.BlockchainExchange;
+import minechain.exchange.MinecraftExchange;
 import minechain.exchange.RegistrationExchange;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +29,8 @@ public class App extends JavaPlugin implements Listener {
     Rabbit.getInstance();
 
     Rabbit.getInstance().registerExchange(new RegistrationExchange());
-    Rabbit.getInstance().registerExchange(new BlockchainExchange());
+    // Rabbit.getInstance().registerExchange(new BlockchainExchange());
+    Rabbit.getInstance().registerExchange(new MinecraftExchange());
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     var world = Bukkit.getServer().getWorld("world");
@@ -46,7 +46,7 @@ public class App extends JavaPlugin implements Listener {
         var min = BlockVector3.at(x * 16, -64, y * 16);
         var max = BlockVector3.at(x * 16 + 16, 319, y * 16 + 16);
         var region = new ProtectedCuboidRegion(String.valueOf(index), min, max);
-        region.setFlag(Flags.BUILD, StateFlag.State.DENY);
+        // region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         region.setFlag(Flags.DENY_MESSAGE, "");
         regions.addRegion(region);
 

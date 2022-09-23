@@ -12,7 +12,10 @@ import { Token } from "./token.entity"
   imports: [
     RabbitMQModule.forRoot(RabbitMQModule, {
       uri: "amqp://localhost:5672",
-      exchanges: [{ name: "blockchain", type: "direct" }],
+      exchanges: [
+        { name: "blockchain", type: "direct" },
+        { name: "minecraft", type: "direct" }
+      ],
       enableControllerDiscovery: true
     }),
     TypeOrmModule.forFeature([User, Token])

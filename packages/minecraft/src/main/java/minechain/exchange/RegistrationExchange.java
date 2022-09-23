@@ -32,7 +32,7 @@ public class RegistrationExchange extends Exchange {
     msg.setColor(ChatColor.RED);
     msg.setUnderlined(true);
 
-    Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg.toString()));
+    Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }
 
   @Route(routingKey = "success")
