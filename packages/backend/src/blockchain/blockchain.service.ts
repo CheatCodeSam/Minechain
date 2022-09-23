@@ -12,7 +12,7 @@ export class BlockchainService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Token) private tokenRepo: Repository<Token>
   ) {}
-  async transfer(from: string, to: string, tokenId: string, data) {
+  async transfer(from: string, to: string, tokenId: string, data?) {
     to = to.toLowerCase()
     from = from.toLowerCase()
     const zeroAddress = "0x0000000000000000000000000000000000000000"
@@ -27,12 +27,11 @@ export class BlockchainService {
     if (from === zeroAddress) {
       const newToken = this.tokenRepo.create({ tokenId: tokenInt })
       newToken.user = existingUser
-      this.tokenRepo.save(newToken)
+      return this.tokenRepo.save(newToken)
     } else {
       const transferToken = await this.tokenRepo.findOneBy({ tokenId: tokenInt })
       transferToken.user = existingUser
-      this.tokenRepo.save(transferToken)
+      return this.tokenRepo.save(transferToken)
     }
-    console.log(from, to, tokenId)
   }
 }
