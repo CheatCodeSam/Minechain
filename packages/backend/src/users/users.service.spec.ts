@@ -1,3 +1,4 @@
+import { EvmChain } from "@moralisweb3/evm-utils"
 import Moralis from "moralis"
 import { Repository } from "typeorm"
 
@@ -51,11 +52,10 @@ describe("User Service", () => {
     await testService.cleanDatabase()
   })
 
-  it("test", async () => {
-    const user = await userRepo.save(userRepo.create({ publicAddress }))
-
-    const images = await service.getNfts(user.publicAddress)
-
-    console.log(images)
+  it("save image that starts with http", async () => {
+    const httpImageFromIpfs =
+      "https://ipfs.moralis.io:2053/ipfs/QmbiKLCpUBAEduAfzCpTMJXj4gEXCA7nLTNjjTH4sJjGWw"
+    const images = await service.getNfts(publicAddress)
+    expect(httpImageFromIpfs in images)
   })
 })
