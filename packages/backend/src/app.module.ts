@@ -1,3 +1,6 @@
+import { AdminModule } from "@adminjs/nestjs"
+import * as AdminJSTypeorm from "@adminjs/typeorm"
+import AdminJS from "adminjs"
 import { DataSource } from "typeorm"
 
 import { Module } from "@nestjs/common"
@@ -11,6 +14,23 @@ import { Token } from "./blockchain/token.entity"
 import { MinecraftModule } from "./minecraft/minecraft.module"
 import { User } from "./users/entities/user.entity"
 import { UsersModule } from "./users/users.module"
+
+const DEFAULT_ADMIN = {
+  email: "admin@example.com",
+  password: "password"
+}
+
+const authenticate = async (email: string, password: string) => {
+  if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+    return Promise.resolve(DEFAULT_ADMIN)
+  }
+  return null
+}
+
+AdminJS.registerAdapter({
+  Resource: AdminJSTypeorm.Resource,
+  Database: AdminJSTypeorm.Database
+})
 
 @Module({
   imports: [
@@ -34,6 +54,24 @@ import { UsersModule } from "./users/users.module"
           entities: [User, Session, Token]
         }
       }
+    }),
+    AdminModule.createAdminAsync({
+      useFactory: () => ({
+        adminJsOptions: {
+          rootPath: "/admin",
+          resources: [User, Session, Token]
+        },
+        auth: {
+          authenticate,
+          cookieName: "adminjs",
+          cookiePassword: "secret"
+        },
+        sessionOptions: {
+          resave: true,
+          saveUninitialized: true,
+          secret: "secret"
+        }
+      })
     }),
     AuthModule,
     UsersModule,

@@ -1,9 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 
 import { User } from "../users/entities/user.entity"
 
 @Entity()
-export class Token {
+export class Token extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 

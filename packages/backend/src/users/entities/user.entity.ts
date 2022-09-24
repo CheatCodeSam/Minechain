@@ -1,5 +1,6 @@
 import { generate as generateShortUuid } from "short-uuid"
 import {
+  BaseEntity,
   BeforeInsert,
   Column,
   CreateDateColumn,
@@ -11,7 +12,7 @@ import {
 import { Token } from "../../blockchain/token.entity"
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
