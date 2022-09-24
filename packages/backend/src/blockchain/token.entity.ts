@@ -10,6 +10,10 @@ export class Token extends BaseEntity {
   @Column()
   tokenId: number
 
+  @Column({ name: "userId" })
+  public userId: number
+
   @ManyToOne(() => User, (user) => user.tokens)
+  @JoinColumn({ name: "userId" })
   user: User
 }
