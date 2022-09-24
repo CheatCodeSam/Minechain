@@ -59,7 +59,21 @@ AdminJS.registerAdapter({
       useFactory: () => ({
         adminJsOptions: {
           rootPath: "/admin",
-          resources: [User, Session, Token]
+          resources: [
+            {
+              resource: User,
+              options: {
+                properties: {
+                  publicAddress: {
+                    isTitle: true
+                  }
+                }
+              }
+            },
+
+            Session,
+            Token
+          ]
         },
         auth: {
           authenticate,
