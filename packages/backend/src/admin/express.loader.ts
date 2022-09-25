@@ -22,12 +22,18 @@ export class ExpressCustomLoader extends AbstractLoader {
     // This named function is there on purpose.
     // It names layer in main router with the name of the function, which helps localize
     // admin layer in reorderRoutes() step.
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this
     app.use(options.adminJsOptions.rootPath, function admin(req, res, next) {
-      //   res.redirect("/login")
+      self.admin(req, res, next)
       return router(req, res, next)
     })
 
     this.reorderRoutes(app)
+  }
+
+  private admin(req, res, next) {
+    console.log("hello")
   }
 
   private reorderRoutes(app) {
