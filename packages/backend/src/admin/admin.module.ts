@@ -7,6 +7,7 @@ import { Module } from "@nestjs/common"
 import { Session } from "../auth/session.entity"
 import { Token } from "../blockchain/token.entity"
 import { User } from "../users/entities/user.entity"
+import { ExpressCustomLoader } from "./express.loader"
 
 const DEFAULT_ADMIN = {
   email: "admin@example.com",
@@ -28,6 +29,7 @@ AdminJS.registerAdapter({
 @Module({
   imports: [
     AdminJsModule.createAdminAsync({
+      customLoader: ExpressCustomLoader,
       useFactory: () => ({
         adminJsOptions: {
           rootPath: "/admin",
