@@ -33,6 +33,18 @@ AdminJS.registerAdapter({
       useFactory: () => ({
         adminJsOptions: {
           rootPath: "/admin",
+          locale: {
+            language: "en",
+            translations: {
+              resources: {
+                Token: {
+                  properties: {
+                    userId: "User"
+                  }
+                }
+              }
+            }
+          },
           resources: [
             {
               resource: User,
@@ -40,13 +52,15 @@ AdminJS.registerAdapter({
                 properties: {
                   publicAddress: {
                     isTitle: true
+                  },
+                  nonce: {
+                    isVisible: false
                   }
                 }
               }
             },
-
-            Session,
-            Token
+            Token,
+            Session
           ]
         },
         auth: {
