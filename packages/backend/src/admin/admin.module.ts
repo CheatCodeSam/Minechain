@@ -33,6 +33,7 @@ AdminJS.registerAdapter({
       useFactory: () => ({
         adminJsOptions: {
           rootPath: "/admin",
+          branding: { companyName: "Minechain", withMadeWithLove: false, logo: false },
           locale: {
             language: "en",
             translations: {
@@ -42,6 +43,12 @@ AdminJS.registerAdapter({
                     userId: "User"
                   }
                 }
+              },
+              messages: {
+                loginWelcome: ""
+              },
+              labels: {
+                loginWelcome: "Minechain Admin"
               }
             }
           },
