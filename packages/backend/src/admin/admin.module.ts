@@ -7,7 +7,6 @@ import { Module } from "@nestjs/common"
 import { Session } from "../auth/session.entity"
 import { Token } from "../blockchain/token.entity"
 import { User } from "../users/entities/user.entity"
-import { ExpressCustomLoader } from "./express.loader"
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -17,7 +16,6 @@ AdminJS.registerAdapter({
 @Module({
   imports: [
     AdminJsModule.createAdminAsync({
-      customLoader: ExpressCustomLoader,
       useFactory: () => ({
         adminJsOptions: {
           rootPath: "/admin",
@@ -54,7 +52,25 @@ AdminJS.registerAdapter({
                 }
               }
             },
-            Token,
+            {
+              resource: Token,
+              options: {
+                actions: {
+                  new: {
+                    isVisible: false,
+                    isAccessible: false
+                  },
+                  edit: {
+                    isVisible: false,
+                    isAccessible: false
+                  },
+                  delete: {
+                    isVisible: false,
+                    isAccessible: false
+                  }
+                }
+              }
+            },
             Session
           ]
         }
