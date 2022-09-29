@@ -42,8 +42,7 @@ export class BlockchainService {
       token: tokenId
     }
     this.amqpConnection.publish("minecraft", "allocate", allocate)
-    return token
-
     console.log(from, to, tokenId)
+    return token
   }
 }
