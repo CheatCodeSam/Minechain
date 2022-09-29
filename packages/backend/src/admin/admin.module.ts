@@ -6,6 +6,7 @@ import { Module } from "@nestjs/common"
 
 import { Session } from "../auth/session.entity"
 import { Token } from "../blockchain/token.entity"
+import { CustomAdminJsModule } from "../custom-adminjs/custom-adminjs.module"
 import { User } from "../users/entities/user.entity"
 
 AdminJS.registerAdapter({
@@ -15,7 +16,7 @@ AdminJS.registerAdapter({
 
 @Module({
   imports: [
-    AdminJsModule.createAdminAsync({
+    CustomAdminJsModule.createAdminAsync({
       useFactory: () => ({
         adminJsOptions: {
           rootPath: "/admin",
