@@ -20,6 +20,7 @@ AdminJS.registerAdapter({
       useFactory: () => ({
         adminJsOptions: {
           rootPath: "/admin",
+          logoutPath: "/api/v1/auth/logout",
           branding: { companyName: "Minechain", withMadeWithLove: false, logo: false },
           locale: {
             language: "en",

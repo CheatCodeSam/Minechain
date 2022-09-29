@@ -8,9 +8,14 @@ import { loadPackage } from "@nestjs/common/utils/load-package.util"
 import { AbstractHttpAdapter } from "@nestjs/core"
 
 import { Session } from "../auth/session.entity"
+import { User } from "../users/entities/user.entity"
 
 import express = require("express")
 import session = require("express-session")
+
+const formatAddress = (publicAddress: string) => {
+  return publicAddress.substring(0, 5) + "..." + publicAddress.substring(publicAddress.length - 4)
+}
 
 export const register = async (
   admin: AdminJS,
@@ -28,6 +33,7 @@ export const register = async (
 
   loadPackage("express-session", "@adminjs/nestjs")
 
+  const { routes, assets } = AdminRouter
   let router = express.Router()
 
   router.use(
@@ -42,10 +48,18 @@ export const register = async (
 
   const authorizedRoutesMiddleware: express.RequestHandler = (request, response, next) => {
     const session = request.session as any
-    if (request.session && session.passport?.user?.isSuperUser) {
-      return next()
-    } else if (request.session && !session.passport?.user?.isSuperUser) {
-      return response.redirect("/")
+
+    if (request.session) {
+      if (session.passport?.user?.isSuperUser) {
+        const user = session.passport.user as User
+        if (!session.adminUser) {
+          session.adminUser = { email: formatAddress(user.publicAddress) }
+          request.session.save()
+        }
+        return next()
+      } else {
+        return response.redirect("/")
+      }
     } else return response.redirect("/login")
   }
 
