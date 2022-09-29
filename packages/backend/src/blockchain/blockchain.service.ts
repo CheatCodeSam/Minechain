@@ -26,14 +26,15 @@ export class BlockchainService {
       existingUser = await this.userRepo.save(user)
     }
 
+    let token: Token
     if (from === zeroAddress) {
       const newToken = this.tokenRepo.create({ tokenId: tokenInt })
       newToken.user = existingUser
-      return this.tokenRepo.save(newToken)
+      token = await this.tokenRepo.save(newToken)
     } else {
       const transferToken = await this.tokenRepo.findOneBy({ tokenId: tokenInt })
       transferToken.user = existingUser
-      return this.tokenRepo.save(transferToken)
+      token = await this.tokenRepo.save(transferToken)
     }
 
     const allocate = {
@@ -41,6 +42,7 @@ export class BlockchainService {
       token: tokenId
     }
     this.amqpConnection.publish("minecraft", "allocate", allocate)
+    return token
 
     console.log(from, to, tokenId)
   }
