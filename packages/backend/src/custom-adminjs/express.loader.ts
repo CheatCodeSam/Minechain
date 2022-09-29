@@ -1,13 +1,20 @@
 /* eslint-disable no-underscore-dangle */
 import { AdminModuleOptions } from "@adminjs/nestjs"
-import AdminJS from "adminjs"
+import AdminJS, { Router as AdminRouter } from "adminjs"
+import { TypeormStore } from "connect-typeorm/out"
+import { Repository } from "typeorm"
 
-import { Injectable } from "@nestjs/common"
 import { loadPackage } from "@nestjs/common/utils/load-package.util"
 import { AbstractHttpAdapter } from "@nestjs/core"
 
+import { Session } from "../auth/session.entity"
+
+import express = require("express")
+import session = require("express-session")
+
 export const register = async (
   admin: AdminJS,
+  sessionRepo: Repository<Session>,
   httpAdapter: AbstractHttpAdapter,
   options: AdminModuleOptions
 ) => {
@@ -19,20 +26,32 @@ export const register = async (
   )
   loadPackage("express-formidable", "@adminjs/nestjs")
 
-  let router
+  loadPackage("express-session", "@adminjs/nestjs")
 
-  if ("auth" in options) {
-    loadPackage("express-session", "@adminjs/nestjs")
-    router = adminJsExpressjs.buildAuthenticatedRouter(
-      admin,
-      options.auth,
-      undefined,
-      options.sessionOptions,
-      options.formidableOptions
-    )
-  } else {
-    router = adminJsExpressjs.buildRouter(admin, undefined, options.formidableOptions)
+  let router = express.Router()
+
+  router.use(
+    session({
+      name: "NESTJS_SESSION_ID",
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      store: new TypeormStore().connect(sessionRepo)
+    })
+  )
+
+  const authorizedRoutesMiddleware: express.RequestHandler = (request, response, next) => {
+    const session = request.session as any
+    if (request.session && session.passport?.user?.isSuperUser) {
+      return next()
+    } else if (request.session && !session.passport?.user?.isSuperUser) {
+      return response.redirect("/")
+    } else return response.redirect("/login")
   }
+
+  router.use(authorizedRoutesMiddleware)
+
+  router = adminJsExpressjs.buildRouter(admin, router, options.formidableOptions)
 
   // This named function is there on purpose.
   // It names layer in main router with the name of the function, which helps localize
