@@ -43,4 +43,8 @@ export class User {
   private addNonce() {
     this.nonce = generateShortUuid()
   }
+
+  public get fullName(): string {
+    return `${this.publicAddress}`
+  }
 }
