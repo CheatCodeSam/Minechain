@@ -1,4 +1,4 @@
-import { AmqpConnection, RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
+import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 
 import { Controller } from "@nestjs/common"
 
