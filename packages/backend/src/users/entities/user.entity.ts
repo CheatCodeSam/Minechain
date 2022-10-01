@@ -10,6 +10,10 @@ import {
 
 import { Token } from "../../blockchain/token.entity"
 
+const formatPublicAddress = (address: string) => {
+  return address.substring(0, 5) + "..." + address.substring(address.length - 4)
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -45,6 +49,6 @@ export class User {
   }
 
   public get fullName(): string {
-    return `${this.publicAddress}`
+    return formatPublicAddress(this.publicAddress)
   }
 }
