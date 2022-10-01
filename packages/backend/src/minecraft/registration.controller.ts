@@ -3,11 +3,9 @@ import { Body, Controller, HttpCode, Post, UseGuards, UseInterceptors } from "@n
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard"
 import { CurrentUser } from "../users/decorators/current-user.decorator"
 import { User } from "../users/entities/user.entity"
-import { UserInterceptor } from "../users/intercepters/user.intercepter"
 import { registerToken } from "./registerToken.dto"
 import { RegistrationService } from "./registration.service"
 
-@UseInterceptors(UserInterceptor)
 @Controller("registration")
 export class RegistrationController {
   constructor(private readonly registrationService: RegistrationService) {}
