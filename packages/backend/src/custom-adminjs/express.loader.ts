@@ -13,13 +13,10 @@ import { User } from "../users/entities/user.entity"
 import express = require("express")
 import session = require("express-session")
 
-const formatAddress = (publicAddress: string) => {
-  return publicAddress.substring(0, 5) + "..." + publicAddress.substring(publicAddress.length - 4)
-}
-
 export const register = async (
   admin: AdminJS,
   sessionRepo: Repository<Session>,
+  userRepo: Repository<User>,
   httpAdapter: AbstractHttpAdapter,
   options: AdminModuleOptions
 ) => {
@@ -46,17 +43,20 @@ export const register = async (
     })
   )
 
-  const authorizedRoutesMiddleware: express.RequestHandler = (request, response, next) => {
+  const authorizedRoutesMiddleware: express.RequestHandler = async (request, response, next) => {
     const session = request.session as any
 
     if (request.session) {
-      if (session.passport?.user?.isSuperUser) {
-        const user = session.passport.user as User
-        if (!session.adminUser) {
-          session.adminUser = { email: formatAddress(user.publicAddress) }
-          request.session.save()
+      if (session.passport?.user?.id) {
+        const id = session.passport.user.id
+        const user = await userRepo.findOne({ where: { id } })
+        if (user?.isSuperUser) {
+          if (!session.adminUser) {
+            session.adminUser = { email: user.fullName }
+            request.session.save()
+          }
+          return next()
         }
-        return next()
       } else {
         return response.redirect("/")
       }

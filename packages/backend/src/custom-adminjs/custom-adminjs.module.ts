@@ -24,6 +24,7 @@ AdminJS.registerAdapter({
 export class CustomAdminJsModule implements OnModuleInit {
   constructor(
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
+    @InjectRepository(User) private userRepo: Repository<User>,
     private readonly httpAdapterHost: HttpAdapterHost,
     @Inject(CONFIG_TOKEN) private readonly adminModuleOptions: AdminModuleOptions
   ) {}
@@ -65,7 +66,7 @@ export class CustomAdminJsModule implements OnModuleInit {
     const admin = new AdminJS(this.adminModuleOptions.adminJsOptions)
     const { httpAdapter } = this.httpAdapterHost
 
-    register(admin, this.sessionRepo, httpAdapter, {
+    register(admin, this.sessionRepo, this.userRepo, httpAdapter, {
       ...this.adminModuleOptions,
       adminJsOptions: admin.options
     })

@@ -11,7 +11,7 @@ export class UserInterceptor implements NestInterceptor {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<unknown>> {
     const request = context.switchToHttp().getRequest()
-    const { id } = request.session.passport.user || { id: null }
+    const { id } = request.session?.passport?.user || { id: null }
     if (!id) {
       return next.handle()
     }

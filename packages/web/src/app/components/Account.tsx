@@ -31,7 +31,7 @@ const Account = () => {
               name="tokenId"
               component="input"
               type="number"
-              validate={composeValidators(minValue(0), maxValue(1024))}
+              validate={composeValidators(minValue(0), maxValue(1023))}
             >
               {({ input, meta }) => (
                 <>
