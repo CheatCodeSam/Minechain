@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config"
 import { APP_INTERCEPTOR } from "@nestjs/core"
 import { TypeOrmModule } from "@nestjs/typeorm"
 
+import { AdminModule } from "./admin/admin.module"
 import { AuthModule } from "./auth/auth.module"
 import { Session } from "./auth/session.entity"
 import { BlockchainModule } from "./blockchain/blockchain.module"
@@ -38,6 +39,7 @@ import { UsersModule } from "./users/users.module"
       }
     }),
     AuthModule,
+    AdminModule,
     UsersModule,
     MinecraftModule,
     BlockchainModule,

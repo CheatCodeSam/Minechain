@@ -1,5 +1,6 @@
 import { generate as generateShortUuid } from "short-uuid"
 import {
+  BaseEntity,
   BeforeInsert,
   Column,
   CreateDateColumn,
@@ -15,7 +16,7 @@ const formatPublicAddress = (address: string) => {
 }
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
