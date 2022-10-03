@@ -11,6 +11,10 @@ import {
 
 import { Token } from "../../blockchain/token.entity"
 
+const formatPublicAddress = (address: string) => {
+  return address.substring(0, 5) + "..." + address.substring(address.length - 4)
+}
+
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -43,5 +47,9 @@ export class User extends BaseEntity {
   @BeforeInsert()
   private addNonce() {
     this.nonce = generateShortUuid()
+  }
+
+  public get fullName(): string {
+    return formatPublicAddress(this.publicAddress)
   }
 }

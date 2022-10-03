@@ -107,7 +107,7 @@
     "express-formidable": "^1.2.0",
     "express-session": "^1.17.3",
     "final-form": "^4.20.7",
-    "helmet": "^5.1.0",
+    "helmet": "^5.1.1",
     "jose": "^4.9.0",
     "moralis": "^2.0.1",
     "passport": "^0.6.0",
@@ -129,6 +129,6 @@
     "sqlite3": "^5.0.8",
     "tslib": "^2.3.0",
     "typeorm": "^0.3.7",
-    "web3": "^1.7.4"
+    "web3": "^1.8.0"
   }
 }
