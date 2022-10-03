@@ -56,9 +56,9 @@ export const register = async (
             request.session.save()
           }
           return next()
+        } else {
+          return response.redirect("/")
         }
-      } else {
-        return response.redirect("/")
       }
     } else return response.redirect("/login")
   }
