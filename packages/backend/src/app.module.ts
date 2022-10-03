@@ -4,6 +4,7 @@ import { Module } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
 import { TypeOrmModule } from "@nestjs/typeorm"
 
+import { AdminModule } from "./admin/admin.module"
 import { AuthModule } from "./auth/auth.module"
 import { Session } from "./auth/session.entity"
 import { BlockchainModule } from "./blockchain/blockchain.module"
@@ -36,6 +37,7 @@ import { UsersModule } from "./users/users.module"
       }
     }),
     AuthModule,
+    AdminModule,
     UsersModule,
     MinecraftModule,
     BlockchainModule
