@@ -1,4 +1,3 @@
-import { EvmChain } from "@moralisweb3/evm-utils"
 import Moralis from "moralis"
 import { Repository } from "typeorm"
 

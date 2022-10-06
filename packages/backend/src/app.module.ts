@@ -2,14 +2,17 @@ import { DataSource } from "typeorm"
 
 import { Module } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
+import { APP_INTERCEPTOR } from "@nestjs/core"
 import { TypeOrmModule } from "@nestjs/typeorm"
 
+import { AdminModule } from "./admin/admin.module"
 import { AuthModule } from "./auth/auth.module"
 import { Session } from "./auth/session.entity"
 import { BlockchainModule } from "./blockchain/blockchain.module"
 import { Token } from "./blockchain/token.entity"
 import { MinecraftModule } from "./minecraft/minecraft.module"
 import { User } from "./users/entities/user.entity"
+import { UserInterceptor } from "./users/intercepters/user.intercepter"
 import { UsersModule } from "./users/users.module"
 
 @Module({
@@ -36,10 +39,13 @@ import { UsersModule } from "./users/users.module"
       }
     }),
     AuthModule,
+    AdminModule,
     UsersModule,
     MinecraftModule,
-    BlockchainModule
-  ]
+    BlockchainModule,
+    TypeOrmModule.forFeature([User])
+  ],
+  providers: [{ provide: APP_INTERCEPTOR, useClass: UserInterceptor }]
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}

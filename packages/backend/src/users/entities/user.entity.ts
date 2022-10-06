@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer"
 import { generate as generateShortUuid } from "short-uuid"
 import {
+  BaseEntity,
   BeforeInsert,
   Column,
   CreateDateColumn,
@@ -11,8 +12,12 @@ import {
 
 import { Token } from "../../blockchain/token.entity"
 
+const formatPublicAddress = (address: string) => {
+  return address.substring(0, 5) + "..." + address.substring(address.length - 4)
+}
+
 @Entity()
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -43,5 +48,9 @@ export class User {
   @BeforeInsert()
   private addNonce() {
     this.nonce = generateShortUuid()
+  }
+
+  public get fullName(): string {
+    return formatPublicAddress(this.publicAddress)
   }
 }

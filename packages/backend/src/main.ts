@@ -1,7 +1,5 @@
-import { Minechain, abi } from "@./abi-typings"
 import { TypeormStore } from "connect-typeorm"
 import "dotenv/config"
-import * as ethers from "ethers"
 import * as session from "express-session"
 import helmet from "helmet"
 import Moralis from "moralis"
