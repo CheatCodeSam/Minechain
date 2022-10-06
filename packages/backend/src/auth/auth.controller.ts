@@ -13,7 +13,6 @@ export class AuthController {
   async signin(@Body() publicAddress: PublicAddressDto) {
     return this.authService.signIn(publicAddress)
   }
-
   @Post("verify")
   @UseGuards(Web3Guard)
   @HttpCode(HttpStatus.ACCEPTED)
