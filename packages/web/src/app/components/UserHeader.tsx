@@ -15,7 +15,7 @@ const UserHeader = () => {
     <div className="h-16 flex w-full top-0 justify-center">
       <div className="navbar w-full bg-neutral">
         <div className="flex-none">
-          <SugarCubeIcon classes="w-9 h-9 inline-block" />
+          <SugarCubeIcon className="w-9 h-9 inline-block" />
         </div>
         <div className="flex-1">
           <span className="normal-case text-xl pl-2">Minechain</span>
