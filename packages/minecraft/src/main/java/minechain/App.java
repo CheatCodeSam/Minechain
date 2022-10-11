@@ -27,7 +27,6 @@ public class App extends JavaPlugin implements Listener {
     Bukkit.getPluginManager().registerEvents(this, this);
 
     Rabbit.getInstance();
-
     Rabbit.getInstance().registerExchange(new RegistrationExchange());
     // Rabbit.getInstance().registerExchange(new BlockchainExchange());
     Rabbit.getInstance().registerExchange(new MinecraftExchange());
