@@ -1,26 +1,22 @@
+import { useEffect, useState } from "react"
 
-import { useSelector } from "react-redux"
-import { Navigate, useLocation } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { Navigate } from "react-router-dom"
+
+import { logout } from "../features/auth/auth.actions"
 import { AuthStatus } from "../features/auth/auth.types"
-import { State } from "../store"
-
+import { AppDispatch, State } from "../store"
 
 const LogoutPage = () => {
-    const { authStatus } = useSelector((state: State) => state.auth)
-  const state = useLocation().state as { redirect?: string }
+  const { authStatus } = useSelector((state: State) => state.auth)
+  const dispatch = useDispatch<AppDispatch>()
 
-  if (authStatus === AuthStatus.AnonymousUser) {
-    return <Navigate to={state?.redirect || "/login"} />
-  }
-  else {
-    return (
-      <div>
-        Dedicated Logout Page
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (authStatus === AuthStatus.LoggedIn) dispatch(logout())
+  }, [authStatus, dispatch])
+
+  if (authStatus === AuthStatus.AnonymousUser) return <Navigate to="/" />
+  else return <div>Waiting</div>
 }
 
-  
-  export default LogoutPage
-  
+export default LogoutPage

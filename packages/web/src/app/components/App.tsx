@@ -8,10 +8,10 @@ import { getAuth } from "../features/auth/auth.actions"
 import { AppDispatch } from "../store"
 import Account from "./Account"
 import LoginPage from "./LoginPage"
+import LogoutPage from "./LogoutPage"
 import Registration from "./Registration"
 import Settings from "./Settings"
 import Test from "./Test"
-import LogoutPage from "./LogoutPage"
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -29,7 +29,7 @@ const App = () => {
         <Route path="/" element={<Test />}>
           <Route path="account" element={<Account />} />
           <Route path="settings" element={<Settings />} />
-          <Route path = "logout" element = {<LogoutPage />} />
+          <Route path="logout" element={<LogoutPage />} />
         </Route>
         <Route path="*" element={<p>Theres nothing here!</p>} />
       </Routes>
