@@ -1,12 +1,12 @@
 import React from "react"
 
-const SugarCubeIcon = (props: { classes: string }) => {
+const SugarCubeIcon = (props: { className: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       version="1.1"
       viewBox="0 0 48 48"
-      className={props.classes}
+      className={props.className}
     >
       <g transform="translate(0 -1004.4)">
         <g transform="translate(-6 1003)">
