@@ -4,6 +4,7 @@ import authReducer from "../features/auth/auth.slice"
 import nftReducer from "../features/nft/nft.slice"
 
 export const store = configureStore({
+  middleware: (gDM) => gDM().concat(),
   reducer: {
     auth: authReducer,
     nft: nftReducer
