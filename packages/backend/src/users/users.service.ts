@@ -8,8 +8,8 @@ const gateway = "https://ipfs.moralis.io:2053/ipfs/"
 @Injectable()
 export class UsersService {
   async getNfts(publicAddress: string) {
-    const nfts = await Moralis.EvmApi.account.getNFTs({
-      chain: EvmChain.RINKEBY,
+    const nfts = await Moralis.EvmApi.nft.getWalletNFTs({
+      chain: EvmChain.GOERLI,
       address: publicAddress
     })
     const images: string[] = []
