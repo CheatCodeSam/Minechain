@@ -5,11 +5,9 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import minechain.exchange.BlockchainExchange;
 import minechain.exchange.MinecraftExchange;
 import minechain.exchange.RegistrationExchange;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
@@ -72,7 +70,15 @@ public class App extends JavaPlugin implements Listener {
     Player player = Bukkit.getPlayer(event.getUUID());
     if (player == null) return;
 
+    Gson gson = new Gson();
+    Map<String, String> stringMap = new LinkedHashMap<>();
     String regionName = event.getRegionName();
+
+    stringMap.put("uuid", player.getUniqueId().toString());
+    stringMap.put("displayName", player.getName());
+    stringMap.put("region", regionName);
+
+    Rabbit.getInstance().publish("minecraft", "regionEnter", gson.toJson(stringMap));
 
     player.sendMessage(regionName);
   }

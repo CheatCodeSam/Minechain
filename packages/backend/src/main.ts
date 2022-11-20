@@ -29,8 +29,8 @@ async function bootstrap() {
   app.use(passport.session())
   app.use(helmet())
   app.setGlobalPrefix("api/v1")
+  app.enableCors()
 
-  await app.startAllMicroservices()
   await app.listen(3001)
 }
 bootstrap()

@@ -2,9 +2,10 @@ import { configureStore } from "@reduxjs/toolkit"
 
 import authReducer from "../features/auth/auth.slice"
 import nftReducer from "../features/nft/nft.slice"
+import socketMiddleware from "./SocketMiddleware"
 
 export const store = configureStore({
-  middleware: (gDM) => gDM().concat(),
+  middleware: (gDM) => gDM().concat(socketMiddleware),
   reducer: {
     auth: authReducer,
     nft: nftReducer
