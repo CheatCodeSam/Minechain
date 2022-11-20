@@ -25,7 +25,6 @@ export class MinecraftController {
     allowNonJsonMessages: false
   })
   public async other(msg) {
-    console.log(msg)
     this.io.emit("g", msg)
   }
 }
