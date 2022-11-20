@@ -15,7 +15,8 @@ import {
   cors: {
     origin: "*"
   },
-  path: "/api/v1/"
+  namespace: "/api/v1/ws",
+  path: "/api/v1/ws/socket.io"
 })
 @Injectable()
 export class EventsGateway {
