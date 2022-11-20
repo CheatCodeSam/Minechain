@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 
 import { getAuth } from "../features/auth/auth.actions"
+import { socketActions } from "../features/socket/socket.slice"
 import { AppDispatch } from "../store"
 import Account from "./Account"
 import LoginPage from "./LoginPage"
@@ -18,6 +19,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getAuth())
+    dispatch(socketActions.startConnecting())
   }, [dispatch])
 
   return (
