@@ -1,15 +1,7 @@
-import { Observable, from } from "rxjs"
-import { map } from "rxjs/operators"
 import { Server } from "socket.io"
 
 import { Injectable } from "@nestjs/common"
-import {
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsResponse
-} from "@nestjs/websockets"
+import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets"
 
 @WebSocketGateway({
   cors: {
