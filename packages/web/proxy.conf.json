@@ -1,7 +1,8 @@
 {
   "/api/v1": {
     "target": "http://localhost:3001",
-    "secure": false
+    "secure": false,
+    "ws": true
   },
   "/admin": {
     "target": "http://localhost:3001",
