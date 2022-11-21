@@ -35,7 +35,7 @@ public class RegistrationExchange extends Exchange {
     Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }
 
-  @Route(routingKey = "success")
+  @Route(routingKey = "authorizeJoin")
   public void success(String consumerTag, Delivery delivery) throws UnsupportedEncodingException {
     String message = new String(delivery.getBody(), "UTF-8");
     Gson gson = new Gson();
