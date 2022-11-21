@@ -20,28 +20,20 @@ export class RegistrationService {
     private io: EventsGateway
   ) {}
 
-  @RabbitSubscribe({
-    exchange: "registration",
-    routingKey: "playerJoin",
-    queue: "nestRegistration",
-    createQueueIfNotExists: true,
-    queueOptions: { durable: true },
-    allowNonJsonMessages: false
-  })
-  public async pubSubHandler(msg: { uuid: string; displayName: string }) {
-    const user = await this.userRepo.findOne({ where: { mojangId: msg.uuid } })
+  public async authenticateUser(uuid: string) {
+    const user = await this.userRepo.findOne({ where: { mojangId: uuid } })
     if (user) {
-      this.publishWelcome(msg.displayName, user)
+      this.publishWelcome(uuid, user)
     } else {
-      const registrationToken = await this.createJwt(msg.uuid, msg.displayName)
+      const registrationToken = await this.createJwt(uuid)
       this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
     }
   }
 
-  private async createJwt(mojangId: string, displayName: string): Promise<string> {
+  private async createJwt(mojangId: string): Promise<string> {
     const privatekey = createSecretKey(process.env.JWT_SECRET, "utf-8")
 
-    return new jose.SignJWT({ mojangId, displayName })
+    return new jose.SignJWT({ mojangId })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setIssuer("minechain:backend")

@@ -11,10 +11,23 @@ import {
 } from "@nestjs/websockets"
 
 import { EventsGateway } from "./events.gateway"
+import { RegistrationService } from "./registration.service"
 
 @Controller("minecrafft")
 export class MinecraftController {
-  constructor(private io: EventsGateway) {}
+  constructor(private io: EventsGateway, private registrationService: RegistrationService) {}
+
+  @RabbitSubscribe({
+    exchange: "registration",
+    routingKey: "playerJoin",
+    queue: "nestRegistration",
+    createQueueIfNotExists: true,
+    queueOptions: { durable: true },
+    allowNonJsonMessages: false
+  })
+  public async playerJoin(msg: { uuid: string; displayName: string }) {
+    return this.registrationService.authenticateUser(msg.uuid)
+  }
 
   @RabbitSubscribe({
     exchange: "minecraft",
@@ -24,7 +37,7 @@ export class MinecraftController {
     queueOptions: { durable: true },
     allowNonJsonMessages: false
   })
-  public async other(msg) {
+  public async regionEnter(msg) {
     this.io.emit("g", msg)
   }
 }
