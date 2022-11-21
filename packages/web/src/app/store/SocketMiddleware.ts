@@ -18,11 +18,12 @@ const socketMiddleware: Middleware = (store) => {
       withCredentials: true
     })
 
-    socket.on("g", (x) => console.log(x))
-    console.log("g")
-
     socket.on("connect", () => {
       store.dispatch(socketActions.connectionEstablished())
+    })
+
+    socket.on("g", (payload) => {
+      store.dispatch(socketActions.playerMove(payload))
     })
 
     next(action)
