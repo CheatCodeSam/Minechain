@@ -21,6 +21,9 @@ const socketSlice = createSlice({
       state.isConnected = true
       state.isEstablishingConnection = true
     },
+    playerJoin: (state, payload) => {
+      console.log(payload)
+    },
     playerMove: (state, payload) => {
       state.playerLocations[payload.payload.uuid] = payload.payload
     }

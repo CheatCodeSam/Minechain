@@ -26,6 +26,10 @@ const socketMiddleware: Middleware = (store) => {
       store.dispatch(socketActions.playerMove(payload))
     })
 
+    socket.on("join", (payload) => {
+      store.dispatch(socketActions.playerJoin(payload))
+    })
+
     next(action)
   }
 }

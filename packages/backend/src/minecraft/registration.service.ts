@@ -10,12 +10,14 @@ import { ForbiddenException, Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 
 import { User } from "../users/entities/user.entity"
+import { EventsGateway } from "./events.gateway"
 
 @Injectable()
 export class RegistrationService {
   constructor(
     private readonly amqpConnection: AmqpConnection,
-    @InjectRepository(User) private userRepo: Repository<User>
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private io: EventsGateway
   ) {}
 
   @RabbitSubscribe({
@@ -29,7 +31,7 @@ export class RegistrationService {
   public async pubSubHandler(msg: { uuid: string; displayName: string }) {
     const user = await this.userRepo.findOne({ where: { mojangId: msg.uuid } })
     if (user) {
-      this.publishWelcome(msg.displayName, user.publicAddress)
+      this.publishWelcome(msg.displayName, user)
     } else {
       const registrationToken = await this.createJwt(msg.uuid, msg.displayName)
       this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
@@ -48,17 +50,20 @@ export class RegistrationService {
       .sign(privatekey)
   }
 
-  private async publishWelcome(displayName: string, publicAddress: string) {
+  private async publishWelcome(displayName: string, user: User) {
     let address: string
     try {
-      const moralisEns = await Moralis.EvmApi.resolve.resolveAddress({ address: publicAddress })
+      const moralisEns = await Moralis.EvmApi.resolve.resolveAddress({
+        address: user.publicAddress
+      })
       address = moralisEns.raw.name
     } catch (error) {
-      address = publicAddress
+      address = user.publicAddress
     }
     this.amqpConnection.publish("registration", "success", {
       msg: `Minecraft user "${displayName}" is linked to address "${address}"`
     })
+    this.io.emit("join", user)
   }
 
   public async validateRegistration(token: string, user: User) {
@@ -79,6 +84,6 @@ export class RegistrationService {
     }
     user.mojangId = payload.mojangId as string
     this.userRepo.save(user)
-    this.publishWelcome(payload.displayName as string, user.publicAddress)
+    this.publishWelcome(payload.displayName as string, user)
   }
 }
