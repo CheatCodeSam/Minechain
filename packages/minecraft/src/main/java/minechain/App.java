@@ -42,7 +42,7 @@ public class App extends JavaPlugin implements Listener {
     for (int y = -16; y < 16; y++) {
       for (int x = -16; x < 16; x++) {
         var min = BlockVector3.at(x * 16, -64, y * 16);
-        var max = BlockVector3.at(x * 16 + 16, 319, y * 16 + 16);
+        var max = BlockVector3.at(x * 16 + 15, 319, y * 16 + 15);
         var region = new ProtectedCuboidRegion(String.valueOf(index), min, max);
         region.setFlag(Flags.DENY_MESSAGE, "");
         regions.addRegion(region);
@@ -94,9 +94,6 @@ public class App extends JavaPlugin implements Listener {
 
     stringMap.put("uuid", player.getUniqueId().toString());
     stringMap.put("region", regionName);
-
-    System.out.println(player.getLocation().getBlockX());
-    System.out.println(player.getLocation().getX());
 
     Rabbit.getInstance().publish("minecraft", "regionEnter", gson.toJson(stringMap));
 
