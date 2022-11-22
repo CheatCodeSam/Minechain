@@ -1,5 +1,4 @@
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
-import { Server } from "socket.io"
 
 import { Controller } from "@nestjs/common"
 
@@ -30,7 +29,9 @@ export class MinecraftController {
     queueOptions: { durable: true },
     allowNonJsonMessages: false
   })
-  public async playerJoin(msg: { uuid: string; displayName: string }) {
+  public async playerJoin(msg: { uuid: string; region: string }) {
+    console.log(msg.region)
+
     return this.registrationService.authenticateUser(msg.uuid)
   }
 

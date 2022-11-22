@@ -1,6 +1,5 @@
 package minechain;
 
-import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.google.gson.Gson;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -45,7 +44,6 @@ public class App extends JavaPlugin implements Listener {
         var min = BlockVector3.at(x * 16, -64, y * 16);
         var max = BlockVector3.at(x * 16 + 16, 319, y * 16 + 16);
         var region = new ProtectedCuboidRegion(String.valueOf(index), min, max);
-        // region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         region.setFlag(Flags.DENY_MESSAGE, "");
         regions.addRegion(region);
 
@@ -68,7 +66,20 @@ public class App extends JavaPlugin implements Listener {
     Player player = playerJoinEvent.getPlayer();
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
+
+    var location = BukkitAdapter.adapt(player.getLocation());
+    var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+    var query = container.createQuery();
+    var set = query.getApplicableRegions(location);
+
+    String regionName = "";
+    for (var region : set) {
+      regionName = region.getId();
+    }
+
     stringMap.put("uuid", player.getUniqueId().toString());
+    stringMap.put("region", regionName);
+
     Rabbit.getInstance().publish("minecraft", "playerJoin", gson.toJson(stringMap));
   }
 
@@ -83,6 +94,9 @@ public class App extends JavaPlugin implements Listener {
 
     stringMap.put("uuid", player.getUniqueId().toString());
     stringMap.put("region", regionName);
+
+    System.out.println(player.getLocation().getBlockX());
+    System.out.println(player.getLocation().getX());
 
     Rabbit.getInstance().publish("minecraft", "regionEnter", gson.toJson(stringMap));
 
