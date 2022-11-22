@@ -30,6 +30,10 @@ const socketMiddleware: Middleware = (store) => {
       store.dispatch(socketActions.playerJoin(payload))
     })
 
+    socket.on("authorizedLeave", (payload) => {
+      store.dispatch(socketActions.playerLeave(payload))
+    })
+
     next(action)
   }
 }

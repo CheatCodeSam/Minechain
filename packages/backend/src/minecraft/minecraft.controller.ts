@@ -19,6 +19,7 @@ export class MinecraftController {
   })
   public async playerLeave(msg: { uuid: string; displayName: string }) {
     console.log(msg.uuid + " left")
+    this.io.emit("authorizedLeave", msg)
   }
 
   @RabbitSubscribe({
@@ -31,7 +32,6 @@ export class MinecraftController {
   })
   public async playerJoin(msg: { uuid: string; region: string }) {
     console.log(msg.region)
-
     return this.registrationService.authenticateUser(msg.uuid)
   }
 

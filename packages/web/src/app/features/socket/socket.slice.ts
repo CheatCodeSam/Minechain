@@ -26,6 +26,9 @@ const socketSlice = createSlice({
     },
     playerMove: (state, payload) => {
       state.playerLocations[payload.payload.uuid] = payload.payload
+    },
+    playerLeave: (state, payload) => {
+      delete state.playerLocations[payload.payload.uuid]
     }
   }
 })
