@@ -40,7 +40,7 @@ public class RegistrationExchange extends Exchange {
     String message = new String(delivery.getBody(), "UTF-8");
     Gson gson = new Gson();
     Map<String, Object> map = gson.fromJson(message, Map.class);
-    String msg = map.get("msg").toString();
+    String msg = map.get("publicAddress").toString();
     Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }
 }

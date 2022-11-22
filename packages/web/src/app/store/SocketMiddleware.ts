@@ -22,11 +22,11 @@ const socketMiddleware: Middleware = (store) => {
       store.dispatch(socketActions.connectionEstablished())
     })
 
-    socket.on("g", (payload) => {
+    socket.on("regionEnter", (payload) => {
       store.dispatch(socketActions.playerMove(payload))
     })
 
-    socket.on("join", (payload) => {
+    socket.on("authorizeJoin", (payload) => {
       store.dispatch(socketActions.playerJoin(payload))
     })
 

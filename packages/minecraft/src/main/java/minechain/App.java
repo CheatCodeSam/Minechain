@@ -1,5 +1,6 @@
 package minechain;
 
+import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import com.google.gson.Gson;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class App extends JavaPlugin implements Listener {
@@ -53,16 +55,21 @@ public class App extends JavaPlugin implements Listener {
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
-    Player player = playerJoinEvent.getPlayer();
-    player.getUniqueId();
+  public void onPlayerQuit(PlayerQuitEvent event) {
+    Player player = event.getPlayer();
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
-
     stringMap.put("uuid", player.getUniqueId().toString());
-    stringMap.put("displayName", player.getName());
+    Rabbit.getInstance().publish("minecraft", "playerLeave", gson.toJson(stringMap));
+  }
 
-    Rabbit.getInstance().publish("registration", "playerJoin", gson.toJson(stringMap));
+  @EventHandler
+  public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
+    Player player = playerJoinEvent.getPlayer();
+    Gson gson = new Gson();
+    Map<String, String> stringMap = new LinkedHashMap<>();
+    stringMap.put("uuid", player.getUniqueId().toString());
+    Rabbit.getInstance().publish("minecraft", "playerJoin", gson.toJson(stringMap));
   }
 
   @EventHandler
@@ -75,7 +82,6 @@ public class App extends JavaPlugin implements Listener {
     String regionName = event.getRegionName();
 
     stringMap.put("uuid", player.getUniqueId().toString());
-    stringMap.put("displayName", player.getName());
     stringMap.put("region", regionName);
 
     Rabbit.getInstance().publish("minecraft", "regionEnter", gson.toJson(stringMap));

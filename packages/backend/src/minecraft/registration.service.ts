@@ -62,9 +62,7 @@ export class RegistrationService {
   }
 
   private async authorizeJoin(user: User) {
-    this.amqpConnection.publish("registration", "authorizeJoin", {
-      msg: `Minecraft user "${user.mojangId}" is linked to address "${user.publicAddress}"`
-    })
-    this.io.emit("join", user)
+    this.amqpConnection.publish("registration", "authorizeJoin", user)
+    this.io.emit("authorizeJoin", user)
   }
 }

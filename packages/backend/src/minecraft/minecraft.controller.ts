@@ -2,13 +2,6 @@ import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 import { Server } from "socket.io"
 
 import { Controller } from "@nestjs/common"
-import {
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsResponse
-} from "@nestjs/websockets"
 
 import { EventsGateway } from "./events.gateway"
 import { RegistrationService } from "./registration.service"
@@ -18,9 +11,21 @@ export class MinecraftController {
   constructor(private io: EventsGateway, private registrationService: RegistrationService) {}
 
   @RabbitSubscribe({
-    exchange: "registration",
+    exchange: "minecraft",
+    routingKey: "playerLeave",
+    queue: "minecraftfPlayerLeave",
+    createQueueIfNotExists: true,
+    queueOptions: { durable: true },
+    allowNonJsonMessages: false
+  })
+  public async playerLeave(msg: { uuid: string; displayName: string }) {
+    console.log(msg.uuid + " left")
+  }
+
+  @RabbitSubscribe({
+    exchange: "minecraft",
     routingKey: "playerJoin",
-    queue: "nestRegistration",
+    queue: "minecraftfPlayerJoin",
     createQueueIfNotExists: true,
     queueOptions: { durable: true },
     allowNonJsonMessages: false
@@ -38,6 +43,6 @@ export class MinecraftController {
     allowNonJsonMessages: false
   })
   public async regionEnter(msg) {
-    this.io.emit("g", msg)
+    this.io.emit("regionEnter", msg)
   }
 }
