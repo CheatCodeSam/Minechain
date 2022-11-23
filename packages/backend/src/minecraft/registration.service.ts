@@ -19,12 +19,19 @@ export class RegistrationService {
   ) {}
 
   public async authenticateUser(uuid: string) {
+    console.log(uuid)
+
     const user = await this.userRepo.findOne({ where: { mojangId: uuid } })
     if (user) {
       this.authorizeJoin(user)
     } else {
       const registrationToken = await this.createJwt(uuid)
-      this.amqpConnection.publish("registration", "registerToken", { token: registrationToken })
+      console.log(registrationToken)
+
+      this.amqpConnection.publish("registration", "registerToken", {
+        token: registrationToken,
+        uuid
+      })
     }
   }
 

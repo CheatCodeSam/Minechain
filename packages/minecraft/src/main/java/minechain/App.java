@@ -27,7 +27,6 @@ public class App extends JavaPlugin implements Listener {
 
     Rabbit.getInstance();
     Rabbit.getInstance().registerExchange(new RegistrationExchange());
-    // Rabbit.getInstance().registerExchange(new BlockchainExchange());
     Rabbit.getInstance().registerExchange(new MinecraftExchange());
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -66,20 +65,7 @@ public class App extends JavaPlugin implements Listener {
     Player player = playerJoinEvent.getPlayer();
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
-
-    var location = BukkitAdapter.adapt(player.getLocation());
-    var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-    var query = container.createQuery();
-    var set = query.getApplicableRegions(location);
-
-    String regionName = "";
-    for (var region : set) {
-      regionName = region.getId();
-    }
-
     stringMap.put("uuid", player.getUniqueId().toString());
-    stringMap.put("region", regionName);
-
     Rabbit.getInstance().publish("minecraft", "playerJoin", gson.toJson(stringMap));
   }
 

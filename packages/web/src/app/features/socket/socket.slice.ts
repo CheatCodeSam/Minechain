@@ -22,13 +22,13 @@ const socketSlice = createSlice({
       state.isEstablishingConnection = true
     },
     playerJoin: (state, payload) => {
-      console.log(payload)
+      state.playerLocations[payload.payload.id] = payload.payload
     },
     playerMove: (state, payload) => {
-      state.playerLocations[payload.payload.uuid] = payload.payload
+      state.playerLocations[payload.payload.id] = payload.payload
     },
     playerLeave: (state, payload) => {
-      delete state.playerLocations[payload.payload.uuid]
+      delete state.playerLocations[payload.payload.id]
     }
   }
 })

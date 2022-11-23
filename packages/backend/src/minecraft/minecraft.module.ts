@@ -2,12 +2,12 @@ import { RabbitMQModule } from "@golevelup/nestjs-rabbitmq"
 
 import { Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
-import { WebSocketGateway } from "@nestjs/websockets"
 
 import { User } from "../users/entities/user.entity"
 import { UsersModule } from "../users/users.module"
 import { EventsGateway } from "./events.gateway"
 import { MinecraftController } from "./minecraft.controller"
+import { MinecraftService } from "./minecraft.service"
 import { RegistrationController } from "./registration.controller"
 import { RegistrationService } from "./registration.service"
 
@@ -25,6 +25,6 @@ import { RegistrationService } from "./registration.service"
     UsersModule
   ],
   controllers: [RegistrationController, MinecraftController],
-  providers: [RegistrationService, EventsGateway]
+  providers: [RegistrationService, EventsGateway, MinecraftService]
 })
 export class MinecraftModule {}

@@ -28,7 +28,7 @@ public class RegistrationExchange extends Exchange {
     msg.setClickEvent(
       new ClickEvent(
         ClickEvent.Action.OPEN_URL,
-        "http://localhost:4200/register/" + map.get("token")
+        "http://localhost:4200/register/" + map.get("registerToken")
       )
     );
     msg.setColor(ChatColor.RED);

@@ -2,12 +2,15 @@ import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
 
 import { Controller } from "@nestjs/common"
 
-import { EventsGateway } from "./events.gateway"
+import { MinecraftService } from "./minecraft.service"
 import { RegistrationService } from "./registration.service"
 
-@Controller("minecrafft")
+@Controller("minecraft")
 export class MinecraftController {
-  constructor(private io: EventsGateway, private registrationService: RegistrationService) {}
+  constructor(
+    private registrationService: RegistrationService,
+    private minecraftService: MinecraftService
+  ) {}
 
   @RabbitSubscribe({
     exchange: "minecraft",
@@ -17,9 +20,8 @@ export class MinecraftController {
     queueOptions: { durable: true },
     allowNonJsonMessages: false
   })
-  public async playerLeave(msg: { uuid: string; displayName: string }) {
-    console.log(msg.uuid + " left")
-    this.io.emit("authorizedLeave", msg)
+  public async playerLeave(msg: { uuid: string }) {
+    return this.minecraftService.playerLeave(msg.uuid)
   }
 
   @RabbitSubscribe({
@@ -30,8 +32,7 @@ export class MinecraftController {
     queueOptions: { durable: true },
     allowNonJsonMessages: false
   })
-  public async playerJoin(msg: { uuid: string; region: string }) {
-    console.log(msg.region)
+  public async playerJoin(msg: { uuid: string }) {
     return this.registrationService.authenticateUser(msg.uuid)
   }
 
@@ -43,7 +44,7 @@ export class MinecraftController {
     queueOptions: { durable: true },
     allowNonJsonMessages: false
   })
-  public async regionEnter(msg) {
-    this.io.emit("regionEnter", msg)
+  public async regionEnter(msg: { uuid: string; region: string }) {
+    return this.minecraftService.regionEnter(msg.uuid, Number(msg.region))
   }
 }

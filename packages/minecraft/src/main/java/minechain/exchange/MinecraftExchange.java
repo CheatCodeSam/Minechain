@@ -28,11 +28,6 @@ public class MinecraftExchange extends Exchange {
     var tokenId = map.get("token").toString();
 
     var value = Integer.parseInt(tokenId);
-    var x = (value / 32) - 16;
-    var y = (value % 32) - 16;
-
-    var msg =
-      "User: " + mojangId + " now owns x: " + String.valueOf(x) + " y: " + String.valueOf(y);
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     var world = Bukkit.getServer().getWorld("world");
