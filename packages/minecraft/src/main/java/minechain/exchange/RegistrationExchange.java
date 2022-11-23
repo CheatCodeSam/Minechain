@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.Delivery;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -23,6 +24,7 @@ public class RegistrationExchange extends Exchange {
     Map map = gson.fromJson(message, Map.class);
 
     var msg = new TextComponent("Click here to register your account.");
+
     msg.setClickEvent(
       new ClickEvent(
         ClickEvent.Action.OPEN_URL,
@@ -32,7 +34,9 @@ public class RegistrationExchange extends Exchange {
     msg.setColor(ChatColor.RED);
     msg.setUnderlined(true);
 
-    Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
+    var player = Bukkit.getServer().getPlayer(UUID.fromString(map.get("uuid").toString()));
+    System.out.println(player.displayName().toString());
+    if (player != null) player.sendMessage(msg);
   }
 
   @Route(routingKey = "authorizeJoin")
