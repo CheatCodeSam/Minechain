@@ -18,7 +18,7 @@ export class MinecraftService {
     private io: EventsGateway
   ) {}
 
-  public async regionEnter(uuid: string, region: number) {
+  public async regionEnter(uuid: string, region: string) {
     const user = await this.userRepo.findOneBy({ mojangId: uuid })
     if (user) {
       user.lastKnownRegion = region

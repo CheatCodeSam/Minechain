@@ -26,10 +26,8 @@ export class RegistrationService {
       this.authorizeJoin(user)
     } else {
       const registrationToken = await this.createJwt(uuid)
-      console.log(registrationToken)
-
       this.amqpConnection.publish("registration", "registerToken", {
-        token: registrationToken,
+        registerToken: registrationToken,
         uuid
       })
     }

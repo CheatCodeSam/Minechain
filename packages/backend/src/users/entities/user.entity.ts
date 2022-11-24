@@ -30,7 +30,7 @@ export class User extends BaseEntity {
   mojangId: string
 
   @Column({ nullable: true })
-  lastKnownRegion: number
+  lastKnownRegion: string
 
   @CreateDateColumn()
   dateJoined: Date
@@ -38,7 +38,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   lastLogin: Date
 
-  @Column({ default: false })
+  @Column({ default: true })
   isSuperUser: boolean
 
   @OneToMany(() => Token, (token) => token.user)

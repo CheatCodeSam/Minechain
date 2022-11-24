@@ -45,6 +45,6 @@ export class MinecraftController {
     allowNonJsonMessages: false
   })
   public async regionEnter(msg: { uuid: string; region: string }) {
-    return this.minecraftService.regionEnter(msg.uuid, Number(msg.region))
+    return this.minecraftService.regionEnter(msg.uuid, msg.region)
   }
 }

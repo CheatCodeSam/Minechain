@@ -8,8 +8,10 @@ import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import minechain.events.AuthJoin;
 import minechain.exchange.MinecraftExchange;
 import minechain.exchange.RegistrationExchange;
+import minechain.utils.RegionUtils;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -26,7 +28,7 @@ public class App extends JavaPlugin implements Listener {
     Bukkit.getPluginManager().registerEvents(this, this);
 
     Rabbit.getInstance();
-    Rabbit.getInstance().registerExchange(new RegistrationExchange());
+    Rabbit.getInstance().registerExchange(new RegistrationExchange(this));
     Rabbit.getInstance().registerExchange(new MinecraftExchange());
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -84,5 +86,23 @@ public class App extends JavaPlugin implements Listener {
     Rabbit.getInstance().publish("minecraft", "regionEnter", gson.toJson(stringMap));
 
     player.sendMessage(regionName);
+  }
+
+  @EventHandler
+  public void onExampleEvent(AuthJoin event) {
+    var player = event.getPlayer();
+    var map = event.getDetails();
+    var playerRegion = RegionUtils.getPlayerRegion(player);
+
+    var lastKnownRegionId = map.get("lastKnownRegion").toString();
+
+    if (playerRegion != null) {
+      if (!lastKnownRegionId.equals(playerRegion.getId())) {
+        var reg = RegionUtils.getRegionById(lastKnownRegionId);
+        var topX = reg.getMaximumPoint().getX();
+        var topZ = reg.getMaximumPoint().getZ();
+        player.teleport(player.getWorld().getHighestBlockAt(topX, topZ).getLocation());
+      }
+    }
   }
 }
