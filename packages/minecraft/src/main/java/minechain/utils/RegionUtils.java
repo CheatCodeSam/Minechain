@@ -28,4 +28,10 @@ public class RegionUtils {
     }
     return null;
   }
+
+  public static void teleportPlayerToRegion(Player player, ProtectedRegion region) {
+    var topX = region.getMaximumPoint().getX();
+    var topZ = region.getMaximumPoint().getZ();
+    player.teleport(player.getWorld().getHighestBlockAt(topX, topZ).getLocation());
+  }
 }

@@ -38,6 +38,14 @@ public class Rabbit {
     return single_instance;
   }
 
+  public void close() {
+    try {
+      this.connection.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   public void registerExchange(Exchange exchange) {
     this.exchanges.add(exchange);
     try {

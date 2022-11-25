@@ -10,12 +10,17 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.UUID;
+import minechain.App;
+import minechain.events.AllocateChunk;
 import org.bukkit.Bukkit;
 
 public class MinecraftExchange extends Exchange {
 
-  public MinecraftExchange() {
+  private App instance;
+
+  public MinecraftExchange(App instance) {
     super("minecraft", "direct", true);
+    this.instance = instance;
   }
 
   @Route(routingKey = "allocate")
@@ -23,23 +28,19 @@ public class MinecraftExchange extends Exchange {
     String message = new String(delivery.getBody(), "UTF-8");
     Gson gson = new Gson();
     Map map = gson.fromJson(message, Map.class);
-    Bukkit.getLogger().info(map.toString());
-    var mojangId = map.get("mojangId").toString();
+    var user = (Map) map.get("user");
     var tokenId = map.get("token").toString();
 
-    var value = Integer.parseInt(tokenId);
-
-    var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-    var world = Bukkit.getServer().getWorld("world");
-    var regions = container.get(BukkitAdapter.adapt(world));
-    var RegionPurchased = regions.getRegion(String.valueOf(value));
-    // RegionPurchased.setFlag(Flags.BUILD, StateFlag.State.ALLOW);
-
-    var player = new DefaultDomain();
-    var UserId = UUID.fromString(mojangId);
-    player.addPlayer(UserId);
-    RegionPurchased.setOwners(player);
-
-    Bukkit.getLogger().info(String.valueOf(value));
+    Bukkit
+      .getScheduler()
+      .runTask(
+        instance,
+        new Runnable() {
+          @Override
+          public void run() {
+            Bukkit.getPluginManager().callEvent(new AllocateChunk(user, tokenId));
+          }
+        }
+      );
   }
 }

@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
+import minechain.events.AllocateChunk;
 import minechain.events.AuthJoin;
 import minechain.exchange.MinecraftExchange;
 import minechain.exchange.RegistrationExchange;
@@ -29,7 +32,7 @@ public class App extends JavaPlugin implements Listener {
 
     Rabbit.getInstance();
     Rabbit.getInstance().registerExchange(new RegistrationExchange(this));
-    Rabbit.getInstance().registerExchange(new MinecraftExchange());
+    Rabbit.getInstance().registerExchange(new MinecraftExchange(this));
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     var world = Bukkit.getServer().getWorld("world");
@@ -51,6 +54,11 @@ public class App extends JavaPlugin implements Listener {
         index++;
       }
     }
+  }
+
+  @Override
+  public void onDisable() {
+    Rabbit.getInstance().close();
   }
 
   @EventHandler
@@ -99,10 +107,16 @@ public class App extends JavaPlugin implements Listener {
     if (playerRegion != null) {
       if (!lastKnownRegionId.equals(playerRegion.getId())) {
         var reg = RegionUtils.getRegionById(lastKnownRegionId);
-        var topX = reg.getMaximumPoint().getX();
-        var topZ = reg.getMaximumPoint().getZ();
-        player.teleport(player.getWorld().getHighestBlockAt(topX, topZ).getLocation());
+        RegionUtils.teleportPlayerToRegion(player, reg);
       }
     }
+  }
+
+  @EventHandler
+  public void onAllocateChunk(AllocateChunk event) {
+    var player = new DefaultDomain();
+    var UserId = UUID.fromString(event.getUser().get("mojangId").toString());
+    player.addPlayer(UserId);
+    event.getRegion().setOwners(player);
   }
 }
