@@ -7,7 +7,6 @@
     "blockchain-watcher": "packages/blockchain-watcher",
     "hardhat": "packages/hardhat",
     "landing": "packages/landing",
-    "landing-e2e": "packages/landing-e2e",
     "minecraft": "packages/minecraft",
     "web": "packages/web",
     "web-e2e": "packages/web-e2e"

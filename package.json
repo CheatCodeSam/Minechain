@@ -90,6 +90,8 @@
     "@adminjs/express": "^5.0.1",
     "@adminjs/nestjs": "^5.0.1",
     "@adminjs/typeorm": "^4.0.0",
+    "@babylonjs/core": "^5.34.0",
+    "@babylonjs/loaders": "^5.34.0",
     "@golevelup/nestjs-rabbitmq": "^3.4.0",
     "@heroicons/react": "^2.0.13",
     "@nestjs/common": "^9.2.0",
