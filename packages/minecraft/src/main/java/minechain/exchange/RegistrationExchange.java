@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.Delivery;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.UUID;
+import minechain.App;
+import minechain.events.AuthJoin;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -11,8 +14,11 @@ import org.bukkit.Bukkit;
 
 public class RegistrationExchange extends Exchange {
 
-  public RegistrationExchange() {
+  App instance;
+
+  public RegistrationExchange(App instance) {
     super("registration", "direct", true);
+    this.instance = instance;
   }
 
   @Route(routingKey = "registerToken")
@@ -23,24 +29,42 @@ public class RegistrationExchange extends Exchange {
     Map map = gson.fromJson(message, Map.class);
 
     var msg = new TextComponent("Click here to register your account.");
+
     msg.setClickEvent(
       new ClickEvent(
         ClickEvent.Action.OPEN_URL,
-        "http://localhost:4200/register/" + map.get("token")
+        "http://localhost:4200/register/" + map.get("registerToken")
       )
     );
     msg.setColor(ChatColor.RED);
     msg.setUnderlined(true);
 
-    Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
+    var player = Bukkit.getServer().getPlayer(UUID.fromString(map.get("uuid").toString()));
+    System.out.println(player.displayName().toString());
+    if (player != null) player.sendMessage(msg);
   }
 
-  @Route(routingKey = "success")
+  @Route(routingKey = "authorizeJoin")
   public void success(String consumerTag, Delivery delivery) throws UnsupportedEncodingException {
     String message = new String(delivery.getBody(), "UTF-8");
     Gson gson = new Gson();
     Map<String, Object> map = gson.fromJson(message, Map.class);
-    String msg = map.get("msg").toString();
+    String msg = map.get("publicAddress").toString();
+
+    var player = Bukkit.getPlayer(UUID.fromString(map.get("mojangId").toString()));
+
+    Bukkit
+      .getScheduler()
+      .runTask(
+        instance,
+        new Runnable() {
+          @Override
+          public void run() {
+            Bukkit.getPluginManager().callEvent(new AuthJoin(player, map));
+          }
+        }
+      );
+
     Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }
 }

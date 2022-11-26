@@ -38,7 +38,7 @@ export class BlockchainService {
     }
 
     const allocate = {
-      mojangId: existingUser.mojangId,
+      user: existingUser,
       token: tokenId
     }
     this.amqpConnection.publish("minecraft", "allocate", allocate)

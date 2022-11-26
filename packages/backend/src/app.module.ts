@@ -42,8 +42,7 @@ import { UsersModule } from "./users/users.module"
     AdminModule,
     UsersModule,
     MinecraftModule,
-    BlockchainModule,
-    TypeOrmModule.forFeature([User])
+    BlockchainModule
   ],
   providers: [{ provide: APP_INTERCEPTOR, useClass: UserInterceptor }]
 })

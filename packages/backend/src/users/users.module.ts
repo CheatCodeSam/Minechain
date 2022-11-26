@@ -11,6 +11,6 @@ import { UsersService } from "./users.service"
   imports: [TypeOrmModule.forFeature([User, Token])],
   controllers: [UsersController],
   providers: [UsersService, UserInterceptor],
-  exports: [UserInterceptor]
+  exports: [UserInterceptor, UsersService]
 })
 export class UsersModule {}

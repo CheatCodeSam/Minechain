@@ -1,10 +1,39 @@
 import { Middleware } from "@reduxjs/toolkit"
-import { io } from "socket.io-client"
+import { Socket, io } from "socket.io-client"
+
+import { socketActions } from "../features/socket/socket.slice"
 
 const socketMiddleware: Middleware = (store) => {
-  const socket = io()
+  // TODO update url behind reverse proxy
+  let socket: Socket
 
   return (next) => (action) => {
+    if (!socketActions.startConnecting.match(action)) {
+      return next(action)
+    }
+
+    socket = io("http://localhost:4200/api/v1/ws", {
+      path: "/api/v1/ws/socket.io",
+      transports: ["websocket"],
+      withCredentials: true
+    })
+
+    socket.on("connect", () => {
+      store.dispatch(socketActions.connectionEstablished())
+    })
+
+    socket.on("regionEnter", (payload) => {
+      store.dispatch(socketActions.playerMove(payload))
+    })
+
+    socket.on("authorizeJoin", (payload) => {
+      store.dispatch(socketActions.playerJoin(payload))
+    })
+
+    socket.on("authorizedLeave", (payload) => {
+      store.dispatch(socketActions.playerLeave(payload))
+    })
+
     next(action)
   }
 }

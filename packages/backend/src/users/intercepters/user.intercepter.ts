@@ -5,18 +5,19 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nes
 import { InjectRepository } from "@nestjs/typeorm"
 
 import { User } from "../entities/user.entity"
+import { UsersService } from "../users.service"
 
 @Injectable()
 export class UserInterceptor implements NestInterceptor {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(private userService: UsersService) {}
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<unknown>> {
     const request = context.switchToHttp().getRequest()
     const { id } = request.session?.passport?.user || { id: null }
-    if (!id) {
-      return next.handle()
-    }
-    const user = await this.userRepo.findOneBy({ id })
-    if (!user) {
+    if (!id) return next.handle()
+    let user: User
+    try {
+      user = await this.userService.findOne(id)
+    } catch (error) {
       return next.handle()
     }
     request.currentUser = user

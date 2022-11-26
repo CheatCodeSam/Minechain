@@ -4,20 +4,24 @@ import com.google.gson.Gson;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import minechain.exchange.BlockchainExchange;
+import java.util.UUID;
+import minechain.events.AllocateChunk;
+import minechain.events.AuthJoin;
 import minechain.exchange.MinecraftExchange;
 import minechain.exchange.RegistrationExchange;
+import minechain.utils.RegionUtils;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class App extends JavaPlugin implements Listener {
@@ -27,9 +31,8 @@ public class App extends JavaPlugin implements Listener {
     Bukkit.getPluginManager().registerEvents(this, this);
 
     Rabbit.getInstance();
-    Rabbit.getInstance().registerExchange(new RegistrationExchange());
-    // Rabbit.getInstance().registerExchange(new BlockchainExchange());
-    Rabbit.getInstance().registerExchange(new MinecraftExchange());
+    Rabbit.getInstance().registerExchange(new RegistrationExchange(this));
+    Rabbit.getInstance().registerExchange(new MinecraftExchange(this));
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
     var world = Bukkit.getServer().getWorld("world");
@@ -43,9 +46,8 @@ public class App extends JavaPlugin implements Listener {
     for (int y = -16; y < 16; y++) {
       for (int x = -16; x < 16; x++) {
         var min = BlockVector3.at(x * 16, -64, y * 16);
-        var max = BlockVector3.at(x * 16 + 16, 319, y * 16 + 16);
+        var max = BlockVector3.at(x * 16 + 15, 319, y * 16 + 15);
         var region = new ProtectedCuboidRegion(String.valueOf(index), min, max);
-        // region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         region.setFlag(Flags.DENY_MESSAGE, "");
         regions.addRegion(region);
 
@@ -54,17 +56,27 @@ public class App extends JavaPlugin implements Listener {
     }
   }
 
+  @Override
+  public void onDisable() {
+    Rabbit.getInstance().close();
+  }
+
+  @EventHandler
+  public void onPlayerQuit(PlayerQuitEvent event) {
+    Player player = event.getPlayer();
+    Gson gson = new Gson();
+    Map<String, String> stringMap = new LinkedHashMap<>();
+    stringMap.put("uuid", player.getUniqueId().toString());
+    Rabbit.getInstance().publish("minecraft", "playerLeave", gson.toJson(stringMap));
+  }
+
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
     Player player = playerJoinEvent.getPlayer();
-    player.getUniqueId();
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
-
     stringMap.put("uuid", player.getUniqueId().toString());
-    stringMap.put("displayName", player.getName());
-
-    Rabbit.getInstance().publish("registration", "playerJoin", gson.toJson(stringMap));
+    Rabbit.getInstance().publish("minecraft", "playerJoin", gson.toJson(stringMap));
   }
 
   @EventHandler
@@ -72,8 +84,39 @@ public class App extends JavaPlugin implements Listener {
     Player player = Bukkit.getPlayer(event.getUUID());
     if (player == null) return;
 
+    Gson gson = new Gson();
+    Map<String, String> stringMap = new LinkedHashMap<>();
     String regionName = event.getRegionName();
 
+    stringMap.put("uuid", player.getUniqueId().toString());
+    stringMap.put("region", regionName);
+
+    Rabbit.getInstance().publish("minecraft", "regionEnter", gson.toJson(stringMap));
+
     player.sendMessage(regionName);
+  }
+
+  @EventHandler
+  public void onExampleEvent(AuthJoin event) {
+    var player = event.getPlayer();
+    var map = event.getDetails();
+    var playerRegion = RegionUtils.getPlayerRegion(player);
+
+    var lastKnownRegionId = map.get("lastKnownRegion").toString();
+
+    if (playerRegion != null) {
+      if (!lastKnownRegionId.equals(playerRegion.getId())) {
+        var reg = RegionUtils.getRegionById(lastKnownRegionId);
+        RegionUtils.teleportPlayerToRegion(player, reg);
+      }
+    }
+  }
+
+  @EventHandler
+  public void onAllocateChunk(AllocateChunk event) {
+    var player = new DefaultDomain();
+    var UserId = UUID.fromString(event.getUser().get("mojangId").toString());
+    player.addPlayer(UserId);
+    event.getRegion().setOwners(player);
   }
 }
