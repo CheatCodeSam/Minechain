@@ -2,10 +2,6 @@ package minechain.exchange;
 
 import com.google.gson.Gson;
 import com.rabbitmq.client.Delivery;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.UUID;
