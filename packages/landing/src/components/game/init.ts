@@ -4,6 +4,7 @@ import {
   Color3,
   Engine,
   HemisphericLight,
+  Matrix,
   Mesh,
   Scene,
   SceneLoader,
@@ -21,20 +22,21 @@ const init = async (canvas: HTMLCanvasElement) => {
     const scene = new Scene(engine)
     //scene.clearColor = Color3.White();
 
-    const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 150, Vector3.Zero())
+    const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 90, Vector3.Zero())
     camera.attachControl(canvas, true)
+    camera.position.x = 0
 
     const globe = await SceneLoader.ImportMeshAsync(
       "earth",
       "/Earth-Final/",
-      "earth-bnw.gltf",
+      "earth-bnw-new-origin.gltf",
       scene
     )
     const m1 = globe.meshes[1] as Mesh
     const m2 = globe.meshes[2] as Mesh
     const m3 = globe.meshes[3] as Mesh
 
-    const newMesh = await Mesh.MergeMeshesAsync([m1, m2, m3], true, true)
+    const newMesh = (await Mesh.MergeMeshesAsync([m1, m2, m3], true, true)) as Mesh
     // globeMat.rotate(new Vector3(0, 80, 0), 3)
     // // var gl = new GlowLayer("glow", scene);
     // // gl.intensity = 100;
@@ -60,7 +62,7 @@ const init = async (canvas: HTMLCanvasElement) => {
       value: 2 * Math.PI
     })
 
-    camera.target = newMesh
+    // camera.setTarget(newMesh)
 
     animEarth.setKeys(earthKeys)
 
