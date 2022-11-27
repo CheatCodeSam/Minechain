@@ -9,7 +9,7 @@ import {
   SceneLoader,
   Vector3
 } from "@babylonjs/core"
-import "@babylonjs/loaders/OBJ"
+import "@babylonjs/loaders/glTF"
 
 const pink = new Color3(197 / 255, 41 / 255, 112 / 255)
 const purple = new Color3(147 / 255, 82 / 255, 148 / 255)
