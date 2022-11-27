@@ -16,7 +16,7 @@ export class BlockchainController {
     queueOptions: { durable: true },
     allowNonJsonMessages: false
   })
-  public async other(msg: { from: string; to: string; value: string; data }) {
+  public async transfer(msg: { from: string; to: string; value: string; data }) {
     this.blockchainService.transfer(msg.from, msg.to, msg.value, msg.data)
   }
 }
