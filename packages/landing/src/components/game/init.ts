@@ -1,95 +1,85 @@
-import "@babylonjs/loaders/OBJ";
 import {
-  ArcRotateCamera,
   Animation,
-  AutoRotationBehavior,
+  ArcRotateCamera,
   Color3,
-  Color4,
-  CreateScreenshotWithResizeAsync,
-  Curve3,
-  DirectionalLight,
   Engine,
-  FramingBehavior,
-  FreeCamera,
   HemisphericLight,
-  HighlightLayer,
-  Light,
   Mesh,
-  MeshAssetTask,
-  MeshBuilder,
-  PlayAnimationAction,
-  PointerInfo,
-  PointLight,
-  PositionNormalTextureVertex,
   Scene,
-  SceneComponentConstants,
   SceneLoader,
-  SpotLight,
-  StandardMaterial,
-  Texture,
-  Vector3,
-  Vector4,
-  GlowLayer,
-  Axis,
-} from "@babylonjs/core";
-import { GLTFFileLoader } from "@babylonjs/loaders/glTF";
-import { helperFunctions } from "@babylonjs/core/Shaders/ShadersInclude/helperFunctions";
-import { extractHighlightsPixelShader } from "@babylonjs/core/Shaders/extractHighlights.fragment";
+  Vector3
+} from "@babylonjs/core"
+import "@babylonjs/loaders/OBJ"
 
-const pink = new Color3(197 / 255, 41 / 255, 112 / 255);
-const purple = new Color3(147 / 255, 82 / 255, 148 / 255);
-const blue = new Color3(19 / 255, 52 / 255, 164 / 255);
+const pink = new Color3(197 / 255, 41 / 255, 112 / 255)
+const purple = new Color3(147 / 255, 82 / 255, 148 / 255)
+const blue = new Color3(19 / 255, 52 / 255, 164 / 255)
 
 const init = async (canvas: HTMLCanvasElement) => {
-  const engine = new Engine(canvas, true);
+  const engine = new Engine(canvas, true)
   const createScene = async () => {
-    const scene = new Scene(engine);
+    const scene = new Scene(engine)
     //scene.clearColor = Color3.White();
 
-    var globe = await SceneLoader.ImportMeshAsync(
+    const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 150, Vector3.Zero())
+    camera.attachControl(canvas, true)
+
+    const globe = await SceneLoader.ImportMeshAsync(
       "earth",
       "/Earth-Final/",
       "earth-bnw.gltf",
       scene
-    );
-    console.log("globe", globe);
+    )
+    const m1 = globe.meshes[1] as Mesh
+    const m2 = globe.meshes[2] as Mesh
+    const m3 = globe.meshes[3] as Mesh
 
-    let globeMat = globe.meshes[0];
-    globeMat.position.y = -20;
-    // var gl = new GlowLayer("glow", scene);
-    // gl.intensity = 100;
+    const newMesh = await Mesh.MergeMeshesAsync([m1, m2, m3], true, true)
+    // globeMat.rotate(new Vector3(0, 80, 0), 3)
+    // // var gl = new GlowLayer("glow", scene);
+    // // gl.intensity = 100;
 
-    const camera = new ArcRotateCamera(
-      "Camera",
-      (3 * -Math.PI) / 2,
-      Math.PI / 4,
-      150,
-      Vector3.Zero()
-    );
-    camera.useFramingBehavior = true;
-    camera.framingBehavior.defaultElevation = Math.PI / 4;
-    camera.framingBehavior.elevationReturnTime = 500;
-    camera.framingBehavior.elevationReturnWaitTime = 200;
+    const animEarth = new Animation(
+      "animEarth",
+      "rotation.y",
+      30,
+      Animation.ANIMATIONTYPE_FLOAT,
+      Animation.ANIMATIONLOOPMODE_CYCLE
+    )
 
-    camera.attachControl(canvas, true);
-    camera.useAutoRotationBehavior = true;
-    camera.autoRotationBehavior.idleRotationSpeed = 1.5;
-    camera.autoRotationBehavior.idleRotationWaitTime = 500;
-    const hemiLight = new HemisphericLight(
-      "hemiLight",
-      new Vector3(1, 0, 0),
-      scene
-    );
-    hemiLight.diffuse = pink;
-    hemiLight.groundColor = blue;
-    hemiLight.intensity = 7;
-    hemiLight.specular = purple;
+    const earthKeys = []
 
-    return scene;
-  };
-  const scene = await createScene();
+    //At the animation key 0, the value of rotation.y is 0
+    earthKeys.push({
+      frame: 0,
+      value: 0
+    })
+
+    earthKeys.push({
+      frame: 120,
+      value: 2 * Math.PI
+    })
+
+    camera.target = newMesh
+
+    animEarth.setKeys(earthKeys)
+
+    newMesh.animations = [animEarth]
+
+    //Begin animation - object to animate, first frame, last frame and loop if true
+    scene.beginAnimation(newMesh, 0, 120, true)
+
+    const hemiLight = new HemisphericLight("hemiLight", new Vector3(1, 0, 0), scene)
+    hemiLight.diffuse = pink
+    hemiLight.groundColor = blue
+    hemiLight.intensity = 7
+    hemiLight.specular = purple
+
+    return scene
+  }
+  const scene = await createScene()
   engine.runRenderLoop(() => {
-    scene.render();
-  });
-};
-export default init;
+    scene.render()
+  })
+}
+export default init
