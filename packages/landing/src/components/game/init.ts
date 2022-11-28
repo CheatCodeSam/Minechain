@@ -1,6 +1,7 @@
 import {
   Animation,
   ArcRotateCamera,
+  AutoRotationBehavior,
   Color3,
   Engine,
   HemisphericLight,
@@ -22,9 +23,8 @@ const init = async (canvas: HTMLCanvasElement) => {
     const scene = new Scene(engine)
     //scene.clearColor = Color3.White();
 
-    const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2, 90, Vector3.Zero())
+    const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 90, Vector3.Zero())
     camera.attachControl(canvas, true)
-    camera.position.x = 0
 
     const globe = await SceneLoader.ImportMeshAsync(
       "earth",
@@ -37,14 +37,14 @@ const init = async (canvas: HTMLCanvasElement) => {
     const m3 = globe.meshes[3] as Mesh
 
     const newMesh = (await Mesh.MergeMeshesAsync([m1, m2, m3], true, true)) as Mesh
+
     // globeMat.rotate(new Vector3(0, 80, 0), 3)
     // // var gl = new GlowLayer("glow", scene);
     // // gl.intensity = 100;
-
     const animEarth = new Animation(
       "animEarth",
       "rotation.y",
-      30,
+      5,
       Animation.ANIMATIONTYPE_FLOAT,
       Animation.ANIMATIONLOOPMODE_CYCLE
     )
