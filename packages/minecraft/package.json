@@ -2,7 +2,7 @@
   "name": "@minechain/minecraft",
   "version": "0.0.0",
   "scripts": {
-    "package": "mvn clean package assembly:single",
+    "package": "mvn clean package",
     "build": "npm run package",
     "clean": "mvn clean",
     "test": "mvn test"
