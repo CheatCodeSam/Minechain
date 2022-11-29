@@ -3,9 +3,11 @@ package minechain.apps.registration;
 import com.google.gson.Gson;
 import com.rabbitmq.client.Delivery;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import minechain.libs.rabbit.Exchange;
+import minechain.libs.rabbit.Rabbit;
 import minechain.libs.rabbit.Route;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -53,6 +55,10 @@ public class RegistrationExchange extends Exchange {
     String msg = map.get("publicAddress").toString();
 
     var player = Bukkit.getPlayer(UUID.fromString(map.get("mojangId").toString()));
+
+    Map<String, String> stringMap = new LinkedHashMap<>();
+    stringMap.put("uuid", player.getUniqueId().toString());
+    Rabbit.getInstance().publish("proxy", "transfer", gson.toJson(stringMap));
 
     Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
   }

@@ -25,6 +25,7 @@ public class App {
   public App(ProxyServer server, Logger logger) {
     this.server = server;
     this.logger = logger;
+    Rabbit.getInstance().registerExchange(new ProxyExchange(this.server));
     this.logger.info("Hello there! I made my first plugin with Velocity.");
   }
 
