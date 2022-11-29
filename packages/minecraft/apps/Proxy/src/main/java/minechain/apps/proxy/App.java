@@ -25,16 +25,6 @@ public class App {
   public App(ProxyServer server, Logger logger) {
     this.server = server;
     this.logger = logger;
-    Rabbit.getInstance().registerExchange(new ProxyExchange(this.server));
-    this.logger.info("Hello there! I made my first plugin with Velocity.");
-  }
-
-  @Subscribe
-  public void onPlayerChat(PlayerChatEvent p) {
-    var serv = this.server.getServer("minechain");
-    if (serv.isPresent()) {
-      var regServ = serv.get();
-      p.getPlayer().createConnectionRequest(regServ).connect();
-    }
+    Rabbit.getInstance().registerExchange(new RegistrationExchange(this.server));
   }
 }

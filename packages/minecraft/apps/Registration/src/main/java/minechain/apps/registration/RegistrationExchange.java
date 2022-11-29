@@ -46,20 +46,4 @@ public class RegistrationExchange extends Exchange {
     System.out.println(player.displayName().toString());
     if (player != null) player.sendMessage(msg);
   }
-
-  @Route(routingKey = "authorizeJoin")
-  public void success(String consumerTag, Delivery delivery) throws UnsupportedEncodingException {
-    String message = new String(delivery.getBody(), "UTF-8");
-    Gson gson = new Gson();
-    Map<String, Object> map = gson.fromJson(message, Map.class);
-    String msg = map.get("publicAddress").toString();
-
-    var player = Bukkit.getPlayer(UUID.fromString(map.get("mojangId").toString()));
-
-    Map<String, String> stringMap = new LinkedHashMap<>();
-    stringMap.put("uuid", player.getUniqueId().toString());
-    Rabbit.getInstance().publish("proxy", "transfer", gson.toJson(stringMap));
-
-    Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(msg));
-  }
 }
