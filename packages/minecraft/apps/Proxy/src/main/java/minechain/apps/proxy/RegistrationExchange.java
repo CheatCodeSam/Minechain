@@ -18,7 +18,7 @@ public class RegistrationExchange extends Exchange {
     this.server = server;
   }
 
-  @Route(routingKey = "authorizeJoin")
+  @Route(routingKey = "authorizeJoin", queueName = "proxyAuthJoin")
   public void success(String consumerTag, Delivery delivery) throws UnsupportedEncodingException {
     String message = new String(delivery.getBody(), "UTF-8");
     Gson gson = new Gson();

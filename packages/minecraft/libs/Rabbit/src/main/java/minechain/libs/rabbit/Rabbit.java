@@ -66,13 +66,7 @@ public class Rabbit {
     }
   }
 
-  public void bindQueue(String exchangeName, String routingKey, DeliverCallback deliverCallback) {
-    try {
-      String queue = this.channel.queueDeclare().getQueue();
-      this.channel.queueBind(queue, exchangeName, routingKey);
-      this.channel.basicConsume(queue, true, deliverCallback, consumerTag -> {});
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  public ConsumeFactory bindQueue() {
+    return new ConsumeFactory(this.channel);
   }
 }

@@ -23,7 +23,7 @@ public class RegistrationExchange extends Exchange {
     this.instance = instance;
   }
 
-  @Route(routingKey = "registerToken")
+  @Route(routingKey = "registerToken", queueName = "regRegisterToken")
   public void registerToken(String consumerTag, Delivery delivery)
     throws UnsupportedEncodingException {
     var message = new String(delivery.getBody(), "UTF-8");

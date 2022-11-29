@@ -2,6 +2,7 @@ package minechain.libs.rabbit;
 
 import com.rabbitmq.client.DeliverCallback;
 import com.rabbitmq.client.Delivery;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 public abstract class Exchange {
@@ -34,7 +35,17 @@ public abstract class Exchange {
             }
           }
         };
-        this.channel.bindQueue(this.exchange, routeMethod.routingKey(), deliverCallback);
+
+        try {
+          this.channel.bindQueue()
+            .ExchangeName(exchange)
+            .RoutingKey(routeMethod.routingKey())
+            .DeliverCallback(deliverCallback)
+            .Queue(routeMethod.queueName())
+            .create();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
   }
