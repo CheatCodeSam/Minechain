@@ -11,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -37,6 +36,8 @@ public class App extends JavaPlugin implements Listener {
 
   @EventHandler
   public void onPlayerJoin(PlayerJoinEvent playerJoinEvent) {
+    playerJoinEvent.setJoinMessage(null);
+
     Player player = playerJoinEvent.getPlayer();
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
@@ -52,13 +53,12 @@ public class App extends JavaPlugin implements Listener {
       }
     }
       .runTaskLater(this, 30);
-
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        player.kick(Component.text("Kicked for being AFK"));
-      }
-    }
-      .runTaskLater(this, 20 * 60 * 5);
+    // new BukkitRunnable() {
+    //   @Override
+    //   public void run() {
+    //     player.kick(Component.text("Kicked for being AFK"));
+    //   }
+    // }
+    //   .runTaskLater(this, 20 * 60 * 5);
   }
 }
