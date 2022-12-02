@@ -7,6 +7,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -15,13 +16,23 @@ import minechain.apps.minechainmain.exchanges.MinecraftExchange;
 import minechain.libs.rabbit.Rabbit;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class App extends JavaPlugin implements Listener {
+
+  HashMap<UUID, BossBar> map;
+
+  public App() {
+    this.map = new HashMap<>();
+  }
 
   @Override
   public void onEnable() {
@@ -57,8 +68,22 @@ public class App extends JavaPlugin implements Listener {
   }
 
   @EventHandler
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    var player = event.getPlayer();
+    var id = player.getUniqueId();
+
+    var bossBar = Bukkit.createBossBar("", BarColor.BLUE, BarStyle.SOLID);
+    bossBar.addPlayer(player);
+
+    this.map.put(id, bossBar);
+  }
+
+  @EventHandler
   public void onPlayerQuit(PlayerQuitEvent event) {
     Player player = event.getPlayer();
+
+    this.map.remove(player.getUniqueId());
+
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
     stringMap.put("uuid", player.getUniqueId().toString());
@@ -70,6 +95,9 @@ public class App extends JavaPlugin implements Listener {
     Player player = Bukkit.getPlayer(event.getUUID());
     if (player == null) return;
 
+    var bossBar = this.map.get(player.getUniqueId());
+    bossBar.setTitle(event.getRegionName());
+
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
     String regionName = event.getRegionName();
@@ -78,8 +106,6 @@ public class App extends JavaPlugin implements Listener {
     stringMap.put("region", regionName);
 
     Rabbit.getInstance().publish("minecraft", "regionEnter", gson.toJson(stringMap));
-
-    player.sendMessage(regionName);
   }
 
   @EventHandler
