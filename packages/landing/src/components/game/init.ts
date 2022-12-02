@@ -1,12 +1,12 @@
 import {
   Animation,
   ArcRotateCamera,
-  AutoRotationBehavior,
   Color3,
   Engine,
   HemisphericLight,
-  Matrix,
   Mesh,
+  PointerEventTypes,
+  PointerInfo,
   Scene,
   SceneLoader,
   Vector3
@@ -24,7 +24,7 @@ const init = async (canvas: HTMLCanvasElement) => {
     //scene.clearColor = Color3.White();
 
     const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 90, Vector3.Zero())
-    camera.attachControl(canvas, true)
+    // camera.attachControl(canvas, false)
 
     const globe = await SceneLoader.ImportMeshAsync(
       "earth",
@@ -41,35 +41,80 @@ const init = async (canvas: HTMLCanvasElement) => {
     // globeMat.rotate(new Vector3(0, 80, 0), 3)
     // // var gl = new GlowLayer("glow", scene);
     // // gl.intensity = 100;
-    const animEarth = new Animation(
-      "animEarth",
-      "rotation.y",
-      5,
-      Animation.ANIMATIONTYPE_FLOAT,
-      Animation.ANIMATIONLOOPMODE_CYCLE
-    )
+    //animate
+    startAnimation()
+    //interaction
+    scene.onPointerObservable.add(onPointer)
+    function startAnimation() {
+      scene.hoverCursor = "pointer"
+      //Begin animation - object to animate, first frame, last frame and loop if true
+      Animation.AllowMatricesInterpolation = true
+      newMesh.animations = []
+      let earthKeys = []
+      var rotationSpeed = 0.1
+      let animEarth = new Animation(
+        "animEarth",
+        "rotation",
+        120,
+        Animation.ANIMATIONTYPE_VECTOR3,
+        Animation.ANIMATIONLOOPMODE_RELATIVE
+      )
+      animEarth.vector3InterpolateFunction = (startValue, endValue, gradient) => {
+        return Vector3.Lerp(startValue, endValue, gradient)
+      }
 
-    const earthKeys = []
+      //At the animation key 0, the value of rotation.y is 0
+      earthKeys.push(
+        {
+          frame: 0,
+          value: newMesh.rotation
+        },
+        {
+          frame: 120,
+          value: new Vector3(0, newMesh.rotation.y + rotationSpeed, 0)
+        }
+      )
 
-    //At the animation key 0, the value of rotation.y is 0
-    earthKeys.push({
-      frame: 0,
-      value: 0
-    })
+      // camera.setTarget(newMesh)
 
-    earthKeys.push({
-      frame: 120,
-      value: 2 * Math.PI
-    })
+      animEarth.setKeys(earthKeys)
 
-    // camera.setTarget(newMesh)
+      newMesh.animations = [animEarth]
+      newMesh.animations.push(animEarth)
+      scene.beginAnimation(newMesh, 0, 120, true)
+      console.log(newMesh)
+    }
+    function stopAnimationandRotate() {
+      scene.stopAllAnimations()
+    }
+    scene.defaultCursor = "grab"
 
-    animEarth.setKeys(earthKeys)
+    let isMouseDown = false
 
-    newMesh.animations = [animEarth]
+    function onPointer(pointerInfo: PointerInfo) {
+      switch (pointerInfo.type) {
+        case PointerEventTypes.POINTERDOWN:
+          scene.defaultCursor = "grabbing"
 
-    //Begin animation - object to animate, first frame, last frame and loop if true
-    scene.beginAnimation(newMesh, 0, 120, true)
+          isMouseDown = true
+          stopAnimationandRotate()
+          break
+        case PointerEventTypes.POINTERMOVE:
+          if (isMouseDown) {
+            const rotationAmount = pointerInfo.event.movementX * 0.01
+            console.log(rotationAmount)
+
+            newMesh.addRotation(0, -rotationAmount, 0)
+          }
+          break
+        case PointerEventTypes.POINTERUP:
+          isMouseDown = false
+          scene.defaultCursor = "grab"
+
+          startAnimation()
+          break
+      }
+    }
 
     const hemiLight = new HemisphericLight("hemiLight", new Vector3(1, 0, 0), scene)
     hemiLight.diffuse = pink
