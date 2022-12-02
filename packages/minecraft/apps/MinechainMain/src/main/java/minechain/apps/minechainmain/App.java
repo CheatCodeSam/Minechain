@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import minechain.apps.minechainmain.events.AllocateChunk;
+import minechain.apps.minechainmain.events.AuthorizedJoin;
 import minechain.apps.minechainmain.exchanges.MinecraftExchange;
 import minechain.libs.rabbit.Rabbit;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
@@ -68,14 +69,14 @@ public class App extends JavaPlugin implements Listener {
   }
 
   @EventHandler
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    var player = event.getPlayer();
-    var id = player.getUniqueId();
-
-    var bossBar = Bukkit.createBossBar("", BarColor.BLUE, BarStyle.SOLID);
+  public void onAuthorizedJoin(AuthorizedJoin event) {
+    System.out.println(event.getUser());
+    var playerId = UUID.fromString(event.getUser().get("mojangId").toString());
+    var player = getServer().getPlayer(playerId);
+    var lastRegion = event.getUser().get("lastKnownRegion").toString();
+    var bossBar = Bukkit.createBossBar(lastRegion, BarColor.BLUE, BarStyle.SOLID);
     bossBar.addPlayer(player);
-
-    this.map.put(id, bossBar);
+    this.map.put(playerId, bossBar);
   }
 
   @EventHandler

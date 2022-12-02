@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.UUID;
 import minechain.libs.rabbit.Exchange;
+import minechain.libs.rabbit.Rabbit;
 import minechain.libs.rabbit.Route;
 
 public class RegistrationExchange extends Exchange {
@@ -31,7 +32,12 @@ public class RegistrationExchange extends Exchange {
     if (serv.isPresent() && player.isPresent()) {
       var mcServ = serv.get();
       var p = player.get();
-      p.createConnectionRequest(mcServ).connect();
+      p
+        .createConnectionRequest(mcServ)
+        .connect()
+        .thenRunAsync(() -> {
+          Rabbit.getInstance().publish("minecraft", "authorizeJoin", message);
+        });
     }
   }
 }

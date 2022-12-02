@@ -53,12 +53,5 @@ public class App extends JavaPlugin implements Listener {
       }
     }
       .runTaskLater(this, 30);
-    // new BukkitRunnable() {
-    //   @Override
-    //   public void run() {
-    //     player.kick(Component.text("Kicked for being AFK"));
-    //   }
-    // }
-    //   .runTaskLater(this, 20 * 60 * 5);
   }
 }
