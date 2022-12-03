@@ -72,19 +72,15 @@ public class App extends JavaPlugin implements Listener {
   @EventHandler
   public void onAuthorizedJoin(AuthorizedJoin event) {
     System.out.println(event.getUser());
-    var playerId = UUID.fromString(event.getUser().get("mojangId").toString());
+    var playerId = event.getUser().mojangId;
     var player = getServer().getPlayer(playerId);
-    var lastRegion = event.getUser().get("lastKnownRegion").toString();
+    var lastRegion = event.getUser().lastKnownRegion;
     var bossBar = Bukkit.createBossBar(lastRegion, BarColor.BLUE, BarStyle.SOLID);
     bossBar.addPlayer(player);
     this.map.put(playerId, bossBar);
 
     var welcomeMessage = new TextComponent(
-      String.format(
-        "%s has joined the server as %s.",
-        event.getUser().get("publicAddress").toString(),
-        player.getName()
-      )
+      String.format("%s has joined as %s.", event.getUser().shortName, player.getName())
     );
     welcomeMessage.setColor(ChatColor.YELLOW);
     Bukkit.broadcast(welcomeMessage);
@@ -123,7 +119,7 @@ public class App extends JavaPlugin implements Listener {
   @EventHandler
   public void onAllocateChunk(AllocateChunk event) {
     var player = new DefaultDomain();
-    var UserId = UUID.fromString(event.getUser().get("mojangId").toString());
+    var UserId = event.getUser().mojangId;
     player.addPlayer(UserId);
     event.getRegion().setOwners(player);
   }

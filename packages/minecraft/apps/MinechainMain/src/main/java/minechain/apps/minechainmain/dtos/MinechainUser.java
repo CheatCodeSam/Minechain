@@ -1,4 +1,4 @@
-package minechain.apps.minechainmain;
+package minechain.apps.minechainmain.dtos;
 
 import java.util.Date;
 import java.util.List;
@@ -14,5 +14,6 @@ public class MinechainUser {
   public Date lastLogin;
   public Boolean isSuperUser;
   public String shortName;
+  public String lastKnownRegion;
   public List<Integer> tokens;
 }

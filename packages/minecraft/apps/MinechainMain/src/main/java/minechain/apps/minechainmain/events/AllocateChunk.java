@@ -1,11 +1,8 @@
 package minechain.apps.minechainmain.events;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import java.util.Map;
-import java.util.UUID;
+import minechain.apps.minechainmain.dtos.MinechainUser;
 import minechain.apps.minechainmain.utils.RegionUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -14,9 +11,9 @@ public class AllocateChunk extends Event {
   private static final HandlerList HANDLERS = new HandlerList();
 
   private ProtectedRegion region;
-  private Map user;
+  private MinechainUser user;
 
-  public AllocateChunk(Map user, String tokenId) {
+  public AllocateChunk(MinechainUser user, String tokenId) {
     this.user = user;
     this.region = RegionUtils.getRegionById(tokenId);
   }
@@ -25,7 +22,7 @@ public class AllocateChunk extends Event {
     return region;
   }
 
-  public Map getUser() {
+  public MinechainUser getUser() {
     return user;
   }
 

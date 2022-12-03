@@ -1,6 +1,6 @@
 package minechain.apps.minechainmain.events;
 
-import java.util.Map;
+import minechain.apps.minechainmain.dtos.MinechainUser;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -8,13 +8,13 @@ public class AuthorizedJoin extends Event {
 
   private static final HandlerList HANDLERS = new HandlerList();
 
-  private Map user;
+  private MinechainUser user;
 
-  public AuthorizedJoin(Map user) {
+  public AuthorizedJoin(MinechainUser user) {
     this.user = user;
   }
 
-  public Map getUser() {
+  public MinechainUser getUser() {
     return user;
   }
 

@@ -16,6 +16,8 @@ export class UserDto {
 
   lastLogin: Date
 
+  lastKnownRegion: string
+
   isSuperUser: boolean
 
   @Exclude()
