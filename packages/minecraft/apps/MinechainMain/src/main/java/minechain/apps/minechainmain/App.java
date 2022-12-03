@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import minechain.apps.minechainmain.dtos.MinechainUser;
 import minechain.apps.minechainmain.events.AllocateChunk;
 import minechain.apps.minechainmain.events.AuthorizedJoin;
 import minechain.apps.minechainmain.exchanges.MinecraftExchange;
@@ -31,6 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class App extends JavaPlugin implements Listener {
 
   HashMap<UUID, BossBar> map;
+  private HashMap<String, MinechainUser> regionsOwned = new HashMap<>();
 
   public App() {
     this.map = new HashMap<>();
@@ -103,8 +105,13 @@ public class App extends JavaPlugin implements Listener {
     Player player = Bukkit.getPlayer(event.getUUID());
     if (player == null) return;
 
+    var owner = this.regionsOwned.get(event.getRegion().getId());
+
+    String barValue = event.getRegionName();
+    if (owner != null) barValue = barValue.concat(" - owned by ").concat(owner.shortName);
+
     var bossBar = this.map.get(player.getUniqueId());
-    bossBar.setTitle(event.getRegionName());
+    bossBar.setTitle(barValue);
 
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
@@ -120,6 +127,7 @@ public class App extends JavaPlugin implements Listener {
   public void onAllocateChunk(AllocateChunk event) {
     var player = new DefaultDomain();
     var UserId = event.getUser().mojangId;
+    this.regionsOwned.put(event.getRegion().getId(), event.getUser());
     player.addPlayer(UserId);
     event.getRegion().setOwners(player);
   }
