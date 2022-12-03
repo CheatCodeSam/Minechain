@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 
 import { User } from "../users/entities/user.entity"
 import { UsersModule } from "../users/users.module"
+import { UsersService } from "../users/users.service"
 import { EventsGateway } from "./events.gateway"
 import { MinecraftController } from "./minecraft.controller"
 import { MinecraftService } from "./minecraft.service"

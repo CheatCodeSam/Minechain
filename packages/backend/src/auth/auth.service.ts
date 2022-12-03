@@ -6,15 +6,19 @@ import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/commo
 import { InjectRepository } from "@nestjs/typeorm"
 
 import { User } from "../users/entities/user.entity"
+import { UsersService } from "../users/users.service"
 import { PublicAddressDto } from "./dto/publicAddress.dto"
 import { VerificationDto } from "./dto/verification.dto"
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private userService: UsersService
+  ) {}
 
   async signIn({ publicAddress }: PublicAddressDto) {
-    const existingUser = await this.userRepo.findOneBy({ publicAddress })
+    const existingUser = await this.userService.findOne({ publicAddress })
     if (existingUser) {
       return existingUser.nonce
     } else {
@@ -26,7 +30,7 @@ export class AuthService {
 
   async verify({ publicAddress, signedNonce }: VerificationDto) {
     if (!this.isValidSignature(signedNonce)) throw new ForbiddenException("Signature is invalid.")
-    const user = await this.userRepo.findOneBy({ publicAddress })
+    const user = await this.userService.findOne({ publicAddress })
     if (!user) throw new NotFoundException("User with public address does not exist.")
 
     const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce)
@@ -47,9 +51,5 @@ export class AuthService {
       return false
     }
     return true
-  }
-
-  async getUserByUUID(uuid: string): Promise<User> {
-    return this.userRepo.findOne({ where: { mojangId: uuid } })
   }
 }

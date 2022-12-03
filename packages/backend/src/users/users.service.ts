@@ -1,6 +1,6 @@
 import { EvmChain } from "@moralisweb3/evm-utils"
 import Moralis from "moralis"
-import { Repository } from "typeorm"
+import { FindOptionsWhere, Repository } from "typeorm"
 
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
@@ -34,9 +34,9 @@ export class UsersService {
     return images
   }
 
-  async findOne(id: number) {
-    const user = await this.userRepo.findOneBy({ id })
-    if (!user) throw new NotFoundException(`User with id ${id} not found.`)
+  async findOne(findOperators: FindOptionsWhere<User>) {
+    const user = await this.userRepo.findOne({ where: findOperators, relations: ["tokens"] })
+    if (!user) throw new NotFoundException(`User with not found.`)
     return user
   }
 }

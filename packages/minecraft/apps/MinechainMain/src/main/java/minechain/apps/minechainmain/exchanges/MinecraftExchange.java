@@ -5,6 +5,7 @@ import com.rabbitmq.client.Delivery;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import minechain.apps.minechainmain.App;
+import minechain.apps.minechainmain.MinechainUser;
 import minechain.apps.minechainmain.events.AllocateChunk;
 import minechain.apps.minechainmain.events.AuthorizedJoin;
 import minechain.libs.rabbit.Exchange;
@@ -48,6 +49,12 @@ public class MinecraftExchange extends Exchange {
     Gson gson = new Gson();
     Map map = gson.fromJson(message, Map.class);
     System.out.println(message);
+
+    var mcUser = gson.fromJson(message, MinechainUser.class);
+
+    System.out.println(mcUser.shortName);
+    System.out.println(mcUser.dateJoined.toString());
+    System.out.println(mcUser.tokens.toString());
 
     Bukkit
       .getScheduler()
