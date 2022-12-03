@@ -15,6 +15,8 @@ import minechain.apps.minechainmain.events.AllocateChunk;
 import minechain.apps.minechainmain.events.AuthorizedJoin;
 import minechain.apps.minechainmain.exchanges.MinecraftExchange;
 import minechain.libs.rabbit.Rabbit;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.raidstone.wgevents.events.RegionEnteredEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
@@ -23,7 +25,6 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -77,6 +78,16 @@ public class App extends JavaPlugin implements Listener {
     var bossBar = Bukkit.createBossBar(lastRegion, BarColor.BLUE, BarStyle.SOLID);
     bossBar.addPlayer(player);
     this.map.put(playerId, bossBar);
+
+    var welcomeMessage = new TextComponent(
+      String.format(
+        "%s has joined the server as %s.",
+        event.getUser().get("publicAddress").toString(),
+        player.getName()
+      )
+    );
+    welcomeMessage.setColor(ChatColor.YELLOW);
+    Bukkit.broadcast(welcomeMessage);
   }
 
   @EventHandler
