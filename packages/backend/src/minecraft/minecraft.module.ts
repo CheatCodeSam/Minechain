@@ -17,7 +17,8 @@ import { RegistrationService } from "./registration.service"
       uri: "amqp://localhost:5672",
       exchanges: [
         { name: "registration", type: "direct" },
-        { name: "minecraft", type: "direct" }
+        { name: "minecraft", type: "direct" },
+        { name: "proxy", type: "direct" }
       ],
       enableControllerDiscovery: true
     }),

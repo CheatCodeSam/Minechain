@@ -1,0 +1,5 @@
+name: Registration
+description: The plugin for the registration server.
+version: 1.0
+main: minechain.apps.registration.App
+api-version: 1.19
