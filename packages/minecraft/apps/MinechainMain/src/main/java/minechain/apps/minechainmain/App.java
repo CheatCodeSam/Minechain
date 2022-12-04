@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import minechain.apps.minechainmain.dtos.MinechainUser;
 import minechain.apps.minechainmain.events.AllocateChunk;
 import minechain.apps.minechainmain.events.AuthorizedJoin;
 import minechain.apps.minechainmain.exchanges.MinecraftExchange;
@@ -31,6 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class App extends JavaPlugin implements Listener {
 
   HashMap<UUID, BossBar> map;
+  private HashMap<String, MinechainUser> regionsOwned = new HashMap<>();
 
   public App() {
     this.map = new HashMap<>();
@@ -72,19 +74,15 @@ public class App extends JavaPlugin implements Listener {
   @EventHandler
   public void onAuthorizedJoin(AuthorizedJoin event) {
     System.out.println(event.getUser());
-    var playerId = UUID.fromString(event.getUser().get("mojangId").toString());
+    var playerId = event.getUser().mojangId;
     var player = getServer().getPlayer(playerId);
-    var lastRegion = event.getUser().get("lastKnownRegion").toString();
+    var lastRegion = event.getUser().lastKnownRegion;
     var bossBar = Bukkit.createBossBar(lastRegion, BarColor.BLUE, BarStyle.SOLID);
     bossBar.addPlayer(player);
     this.map.put(playerId, bossBar);
 
     var welcomeMessage = new TextComponent(
-      String.format(
-        "%s has joined the server as %s.",
-        event.getUser().get("publicAddress").toString(),
-        player.getName()
-      )
+      String.format("%s has joined as %s.", event.getUser().shortName, player.getName())
     );
     welcomeMessage.setColor(ChatColor.YELLOW);
     Bukkit.broadcast(welcomeMessage);
@@ -107,8 +105,13 @@ public class App extends JavaPlugin implements Listener {
     Player player = Bukkit.getPlayer(event.getUUID());
     if (player == null) return;
 
+    var owner = this.regionsOwned.get(event.getRegion().getId());
+
+    String barValue = event.getRegionName();
+    if (owner != null) barValue = barValue.concat(" - owned by ").concat(owner.shortName);
+
     var bossBar = this.map.get(player.getUniqueId());
-    bossBar.setTitle(event.getRegionName());
+    bossBar.setTitle(barValue);
 
     Gson gson = new Gson();
     Map<String, String> stringMap = new LinkedHashMap<>();
@@ -123,7 +126,8 @@ public class App extends JavaPlugin implements Listener {
   @EventHandler
   public void onAllocateChunk(AllocateChunk event) {
     var player = new DefaultDomain();
-    var UserId = UUID.fromString(event.getUser().get("mojangId").toString());
+    var UserId = event.getUser().mojangId;
+    this.regionsOwned.put(event.getRegion().getId(), event.getUser());
     player.addPlayer(UserId);
     event.getRegion().setOwners(player);
   }

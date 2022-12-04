@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 
 import { User } from "../users/entities/user.entity"
 import { UsersModule } from "../users/users.module"
+import { UsersService } from "../users/users.service"
 import { AuthController } from "./auth.controller"
 import { AuthService } from "./auth.service"
 import { Session } from "./session.entity"
@@ -14,7 +15,8 @@ import { Web3Strategy } from "./strategies/web3.strategy"
   imports: [
     UsersModule,
     PassportModule.register({ session: true }),
-    TypeOrmModule.forFeature([User, Session])
+    TypeOrmModule.forFeature([User, Session]),
+    UsersModule
   ],
   providers: [AuthService, Web3Strategy, SessionSerializer],
   exports: [AuthService],

@@ -1,4 +1,5 @@
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq"
+import { instanceToPlain } from "class-transformer"
 import { createSecretKey } from "crypto"
 import "dotenv/config"
 import * as jose from "jose"
@@ -7,7 +8,9 @@ import { Repository } from "typeorm"
 import { ForbiddenException, Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 
+import { UserDto } from "../users/dto/user.dto"
 import { User } from "../users/entities/user.entity"
+import { UsersService } from "../users/users.service"
 import { EventsGateway } from "./events.gateway"
 
 @Injectable()
@@ -15,13 +18,14 @@ export class RegistrationService {
   constructor(
     private readonly amqpConnection: AmqpConnection,
     @InjectRepository(User) private userRepo: Repository<User>,
-    private io: EventsGateway
+    private io: EventsGateway,
+    private userService: UsersService
   ) {}
 
   public async authenticateUser(uuid: string) {
     console.log(uuid)
 
-    const user = await this.userRepo.findOne({ where: { mojangId: uuid } })
+    const user = await this.userService.findOne({ mojangId: uuid })
     if (user) {
       this.authorizeJoin(user)
     } else {
@@ -67,7 +71,8 @@ export class RegistrationService {
   }
 
   private async authorizeJoin(user: User) {
-    this.amqpConnection.publish("registration", "authorizeJoin", user)
-    this.io.emit("authorizeJoin", user)
+    const userSerialized = instanceToPlain(new UserDto(user))
+    this.amqpConnection.publish("registration", "authorizeJoin", userSerialized)
+    this.io.emit("authorizeJoin", userSerialized)
   }
 }

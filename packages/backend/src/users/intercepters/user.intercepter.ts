@@ -16,7 +16,7 @@ export class UserInterceptor implements NestInterceptor {
     if (!id) return next.handle()
     let user: User
     try {
-      user = await this.userService.findOne(id)
+      user = await this.userService.findOne({ id })
     } catch (error) {
       return next.handle()
     }

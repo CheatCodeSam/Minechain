@@ -3,8 +3,9 @@ package minechain.apps.minechainmain.exchanges;
 import com.google.gson.Gson;
 import com.rabbitmq.client.Delivery;
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 import minechain.apps.minechainmain.App;
+import minechain.apps.minechainmain.dtos.McAllocation;
+import minechain.apps.minechainmain.dtos.MinechainUser;
 import minechain.apps.minechainmain.events.AllocateChunk;
 import minechain.apps.minechainmain.events.AuthorizedJoin;
 import minechain.libs.rabbit.Exchange;
@@ -24,9 +25,10 @@ public class MinecraftExchange extends Exchange {
   public void allocate(String consumerTag, Delivery delivery) throws UnsupportedEncodingException {
     String message = new String(delivery.getBody(), "UTF-8");
     Gson gson = new Gson();
-    Map map = gson.fromJson(message, Map.class);
-    var user = (Map) map.get("user");
-    var tokenId = map.get("token").toString();
+    var data = gson.fromJson(message, McAllocation.class);
+
+    var user = data.user;
+    var tokenId = data.token;
 
     Bukkit
       .getScheduler()
@@ -46,8 +48,7 @@ public class MinecraftExchange extends Exchange {
     throws UnsupportedEncodingException {
     String message = new String(delivery.getBody(), "UTF-8");
     Gson gson = new Gson();
-    Map map = gson.fromJson(message, Map.class);
-    System.out.println(message);
+    var mcUser = gson.fromJson(message, MinechainUser.class);
 
     Bukkit
       .getScheduler()
@@ -56,7 +57,7 @@ public class MinecraftExchange extends Exchange {
         new Runnable() {
           @Override
           public void run() {
-            Bukkit.getPluginManager().callEvent(new AuthorizedJoin(map));
+            Bukkit.getPluginManager().callEvent(new AuthorizedJoin(mcUser));
           }
         }
       );

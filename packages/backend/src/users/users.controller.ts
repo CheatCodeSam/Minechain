@@ -1,26 +1,26 @@
-
-import { EvmChain } from "@moralisweb3/evm-utils"
-import Moralis from "moralis"
-import { Controller, Get, UseGuards,} from "@nestjs/common"
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  UseGuards,
+  UseInterceptors
+} from "@nestjs/common"
 
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard"
 import { CurrentUser } from "./decorators/current-user.decorator"
 import { UserDto } from "./dto/user.dto"
 import { User } from "./entities/user.entity"
-import { Serialize } from "./user.serilalize.interceptor"
 import { UsersService } from "./users.service"
 
 @Controller("users")
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Serialize(UserDto)
   @Get("whoami")
   @UseGuards(AuthenticatedGuard)
   async whoami(@CurrentUser() user: User) {
-    console.log(user.fullName)
-
-    return user
+    return new UserDto(user)
   }
 
   @Get("nfts")
