@@ -8,11 +8,11 @@ import { getAuth } from "../features/auth/auth.actions"
 import { socketActions } from "../features/socket/socket.slice"
 import { AppDispatch } from "../store"
 import Account from "./Account"
+import Layout from "./Layout"
 import LoginPage from "./LoginPage"
 import LogoutPage from "./LogoutPage"
 import Registration from "./Registration"
 import Settings from "./Settings"
-import Test from "./Test"
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -28,7 +28,7 @@ const App = () => {
       <Routes>
         <Route path="login" element={<LoginPage />} />
         <Route path="register/:jwt" element={<Registration />} />
-        <Route path="/" element={<Test />}>
+        <Route path="/" element={<Layout />}>
           <Route path="account" element={<Account />} />
           <Route path="settings" element={<Settings />} />
           <Route path="logout" element={<LogoutPage />} />

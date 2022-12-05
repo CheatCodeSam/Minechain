@@ -36,7 +36,7 @@ export class UsersService {
 
   async findOne(findOperators: FindOptionsWhere<User>) {
     const user = await this.userRepo.findOne({ where: findOperators, relations: ["tokens"] })
-    if (!user) throw new NotFoundException(`User with not found.`)
+    if (!user) return null
     return user
   }
 }
