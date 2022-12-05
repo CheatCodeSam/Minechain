@@ -1,6 +1,7 @@
 import React from "react"
 
 import { useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 
 import { AuthStatus } from "../features/auth/auth.types"
 import { State } from "../store"
@@ -15,7 +16,9 @@ const UserHeader = () => {
     <div className="h-16 flex w-full top-0 justify-center">
       <div className="navbar w-full bg-neutral">
         <div className="flex-none">
-          <SugarCubeIcon className="w-9 h-9 inline-block" />
+          <Link to="/">
+            <SugarCubeIcon className="w-9 h-9 inline-block" />
+          </Link>
         </div>
         <div className="flex-1">
           <span className="normal-case text-xl pl-2">Minechain</span>

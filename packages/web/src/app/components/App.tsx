@@ -11,6 +11,7 @@ import Account from "./Account"
 import Layout from "./Layout"
 import LoginPage from "./LoginPage"
 import LogoutPage from "./LogoutPage"
+import PropertyView from "./PropertyView"
 import Registration from "./Registration"
 import Settings from "./Settings"
 
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="login" element={<LoginPage />} />
         <Route path="register/:jwt" element={<Registration />} />
         <Route path="/" element={<Layout />}>
+          <Route index element={<PropertyView />} />
           <Route path="account" element={<Account />} />
           <Route path="settings" element={<Settings />} />
           <Route path="logout" element={<LogoutPage />} />
