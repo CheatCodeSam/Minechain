@@ -2,10 +2,45 @@
 import Card from "../components/Card.astro"
 import Layout from "../layouts/Layout.astro"
 import BabylonCanvas from '../components/BabylonCanvas';
+import SiteWidth from "../components/SiteWidth.astro";
+import Header from "../components/Header.astro";
+import { HomeModernIcon, KeyIcon, MapIcon } from "@heroicons/react/24/solid"
+import { CubeIcon, HomeIcon, MapPinIcon } from "@heroicons/react/24/outline";
 
 ---
 
 <Layout title="Welcome to Astro.">
-  <BabylonCanvas client:only="react" />
+    <div class="">
+      <Header />
+    <div class="absolute w-full  pointer-events-none">
+      <SiteWidth>
+        <div class="mt-40">
+          <div class="animate-in slide-in-from-bottom-2.5 fade-in duration-700 w-6/12 pointer-events-auto">
+            <div class="mb-8"> <HomeModernIcon className="w-5 h-5 inline mr-3 fill-blue-300"/> <span class="align-middle text-indigo-200">Explore virtual real estate</span></div>
+            <div class="mb-8"><h1 class=" font-sans font-bold text-5xl text-fuchsia-500">Welcome Home</h1></div>
+            <div class="text-2xl text-indigo-200 mb-8">Experience your favorite classic with a Decentralized Spin</div>
+          </div>
+          <button class="btn bg-fuchsia-500 btn-primary pointer-events-auto">Get Started</button>
+        </div>
+        <div class="mt-40 pointer-events-auto" > 
+          <div class=" mt-70 grid grid-cols-2 gap-4">
+            <div><div class="mb-3"> <CubeIcon className="w-6 h-6 inline mr-3 fill-blue-300"/> <span class="align-middle  text-indigo-200 text-xl ">Minecraft for Everyone</span></div>
+            <div class="text-l  text-indigo-200 font-extralight">Own Minecraft property</div> 
+            <div class="text-l  text-indigo-200 font-extralight">on the Ethereum blockchain</div>
+          <div class="text-l  text-indigo-200 font-extralight">independent from any server. </div> 
+          </div>
+            <div><div class="mb-3"> <MapPinIcon className="w-6 h-6 inline mr-3 fill-blue-300"/> <span class="align-middle  text-indigo-200 text-xl ">Real Estate Without the Hurdle</span></div>
+            <div class="text-l  text-indigo-200 font-extralight">Buy, Build, Sell and Trade </div>
+            <div class="text-l  text-indigo-200 font-extralight">using Web3 technology for a</div>
+            <div class="text-l  text-indigo-200 font-extralight">more personalized user experience. </div>
+          </div>
+        </div>
+    </div>
+      </SiteWidth>
+    </div>
+    <div class=" mt-5 w-full">
+      <BabylonCanvas className="block float-right outline-none" client:only="react" />
+    </div>
+  </div>
 </Layout>
 

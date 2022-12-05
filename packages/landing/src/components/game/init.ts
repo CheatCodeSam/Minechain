@@ -2,7 +2,9 @@ import {
   Animation,
   ArcRotateCamera,
   Color3,
+  Color4,
   Engine,
+  GlowLayer,
   HemisphericLight,
   Mesh,
   PointerEventTypes,
@@ -11,6 +13,7 @@ import {
   SceneLoader,
   Vector3
 } from "@babylonjs/core"
+import { colorVertexShader } from "@babylonjs/core/Shaders/color.vertex"
 import "@babylonjs/loaders/glTF"
 
 const pink = new Color3(197 / 255, 41 / 255, 112 / 255)
@@ -21,15 +24,22 @@ const init = async (canvas: HTMLCanvasElement) => {
   const engine = new Engine(canvas, true)
   const createScene = async () => {
     const scene = new Scene(engine)
-    //scene.clearColor = Color3.White();
+    scene.clearColor = new Color4(0, 0, 0, 0)
 
-    const camera = new ArcRotateCamera("camera", Math.PI / 2, Math.PI / 3, 90, Vector3.Zero())
+    const camera = new ArcRotateCamera(
+      "camera",
+      Math.PI / 2,
+      Math.PI / 3,
+      75,
+      new Vector3(-10, 0, 0)
+    )
+    scene.useRightHandedSystem = true
     // camera.attachControl(canvas, false)
 
     const globe = await SceneLoader.ImportMeshAsync(
       "earth",
       "/Earth-Final/",
-      "earth-bnw-new-origin.gltf",
+      "new-earth.gltf",
       scene
     )
     const m1 = globe.meshes[1] as Mesh
@@ -37,10 +47,15 @@ const init = async (canvas: HTMLCanvasElement) => {
     const m3 = globe.meshes[3] as Mesh
 
     const newMesh = (await Mesh.MergeMeshesAsync([m1, m2, m3], true, true)) as Mesh
+    newMesh.material?.getActiveTextures().forEach((text) => {
+      console.log(text.toString())
+    })
+    // var gl = new GlowLayer("glow", scene)
+    //ß gl.intensity = 0.0001
 
-    // globeMat.rotate(new Vector3(0, 80, 0), 3)
-    // // var gl = new GlowLayer("glow", scene);
-    // // gl.intensity = 100;
+    // // Method 1
+    // newMesh.bakeCurrentTransformIntoVertices(true)
+
     //animate
     startAnimation()
     //interaction
@@ -119,9 +134,8 @@ const init = async (canvas: HTMLCanvasElement) => {
     const hemiLight = new HemisphericLight("hemiLight", new Vector3(1, 0, 0), scene)
     hemiLight.diffuse = pink
     hemiLight.groundColor = blue
-    hemiLight.intensity = 7
+    hemiLight.intensity = 9
     hemiLight.specular = purple
-
     return scene
   }
   const scene = await createScene()

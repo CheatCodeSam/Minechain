@@ -1,16 +1,17 @@
-import React, { useEffect, useRef } from "react";
-import init from "./game/init";
+import React, { useEffect, useRef } from "react"
 
-const BabylonCanvas = () => {
-  const canvasRef = useRef(null);
+import init from "./game/init"
+
+const BabylonCanvas = (props: { className?: string }) => {
+  const canvasRef = useRef(null)
 
   useEffect(() => {
     if (canvasRef.current) {
-      init(canvasRef.current);
+      init(canvasRef.current)
     }
-  }, [canvasRef]);
+  }, [canvasRef])
 
-  return <canvas width={900} height={600} ref={canvasRef}></canvas>;
-};
+  return <canvas width={800} height={800} className={props.className} ref={canvasRef}></canvas>
+}
 
-export default BabylonCanvas;
+export default BabylonCanvas

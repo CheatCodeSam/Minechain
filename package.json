@@ -81,6 +81,7 @@
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.22",
     "tailwindcss": "^3.2.4",
+    "tailwindcss-animate": "^1.0.5",
     "ts-jest": "27.1.4",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1",
