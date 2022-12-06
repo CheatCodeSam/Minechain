@@ -26,6 +26,7 @@ import { RegistrationService } from "./registration.service"
     UsersModule
   ],
   controllers: [RegistrationController, MinecraftController],
-  providers: [RegistrationService, EventsGateway, MinecraftService]
+  providers: [RegistrationService, EventsGateway, MinecraftService],
+  exports: [EventsGateway]
 })
 export class MinecraftModule {}

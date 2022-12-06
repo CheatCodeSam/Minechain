@@ -1,6 +1,7 @@
 import { Middleware } from "@reduxjs/toolkit"
 import { Socket, io } from "socket.io-client"
 
+import { propertyActions } from "../features/property/property.slice"
 import { socketActions } from "../features/socket/socket.slice"
 
 const socketMiddleware: Middleware = (store) => {
@@ -32,6 +33,10 @@ const socketMiddleware: Middleware = (store) => {
 
     socket.on("authorizedLeave", (payload) => {
       store.dispatch(socketActions.playerLeave(payload))
+    })
+
+    socket.on("propertyAllocate", (payload) => {
+      store.dispatch(propertyActions.allocate(payload))
     })
 
     next(action)

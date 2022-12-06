@@ -28,4 +28,9 @@ export class UsersController {
   async getNFTS(@CurrentUser() user: User) {
     return this.usersService.getNfts(user.publicAddress)
   }
+  //TODO Move to Properties
+  @Get("properties")
+  async getProperties() {
+    return this.usersService.getProperties()
+  }
 }

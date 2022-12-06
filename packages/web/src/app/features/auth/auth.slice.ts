@@ -12,6 +12,7 @@ export interface AuthState {
     publicAddress: string
     isSuperUser: boolean
     dateJoined: string
+    shortName: string
   } | null
 }
 

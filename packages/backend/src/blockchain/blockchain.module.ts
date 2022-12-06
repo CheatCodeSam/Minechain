@@ -3,6 +3,7 @@ import { RabbitMQModule } from "@golevelup/nestjs-rabbitmq"
 import { Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
 
+import { MinecraftModule } from "../minecraft/minecraft.module"
 import { User } from "../users/entities/user.entity"
 import { UsersModule } from "../users/users.module"
 import { UsersService } from "../users/users.service"
@@ -21,7 +22,8 @@ import { Token } from "./token.entity"
       enableControllerDiscovery: true
     }),
     TypeOrmModule.forFeature([User, Token]),
-    UsersModule
+    UsersModule,
+    MinecraftModule
   ],
   controllers: [BlockchainController],
   providers: [BlockchainService]

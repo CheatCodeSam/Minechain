@@ -5,6 +5,7 @@ import { Repository } from "typeorm"
 import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 
+import { EventsGateway } from "../minecraft/events.gateway"
 import { UserDto } from "../users/dto/user.dto"
 import { User } from "../users/entities/user.entity"
 import { UsersService } from "../users/users.service"
@@ -16,7 +17,8 @@ export class BlockchainService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Token) private tokenRepo: Repository<Token>,
     private readonly amqpConnection: AmqpConnection,
-    private userService: UsersService
+    private userService: UsersService,
+    private eventsGateway: EventsGateway
   ) {}
   async transfer(from: string, to: string, tokenId: string, data?) {
     to = to.toLowerCase()
@@ -48,6 +50,7 @@ export class BlockchainService {
     }
     console.log(userSerialized)
 
+    this.eventsGateway.emit("propertyAllocate", allocate)
     this.amqpConnection.publish("minecraft", "allocate", allocate)
     console.log(from, to, tokenId)
     return token

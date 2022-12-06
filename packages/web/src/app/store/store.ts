@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit"
 
 import authReducer from "../features/auth/auth.slice"
 import nftReducer from "../features/nft/nft.slice"
+import propertyReducer from "../features/property/property.slice"
 import socketReducer from "../features/socket/socket.slice"
 import socketMiddleware from "./SocketMiddleware"
 
@@ -10,7 +11,8 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     nft: nftReducer,
-    socket: socketReducer
+    socket: socketReducer,
+    property: propertyReducer
   }
 })
 

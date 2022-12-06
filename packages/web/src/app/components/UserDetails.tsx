@@ -17,9 +17,7 @@ const UserHeader = () => {
     <div className="dropdown dropdown-end">
       <label tabIndex={0} className="btn btn-ghost m-1 gap-3 normal-case">
         <Jazzicon diameter={30} seed={jsNumberForAddress(user.publicAddress)} />
-        {user.publicAddress.substring(0, 5) +
-          "..." +
-          user.publicAddress.substring(user.publicAddress.length - 4)}
+        {user.shortName}
       </label>
       <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-52">
         <li>
