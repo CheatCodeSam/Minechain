@@ -50,7 +50,7 @@ export class BlockchainService {
     }
     console.log(userSerialized)
 
-    this.eventsGateway.emit("propertyAllocate", allocate)
+    this.eventsGateway.emit("propertyAllocate", token)
     this.amqpConnection.publish("minecraft", "allocate", allocate)
     console.log(from, to, tokenId)
     return token

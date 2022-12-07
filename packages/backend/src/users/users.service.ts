@@ -47,6 +47,6 @@ export class UsersService {
   }
 
   async getProperties() {
-    return await this.tokenRepo.find({})
+    return await this.tokenRepo.find({ relations: { user: true } })
   }
 }

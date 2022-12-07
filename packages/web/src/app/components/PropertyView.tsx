@@ -7,7 +7,9 @@ import { AppDispatch, State } from "../store"
 
 const PropertyView = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { isInitialized, propertiesOwned } = useSelector((state: State) => state.property)
+  const { isInitialized, propertiesOwned, propertiesOwnedIds } = useSelector(
+    (state: State) => state.property
+  )
   const { playerLocations } = useSelector((state: State) => state.socket)
 
   useEffect(() => {
@@ -16,11 +18,9 @@ const PropertyView = () => {
 
   return (
     <div className="">
-      {propertiesOwned.map((property) => (
-        <div key={property.id} className="">
-          {property.tokenId}
-        </div>
-      ))}
+      {propertiesOwnedIds.map((id) => {
+        return <div className="">{propertiesOwned[id].tokenId}</div>
+      })}
     </div>
   )
 }
