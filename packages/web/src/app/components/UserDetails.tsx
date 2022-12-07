@@ -21,13 +21,13 @@ const UserHeader = () => {
       </label>
       <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-52">
         <li>
-          <Link to="/account">
+          {/* <Link to="/account">
             <UserIcon className="h-5 w-5" /> Account
           </Link>
           <Link to="/settings">
             <CogIcon className="h-5 w-5" />
             Settings
-          </Link>
+          </Link> */}
           {user.isSuperUser && (
             <a href="/admin">
               <BuildingLibraryIcon className="h-5 w-5" />

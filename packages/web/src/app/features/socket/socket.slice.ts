@@ -4,11 +4,13 @@ export interface SocketState {
   isEstablishingConnection: boolean
   isConnected: boolean
   playerLocations: Record<string, any>
+  playerLocationsIds: Array<number>
 }
 const initialState: SocketState = {
   isEstablishingConnection: false,
   isConnected: false,
-  playerLocations: {}
+  playerLocations: {},
+  playerLocationsIds: []
 }
 const socketSlice = createSlice({
   name: "socket",
@@ -23,12 +25,14 @@ const socketSlice = createSlice({
     },
     playerJoin: (state, payload) => {
       state.playerLocations[payload.payload.id] = payload.payload
+      state.playerLocationsIds.push(payload.payload.id)
     },
     playerMove: (state, payload) => {
       state.playerLocations[payload.payload.id] = payload.payload
     },
     playerLeave: (state, payload) => {
       delete state.playerLocations[payload.payload.id]
+      state.playerLocationsIds = state.playerLocationsIds.filter((e) => e !== payload.payload.id)
     }
   }
 })

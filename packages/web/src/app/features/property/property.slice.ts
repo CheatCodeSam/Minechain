@@ -6,11 +6,13 @@ export interface PropertyState {
   isInitialized: boolean
   propertiesOwned: Record<string, { id: number; tokenId: number; userId: number; user: any }>
   propertiesOwnedIds: number[]
+  selectedProperty: number | null
 }
 const initialState: PropertyState = {
   isInitialized: false,
   propertiesOwned: {},
-  propertiesOwnedIds: []
+  propertiesOwnedIds: [],
+  selectedProperty: null
 }
 
 export const propertySlice = createSlice({
@@ -22,6 +24,9 @@ export const propertySlice = createSlice({
         state.propertiesOwned[payload.payload.tokenId] = payload.payload
         state.propertiesOwnedIds.push(parseInt(payload.payload.tokenId))
       }
+    },
+    selectProperty: (state, payload) => {
+      state.selectedProperty = payload.payload
     }
   },
   extraReducers: {
