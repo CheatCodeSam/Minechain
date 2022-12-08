@@ -24,7 +24,7 @@ const App = () => {
   }, [dispatch])
 
   return (
-    <BrowserRouter basename="app">
+    <BrowserRouter>
       <Toaster />
       <Routes>
         <Route path="login" element={<LoginPage />} />

@@ -14,9 +14,14 @@ const PropertyInfo = (props: { propertyId: number }) => {
 
   const usersAtProperty: Array<string> = []
 
+  console.log(playerLocationsIds)
+
   playerLocationsIds.forEach((id) => {
     const player = playerLocations[id]
-    if (player.lastKnownLocatoin === props.propertyId) usersAtProperty.push(player.publicAddress)
+    console.log(player)
+
+    if (parseInt(player.lastKnownRegion) === props.propertyId)
+      usersAtProperty.push(player.publicAddress)
   })
 
   const getData = () => {
@@ -43,7 +48,7 @@ const PropertyInfo = (props: { propertyId: number }) => {
         <div className="">Users there Now:</div>
         <ul>
           {usersAtProperty.map((playerAddress) => (
-            <ul>{playerAddress}</ul>
+            <ul key={playerAddress}>{playerAddress}</ul>
           ))}
         </ul>
       </div>
