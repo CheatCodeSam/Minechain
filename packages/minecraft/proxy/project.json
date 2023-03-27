@@ -10,7 +10,7 @@
       }
     },
 
-    "build-docker": {
+    "docker-build": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {

@@ -1,0 +1,6 @@
+on player move:
+    cancel event
+on break:
+    cancel event
+on join:
+    apply blindness to the player for 999 days

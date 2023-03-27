@@ -2,21 +2,14 @@
   "name": "minecraft-registration",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-
   "targets": {
-    "build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "mvn initialize clean package --projects :minechain-registration-plugin"
-      }
-    },
-
-    "build-docker": {
+    "docker-build": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
         "command": "docker build -f packages/minecraft/registration/Dockerfile . -t registration"
-      }
     }
   }
+}
+
 }

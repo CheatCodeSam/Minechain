@@ -15,7 +15,6 @@
     <modules>
         <module>packages/minecraft/proxy</module>
         <module>packages/minecraft/minechain</module>
-        <module>packages/minecraft/registration</module>
     </modules>
 
     <properties>

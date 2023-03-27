@@ -30,9 +30,6 @@ VOLUME "/data"
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
 
-#Pl3xmap port
-EXPOSE 8080/tcp
-
 # Set memory size
 ARG memory_size=1G
 ENV MEMORYSIZE=$memory_size
@@ -48,12 +45,14 @@ ENV PAPERMC_FLAGS=$papermc_flags
 WORKDIR /data
 
 RUN mkdir plugins
+RUN wget "https://github.com/SkriptLang/Skript/releases/download/2.6.4/Skript-2.6.4.jar" -P /data/plugins/
+
+RUN mkdir -p plugins/Skript/scripts
+COPY packages/minecraft/registration/src/ plugins/Skript/scripts/
 
 COPY packages/minecraft/registration/config/ /opt/minecraft
 RUN chmod +x /opt/minecraft/compile-templates.sh
 RUN chmod +x /opt/minecraft/start.sh
-
-COPY dist/packages/minecraft-registration/app/*.jar /data/plugins/
 
 ENV LEVEL_SEED=glacier
 ENV FORWARDING_SECRET=my_secret
