@@ -17,7 +17,7 @@ import { User } from '../user/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('signin')
   @HttpCode(HttpStatus.CREATED)

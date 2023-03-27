@@ -1,8 +1,3 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import { ClassSerializerInterceptor, Logger } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 

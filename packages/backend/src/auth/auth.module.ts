@@ -28,8 +28,8 @@ import { TypeormStore } from 'connect-typeorm';
 })
 export class AuthModule implements NestModule {
   constructor(
-    private configService: ConfigService,
-    @InjectRepository(Session) private sessionRepo: Repository<Session>
+    private readonly configService: ConfigService,
+    @InjectRepository(Session) private readonly sessionRepo: Repository<Session>
   ) {}
 
   configure(consumer: MiddlewareConsumer) {
