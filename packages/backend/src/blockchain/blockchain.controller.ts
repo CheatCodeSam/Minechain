@@ -1,22 +1,21 @@
-import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq"
+import { Controller, Get } from '@nestjs/common';
+import { EthersContract, InjectContractProvider, InjectEthersProvider } from 'nestjs-ethers';
+import {BigNumber, ethers} from "ethers"
+import { abi, Lock } from '@minechain/eth-types';
 
-import { Controller } from "@nestjs/common"
-
-import { BlockchainService } from "./blockchain.service"
-
-@Controller("blockchain")
+@Controller('blockchain')
 export class BlockchainController {
-  constructor(private blockchainService: BlockchainService) {}
-
-  @RabbitSubscribe({
-    exchange: "blockchain",
-    routingKey: "transfer",
-    queue: "nestTransfer",
-    createQueueIfNotExists: true,
-    queueOptions: { durable: true },
-    allowNonJsonMessages: false
-  })
-  public async transfer(msg: { from: string; to: string; value: string; data }) {
-    this.blockchainService.transfer(msg.from, msg.to, msg.value, msg.data)
-  }
+    constructor(
+        @InjectContractProvider()
+        private readonly contract: EthersContract,
+      ) {}
+      @Get()
+      async get() {
+        const contract = this.contract.create(
+            '0x5fbdb2315678afecb367f032d93f642f64180aa3',
+            abi,
+          ) as Lock
+    
+        return { gasPrice: await contract.owner() }
+      }
 }

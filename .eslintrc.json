@@ -1,13 +1,7 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx", "react", "@typescript-eslint", "react-hooks", "etc", "prettier"],
-  "rules": {
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "etc/no-commented-out-code": "warn",
-    "@typescript-eslint/no-non-null-assertion": "off"
-  },
+  "plugins": ["@nrwl/nx"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

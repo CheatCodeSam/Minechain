@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@./abi-typings": ["packages/abi-typings/src/index.ts"]
+      "@minechain/eth-types": ["packages/eth-types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

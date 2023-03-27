@@ -9,18 +9,21 @@
  * Note: this is only an issue when computing the project graph with the Nx Daemon
  * disabled (e.g. in CI environments).
  */
-const { readFileSync, writeFileSync } = require("fs")
+const { readFileSync, writeFileSync } = require('fs');
 
 try {
-  const path = "node_modules/nx/bin/nx.js"
-  const nxCliEntryPoint = readFileSync(path, "utf-8")
-  const updatedContent = nxCliEntryPoint.replace(`require('v8-compile-cache');`, "")
-  writeFileSync(path, updatedContent)
+  const path = 'node_modules/nx/bin/nx.js';
+  const nxCliEntryPoint = readFileSync(path, 'utf-8');
+  const updatedContent = nxCliEntryPoint.replace(
+    `require('v8-compile-cache');`,
+    ''
+  );
+  writeFileSync(path, updatedContent);
 
   console.log(
     'The Nx CLI was patched to allow importing ESM modules in the "@nxtensions/astro" project graph plugin.'
-  )
+  );
 } catch (e) {
-  console.error("The Nx CLI could not be patched.")
-  throw e
+  console.error('The Nx CLI could not be patched.');
+  throw e;
 }

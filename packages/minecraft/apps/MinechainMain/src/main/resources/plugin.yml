@@ -1,6 +1,0 @@
-name: MinechainMain
-description: The main server plugin for minechain
-version: 1.0
-main: minechain.apps.minechainmain.App
-api-version: 1.19
-depend: [WorldGuard, WorldGuardEvents]

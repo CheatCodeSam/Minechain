@@ -1,25 +1,48 @@
-import { Module } from "@nestjs/common"
-import { PassportModule } from "@nestjs/passport"
-import { TypeOrmModule } from "@nestjs/typeorm"
-
-import { User } from "../users/entities/user.entity"
-import { UsersModule } from "../users/users.module"
-import { UsersService } from "../users/users.service"
-import { AuthController } from "./auth.controller"
-import { AuthService } from "./auth.service"
-import { Session } from "./session.entity"
-import { SessionSerializer } from "./session.serializer"
-import { Web3Strategy } from "./strategies/web3.strategy"
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import expressSession from 'express-session';
+import { UserModule } from '../user/user.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import passport from 'passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserSerializer } from './session/user-session.serializer';
+import { Web3Strategy } from './strategy/web3.strategy';
+import { Session } from './session/session.entity';
+import { User } from '../user/user.entity';
+import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TypeormStore } from 'connect-typeorm';
 
 @Module({
+  controllers: [AuthController],
+  providers: [AuthService, UserSerializer, Web3Strategy],
   imports: [
-    UsersModule,
-    PassportModule.register({ session: true }),
+    ConfigModule.forRoot({}),
+    UserModule,
     TypeOrmModule.forFeature([User, Session]),
-    UsersModule
+    PassportModule.register({
+      session: true,
+    }),
   ],
-  providers: [AuthService, Web3Strategy, SessionSerializer],
-  exports: [AuthService],
-  controllers: [AuthController]
 })
-export class AuthModule {}
+export class AuthModule implements NestModule {
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(Session) private sessionRepo: Repository<Session>
+  ) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(
+        expressSession({
+          secret: this.configService.get('SESSION_SECRET'),
+          resave: false,
+          saveUninitialized: false,
+          store: new TypeormStore().connect(this.sessionRepo),
+        }),
+        passport.session()
+      )
+      .forRoutes('*');
+  }
+}

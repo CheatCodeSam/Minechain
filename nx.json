@@ -1,39 +1,37 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": ".",
-  "affected": {
-    "defaultBase": "main"
-  },
-  "implicitDependencies": {
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
+  "plugins": ["@nxtensions/astro"],
+  "targetDefaults": {
+    "test": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     },
-    ".eslintrc.json": "*"
+    "lint": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore"
+      ]
+    }
+  },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
   },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
         "cacheableOperations": ["build", "lint", "test", "e2e", "check"],
-        "accessToken": "M2U0MjlmNDUtYmYwMS00ZjExLTllY2UtNTgwODk5MzFmNTllfHJlYWQtd3JpdGU="
+        "accessToken": "YjU3YmMxOWYtNWI1MS00MmIzLWI0YTQtNWZmMzBkNTExZjVifHJlYWQtd3JpdGU="
       }
     }
-  },
-  "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"]
-    }
-  },
-  "workspaceLayout": {
-    "appsDir": "packages",
-    "libsDir": "packages"
   },
   "generators": {
     "@nrwl/react": {
       "application": {
         "style": "css",
         "linter": "eslint",
+        "bundler": "vite",
         "babel": true
       },
       "component": {
@@ -45,6 +43,6 @@
       }
     }
   },
-  "defaultProject": "web",
-  "plugins": ["@nxtensions/astro"]
+  "defaultProject": "backend",
+  "extends": "nx/presets/npm.json"
 }

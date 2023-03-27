@@ -1,32 +1,27 @@
-import { RabbitMQModule } from "@golevelup/nestjs-rabbitmq"
-
-import { Module } from "@nestjs/common"
-import { TypeOrmModule } from "@nestjs/typeorm"
-
-import { User } from "../users/entities/user.entity"
-import { UsersModule } from "../users/users.module"
-import { EventsGateway } from "./events.gateway"
-import { MinecraftController } from "./minecraft.controller"
-import { MinecraftService } from "./minecraft.service"
-import { RegistrationController } from "./registration.controller"
-import { RegistrationService } from "./registration.service"
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq'
+import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { UserModule } from '../user/user.module'
+import { MinecraftProvider } from './minecraft.provider'
+import { MinecraftService } from './minecraft.service'
 
 @Module({
   imports: [
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: "amqp://localhost:5672",
-      exchanges: [
-        { name: "registration", type: "direct" },
-        { name: "minecraft", type: "direct" },
-        { name: "proxy", type: "direct" }
-      ],
-      enableControllerDiscovery: true
+    ConfigModule.forRoot({}),
+    RabbitMQModule.forRootAsync(RabbitMQModule, {
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get('RABBIT_URI'),
+        exchanges: [
+          { name: 'registration', type: 'direct', options: {durable: false}  },
+          { name: 'minecraft', type: 'direct' },
+          { name: 'proxy', type: 'direct' },
+        ],
+      }),
     }),
-    TypeOrmModule.forFeature([User]),
-    UsersModule
+    UserModule,
   ],
-  controllers: [RegistrationController, MinecraftController],
-  providers: [RegistrationService, EventsGateway, MinecraftService],
-  exports: [EventsGateway]
+  providers: [MinecraftProvider, MinecraftService],
 })
 export class MinecraftModule {}

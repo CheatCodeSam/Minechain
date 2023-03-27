@@ -1,0 +1,22 @@
+{
+  "name": "minecraft-minechain",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn initialize clean package --projects :minechain-main-minecraft-plugin"
+      }
+    },
+
+    "build-docker": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "docker build -f packages/minecraft/minechain/Dockerfile . -t minechain"
+      }
+    }
+  }
+}

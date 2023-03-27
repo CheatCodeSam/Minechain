@@ -1,31 +1,25 @@
-import { RabbitMQModule } from "@golevelup/nestjs-rabbitmq"
-
-import { Module } from "@nestjs/common"
-import { TypeOrmModule } from "@nestjs/typeorm"
-
-import { MinecraftModule } from "../minecraft/minecraft.module"
-import { User } from "../users/entities/user.entity"
-import { UsersModule } from "../users/users.module"
-import { UsersService } from "../users/users.service"
-import { BlockchainController } from "./blockchain.controller"
-import { BlockchainService } from "./blockchain.service"
-import { Token } from "./token.entity"
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EthersModule } from 'nestjs-ethers';
+import { BlockchainController } from './blockchain.controller';
+import { BlockchainProvider } from './blockchain.provider';
+import { BlockchainService } from './blockchain.service';
 
 @Module({
   imports: [
-    RabbitMQModule.forRoot(RabbitMQModule, {
-      uri: "amqp://localhost:5672",
-      exchanges: [
-        { name: "blockchain", type: "direct" },
-        { name: "minecraft", type: "direct" }
-      ],
-      enableControllerDiscovery: true
+    ConfigModule.forRoot({}),
+    EthersModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        network: { name: 'localhost', chainId: 31337 },
+        custom: 'http://127.0.0.1:8545/',
+        waitUntilIsConnected: true,
+        useDefaultProvider: false,
+      }),
     }),
-    TypeOrmModule.forFeature([User, Token]),
-    UsersModule,
-    MinecraftModule
   ],
   controllers: [BlockchainController],
-  providers: [BlockchainService]
+  providers: [BlockchainService, BlockchainProvider],
 })
 export class BlockchainModule {}

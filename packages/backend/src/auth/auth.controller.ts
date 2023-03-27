@@ -1,41 +1,41 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   HttpCode,
   HttpStatus,
   Post,
-  Request,
+  Session,
   UseGuards,
-  UseInterceptors
-} from "@nestjs/common"
+} from '@nestjs/common';
 
-import { UserDto } from "../users/dto/user.dto"
-import { AuthService } from "./auth.service"
-import { PublicAddressDto } from "./dto/publicAddress.dto"
-import { Web3Guard } from "./guards/web3.guard"
+import { AuthService } from './auth.service';
+import { SignInDto } from './dto/signIn.dto';
+import { Web3Guard } from './guard/web3.guard';
+import { Session as ExpressSession } from 'express-session';
+import { CurrentUser } from '../user/decorator/current-user.decorator';
+import { User } from '../user/user.entity';
 
-@Controller("auth")
-@UseInterceptors(ClassSerializerInterceptor)
+@Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post("signin")
+  @Post('signin')
   @HttpCode(HttpStatus.CREATED)
-  async signin(@Body() publicAddress: PublicAddressDto) {
-    return this.authService.signIn(publicAddress)
+  async signin(@Body() publicAddress: SignInDto) {
+    const nonce = await this.authService.signIn(publicAddress.publicAddress);
+    return { nonce: nonce };
   }
 
-  @Post("verify")
+  @Post('verify')
   @UseGuards(Web3Guard)
   @HttpCode(HttpStatus.ACCEPTED)
-  async verify(@Request() req: any) {
-    return new UserDto(req.user)
+  async verify(@CurrentUser() user: User) {
+    return user;
   }
 
-  @Post("/logout")
-  logout(@Request() req): any {
-    req.session.destroy()
-    return { msg: "The user session has ended" }
+  @Post('logout')
+  logout(@Session() req: ExpressSession) {
+    req.destroy(() => '');
+    return;
   }
 }

@@ -1,0 +1,21 @@
+{
+  "name": "eth-types",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/eth-types/src",
+  "projectType": "library",
+  "implicitDependencies": ["hardhat"],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["^build"],
+      "options": {
+        "outputPath": "dist/packages/eth-types",
+        "main": "packages/eth-types/src/index.ts",
+        "tsConfig": "packages/eth-types/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+  },
+  "tags": []
+}

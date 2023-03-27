@@ -1,55 +1,36 @@
-import { DataSource } from "typeorm"
-
-import { Module } from "@nestjs/common"
-import { ConfigModule, ConfigService } from "@nestjs/config"
-import { APP_INTERCEPTOR } from "@nestjs/core"
-import { TypeOrmModule } from "@nestjs/typeorm"
-
-import { AdminModule } from "./admin/admin.module"
-import { AuthModule } from "./auth/auth.module"
-import { Session } from "./auth/session.entity"
-import { BlockchainModule } from "./blockchain/blockchain.module"
-import { Token } from "./blockchain/token.entity"
-import { MinecraftModule } from "./minecraft/minecraft.module"
-import { User } from "./users/entities/user.entity"
-import { UserInterceptor } from "./users/intercepters/user.intercepter"
-import { UsersModule } from "./users/users.module"
+import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { UserModule } from './user/user.module'
+import { AuthModule } from './auth/auth.module'
+import { Session } from './auth/session/session.entity'
+import { User } from './user/user.entity'
+import { BlockchainModule } from './blockchain/blockchain.module'
+import { MinecraftModule } from './minecraft/minecraft.module'
+import { AccountLinkModule } from './account-link/account-link.module'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`
-    }),
+    UserModule,
+    ConfigModule.forRoot({}),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return {
-          type: "sqlite",
-          database: "db",
-          //   type: "postgres",
-          //   host: process.env.PGHOST,
-          //   port: 5432,
-          //   username: process.env.PGUSER,
-          //   password: process.env.PGPASSWORD,
-          //   database: process.env.PGDATABASE,
-          synchronize: true,
-          entities: [User, Session, Token]
-        }
-      }
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: +configService.get('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        synchronize: configService.get('ENV') === 'DEBUG',
+        entities: [User, Session],
+      }),
     }),
     AuthModule,
-    AdminModule,
-    UsersModule,
-    MinecraftModule,
-    BlockchainModule
+    BlockchainModule,
+    // MinecraftModule,
+    AccountLinkModule,
   ],
-  providers: [{ provide: APP_INTERCEPTOR, useClass: UserInterceptor }]
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
-
-  getDataSource() {
-    return this.dataSource
-  }
-}
+export class AppModule {}

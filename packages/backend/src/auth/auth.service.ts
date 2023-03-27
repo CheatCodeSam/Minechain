@@ -1,55 +1,46 @@
-import { ethers } from "ethers"
-import { generate as generateShortUuid } from "short-uuid"
-import { Repository } from "typeorm"
-
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common"
-import { InjectRepository } from "@nestjs/typeorm"
-
-import { User } from "../users/entities/user.entity"
-import { UsersService } from "../users/users.service"
-import { PublicAddressDto } from "./dto/publicAddress.dto"
-import { VerificationDto } from "./dto/verification.dto"
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ethers } from 'ethers';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User) private userRepo: Repository<User>,
-    private userService: UsersService
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  async signIn({ publicAddress }: PublicAddressDto) {
-    const existingUser = await this.userService.findOne({ publicAddress })
+  async signIn(publicAddress : string) {
+    const existingUser = await this.userService.findOne({ publicAddress });
     if (existingUser) {
-      return existingUser.nonce
+      return existingUser.nonce;
     } else {
-      const user = this.userRepo.create({ publicAddress })
-      const savedUser = await this.userRepo.save(user)
-      return savedUser.nonce
+      const user = await this.userService.createUser(publicAddress);
+      return user.nonce;
     }
   }
 
-  async verify({ publicAddress, signedNonce }: VerificationDto) {
-    if (!this.isValidSignature(signedNonce)) throw new ForbiddenException("Signature is invalid.")
-    const user = await this.userService.findOne({ publicAddress })
-    if (!user) throw new NotFoundException("User with public address does not exist.")
+  async verify(publicAddress: string, signedNonce: string) {
+    if (!this.isValidSignature(signedNonce))
+      throw new ForbiddenException('Signature is invalid.');
+    const user = await this.userService.findOne({ publicAddress });
+    if (!user)
+      throw new NotFoundException('User with public address does not exist.');
 
-    const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce)
+    const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce);
     if (publicAddress.toLowerCase() === decodedAddress.toLowerCase()) {
-      user.isActive = true
-      user.nonce = generateShortUuid()
-      return this.userRepo.save(user)
+      return this.userService.activateUser(user.id);
     } else {
-      throw new ForbiddenException("Invalid public address.")
+      throw new ForbiddenException('Invalid public address.');
     }
   }
 
   private isValidSignature(signature: string): boolean {
-    // Hack solution
     try {
-      ethers.utils.splitSignature(signature)
+      ethers.utils.splitSignature(signature);
     } catch (error) {
-      return false
+      return false;
     }
-    return true
+    return true;
   }
 }
