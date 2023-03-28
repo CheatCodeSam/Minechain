@@ -35,9 +35,12 @@ public class RabbitMQ {
         factory.setNetworkRecoveryInterval(5000);
         factory.setTopologyRecoveryEnabled(true);
 
+        System.out.println(configuration.getRabbitMqIp());
+
         this.connection = factory.newConnection();
         this.channel = this.connection.createChannel();
     }
+
 
     public Channel createChannel() throws IOException {
         return this.connection.createChannel();
