@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.minechain.minechain.messaging.RabbitMQ;
 import com.minechain.minechain.types.MojangId;
+import com.minechain.minechain.types.User;
 import com.rabbitmq.client.RpcClient;
 import com.rabbitmq.client.RpcClientParams;
 
@@ -52,8 +53,8 @@ public class PlayerEntry implements Listener {
                 return retVal;
             }
         });
-        System.out.println(result.get());
-        app.getLogger().info("player joined");
+        var user = new Gson().fromJson(result.get(), User.class);
+        app.getLogger().info(String.format("%s has joined under %s", user.getDisplayName(), event.getUniqueId().toString()));
         event.allow();
     }
     
