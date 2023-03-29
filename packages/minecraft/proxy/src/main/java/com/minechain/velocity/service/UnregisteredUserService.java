@@ -3,8 +3,6 @@ package com.minechain.velocity.service;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.minechain.velocity.App;
@@ -16,16 +14,14 @@ import com.velocitypowered.api.proxy.ProxyServer;
 public class UnregisteredUserService {
 
     private HashMap<UUID, UnregisteredUser> users;
-    private Logger logger;
     private App app;
     private ProxyServer server;
 
     @Inject
-    public UnregisteredUserService(Logger logger, App app, ProxyServer server) {
+    public UnregisteredUserService(App app, ProxyServer server) {
         this.users = new HashMap<UUID, UnregisteredUser>();
         this.app = app;
         this.server = server;
-        this.logger = logger;
     }
 
     public boolean hasUser(Player player) {

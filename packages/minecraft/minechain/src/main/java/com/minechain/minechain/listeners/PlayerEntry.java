@@ -1,13 +1,13 @@
 package com.minechain.minechain.listeners;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -15,7 +15,6 @@ import com.minechain.minechain.messaging.RabbitMQ;
 import com.minechain.minechain.types.MojangId;
 import com.rabbitmq.client.RpcClient;
 import com.rabbitmq.client.RpcClientParams;
-import com.rabbitmq.client.ShutdownSignalException;
 
 
 public class PlayerEntry implements Listener {
@@ -40,22 +39,22 @@ public class PlayerEntry implements Listener {
 
     @EventHandler
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent  event) throws Exception {
-        System.out.println("hiiiiii");
         var rpc = this.authenticateRpc;
-        new BukkitRunnable() {
+        var result = CompletableFuture.supplyAsync(new Supplier<String>() {
             @Override
-            public void run() {
+            public String get() {
+                String retVal = "";
                 try {
-                    String g = rpc.stringCall(new Gson().toJson(new MojangId(event.getUniqueId())));
-                    System.out.println(g);
-                    event.allow();
-                } catch (ShutdownSignalException | IOException | TimeoutException e) {
-                    e.printStackTrace();
+                    retVal = rpc.stringCall(new Gson().toJson(new MojangId(event.getUniqueId())));
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
                 }
+                return retVal;
             }
-        }.runTaskAsynchronously(this.app);
-        
-        
+        });
+        System.out.println(result.get());
+        app.getLogger().info("player joined");
+        event.allow();
     }
     
 }
