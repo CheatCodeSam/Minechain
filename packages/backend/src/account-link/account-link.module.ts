@@ -16,6 +16,7 @@ import { AccountLinkService } from './account-link.service'
         uri: configService.get('RABBIT_URI'),
         exchanges: [
           { name: 'account-link', type: 'direct', options: { durable: false } },
+          { name: 'minecraft', type: 'direct', options: { durable: false } },
         ],
       }),
     }),

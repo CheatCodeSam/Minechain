@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.inject.Guice;
 import com.minechain.minechain.di.InjectModule;
+import com.minechain.minechain.listeners.PlayerEntry;
 import com.minechain.minechain.messaging.RabbitMQ;
 
 public class App extends JavaPlugin implements Listener {
@@ -20,7 +21,6 @@ public class App extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(this, this);
         var injector = Guice.createInjector(new InjectModule(this));
         injector.injectMembers(this);
 
@@ -31,22 +31,12 @@ public class App extends JavaPlugin implements Listener {
         } catch (Exception e) {
             this.getLogger().warning(e.getMessage());
         }
+
+        Bukkit.getPluginManager().registerEvents(injector.getInstance(PlayerEntry.class), this);
     }
 
     @Override
     public void onDisable() {
         this.mqqt.close();
     }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        event.getPlayer().sendMessage(Component.text("Hello, " + event.getPlayer().getName() + "!"));
-    }
-
-    @EventHandler
-    public void onAsyncLogin(AsyncPlayerPreLoginEvent  event) throws InterruptedException {
-        this.getLogger().info(event.getUniqueId().toString());
-        event.allow();
-    }
-
 }

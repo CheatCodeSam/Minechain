@@ -7,6 +7,17 @@ import { MojangIdDto } from './dto/mojang-id-dto'
 export class AccountLinkProvider {
   constructor(private readonly accountLinkService: AccountLinkService) {}
 
+
+  @RabbitRPC({
+    exchange: 'minecraft',
+    routingKey: 'authenticate',
+    queueOptions: { autoDelete: true },
+  })
+  public async authenticate({ uuid }: MojangIdDto) {
+    console.log(uuid)
+    return "this.minecraftService.getUser(uuid)"
+  }
+
   @RabbitRPC({
     exchange: 'account-link',
     routingKey: 'generateRegistrationToken',
@@ -22,6 +33,8 @@ export class AccountLinkProvider {
     queueOptions: { autoDelete: true },
   })
   public async isLinked({ uuid }: MojangIdDto) {
+    console.log(uuid);
+    
     return this.accountLinkService.isLinked(uuid)
   }
 }

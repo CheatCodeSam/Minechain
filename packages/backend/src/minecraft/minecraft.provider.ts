@@ -1,18 +1,26 @@
-import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq'
+import { RabbitRPC, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq'
 import { Injectable } from '@nestjs/common'
+import { MojangIdDto } from '../account-link/dto/mojang-id-dto'
 import { MinecraftService } from './minecraft.service'
 
 @Injectable()
 export class MinecraftProvider {
-  constructor(
-    private readonly minecraftService: MinecraftService
-  ) {}
+  constructor(private readonly minecraftService: MinecraftService) {}
+
+  @RabbitRPC({
+    exchange: 'minecraft',
+    routingKey: 'authenticate',
+    queueOptions: { autoDelete: true },
+  })
+  public async authenticate({ uuid }: MojangIdDto) {
+    console.log(uuid)
+    return "this.minecraftService.getUser(uuid)"
+  }
 
   @RabbitSubscribe({
     exchange: 'minecraft',
     routingKey: 'playerLeave',
-    queue: 'minecraftfPlayerLeave',
-    createQueueIfNotExists: true,
+    queueOptions: { autoDelete: true },
     allowNonJsonMessages: false,
   })
   public async playerLeave(msg: { uuid: string }) {
@@ -22,8 +30,7 @@ export class MinecraftProvider {
   @RabbitSubscribe({
     exchange: 'minecraft',
     routingKey: 'regionEnter',
-    queue: 'minecraftRegionEnter',
-    createQueueIfNotExists: true,
+    queueOptions: { autoDelete: true },
     allowNonJsonMessages: false,
   })
   public async regionEnter(msg: { uuid: string; region: string }) {

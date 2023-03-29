@@ -29,7 +29,7 @@ import { AccountLinkModule } from './account-link/account-link.module'
     }),
     AuthModule,
     BlockchainModule,
-    MinecraftModule,
+    // MinecraftModule,
     AccountLinkModule,
   ],
 })

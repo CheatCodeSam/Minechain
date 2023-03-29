@@ -14,9 +14,7 @@ import { MinecraftService } from './minecraft.service'
       useFactory: (configService: ConfigService) => ({
         uri: configService.get('RABBIT_URI'),
         exchanges: [
-          { name: 'registration', type: 'direct', options: {durable: false}  },
-          { name: 'minecraft', type: 'direct' },
-          { name: 'proxy', type: 'direct' },
+          { name: 'minecraft', type: 'direct', options: { durable: false } },
         ],
       }),
     }),

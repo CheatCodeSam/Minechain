@@ -18,9 +18,6 @@ public class ConfigService {
     {
         this.config = app.getConfig();
         app.saveDefaultConfig();
-        app.getLogger().info(getRabbitMqIp());
-        app.getLogger().info(getRabbitMqPort());
-
     }
 
     public String getRabbitMqIp() {
