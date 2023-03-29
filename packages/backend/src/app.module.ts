@@ -8,6 +8,7 @@ import { User } from './user/user.entity'
 import { BlockchainModule } from './blockchain/blockchain.module'
 import { MinecraftModule } from './minecraft/minecraft.module'
 import { AccountLinkModule } from './account-link/account-link.module'
+import { MessagingModule } from './messaging/messaging.module'
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { AccountLinkModule } from './account-link/account-link.module'
     }),
     AuthModule,
     BlockchainModule,
-    // MinecraftModule,
+    MessagingModule,
+    MinecraftModule,
     AccountLinkModule,
   ],
 })

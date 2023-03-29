@@ -11,7 +11,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import com.minechain.minechain.App;
 import com.minechain.minechain.messaging.RabbitMQ;
 import com.minechain.minechain.types.MojangId;
 import com.rabbitmq.client.RpcClient;
@@ -49,13 +48,14 @@ public class PlayerEntry implements Listener {
                 try {
                     String g = rpc.stringCall(new Gson().toJson(new MojangId(event.getUniqueId())));
                     System.out.println(g);
+                    event.allow();
                 } catch (ShutdownSignalException | IOException | TimeoutException e) {
                     e.printStackTrace();
                 }
             }
         }.runTaskAsynchronously(this.app);
         
-        event.allow();
+        
     }
     
 }
