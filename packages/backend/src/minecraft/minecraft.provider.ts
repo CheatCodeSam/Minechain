@@ -14,7 +14,7 @@ export class MinecraftProvider {
   })
   public async authenticate({ uuid }: MojangIdDto) {
     console.log(uuid)
-    return "this.minecraftService.getUser(uuid)"
+    return await this.minecraftService.getUser(uuid)
   }
 
   @RabbitSubscribe({

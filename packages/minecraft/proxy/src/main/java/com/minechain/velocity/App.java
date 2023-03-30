@@ -44,7 +44,7 @@ public class App {
 
         this.mqqt = injector.getInstance(RabbitMQ.class);
         this.mqqt.connect();
-        this.mqqt.addConsumer(new AuthJoinSubscriber(this.server), "registration", "registerToken");
+        this.mqqt.addConsumer(injector.getInstance(AuthJoinSubscriber.class), "account-link", "authorizeJoin");
         server.getEventManager().register(this, injector.getInstance(PlayerEntry.class));
     }
 

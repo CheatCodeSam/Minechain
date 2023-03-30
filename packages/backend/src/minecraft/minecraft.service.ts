@@ -7,7 +7,8 @@ export class MinecraftService {
   constructor(private readonly userService: UserService) {}
 
   public async getUser(uuid: string) {
-    const user = this.userService.findOne({ mojangId: uuid })
+    const user = await this.userService.findOne({ mojangId: uuid })
+    console.log(user)
     return instanceToPlain(user)
   }
 

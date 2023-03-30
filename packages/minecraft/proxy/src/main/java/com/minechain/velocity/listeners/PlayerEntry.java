@@ -51,9 +51,9 @@ public class PlayerEntry {
 
         var player = event.getPlayer();
         var isAccountLinked = this.accountLinkService
-                .stringCall(new Gson().toJson(new MojangId(player.getUniqueId()))) == "true";
+                .stringCall(new Gson().toJson(new MojangId(player.getUniqueId())));
 
-        if (!isAccountLinked) {
+        if (!isAccountLinked.equals("true")) {
             var rawJson = this.generateTokenService
                     .stringCall(new Gson().toJson(new MojangId(player.getUniqueId())));
             var registrationInformation = new Gson().fromJson(rawJson, RegisterUser.class);

@@ -24,11 +24,12 @@ export class AccountLinkService {
     const mojangId = await this.verifyJwt(token)
     if (!mojangId) throw new ForbiddenException('Token is invalid.')
     this.userService.updateUserMojangId(user.id, mojangId)
-    this.authorizeJoin(user)
+    this.authorizeJoin(mojangId)
   }
 
   public async isLinked(mojangId: string): Promise<boolean> {
-    return !!this.userService.findOne({ mojangId })
+    const user = await this.userService.findOne({ mojangId })
+    return !!user
   }
 
   public async generateRegistrationToken(uuid: string) {
@@ -65,7 +66,7 @@ export class AccountLinkService {
     }
   }
 
-  private async authorizeJoin(user: User) {
-    this.amqpConnection.publish('registration', 'authorizeJoin', user)
+  private async authorizeJoin(uuid: String) {
+    this.amqpConnection.publish('account-link', 'authorizeJoin', {uuid})
   }
 }

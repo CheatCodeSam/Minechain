@@ -8,5 +8,9 @@ public class MojangId {
     public MojangId(UUID uuid) {
         this.uuid = uuid;
     }
-    
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
 }

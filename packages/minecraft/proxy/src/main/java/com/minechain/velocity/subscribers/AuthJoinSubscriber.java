@@ -3,21 +3,23 @@ package com.minechain.velocity.subscribers;
 import java.io.UnsupportedEncodingException;
 
 import com.google.gson.Gson;
-import com.minechain.velocity.types.RegisterUser;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.minechain.velocity.service.UnregisteredUserService;
+import com.minechain.velocity.types.MojangId;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
 import com.velocitypowered.api.proxy.ProxyServer;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-
+@Singleton
 public class AuthJoinSubscriber implements ISubscriber {
 
+    private UnregisteredUserService unregisteredUserService;
     private ProxyServer server;
 
-    public AuthJoinSubscriber(ProxyServer server) {
+    @Inject
+    public AuthJoinSubscriber(ProxyServer server, UnregisteredUserService unregisteredUserService) {
+        this.unregisteredUserService = unregisteredUserService;
         this.server = server;
     }
 
@@ -33,21 +35,18 @@ public class AuthJoinSubscriber implements ISubscriber {
         }
     }
 
-
     private void handleData(String data) {
-        var user = new Gson().fromJson(data, RegisterUser.class);
-        var player = this.server.getPlayer(user.getUuid());
-
-        player.ifPresent(p -> {
-            p.sendMessage(Component.text("Hello " + p.getUsername() + ", Welcome to Minechain."));
-            p.sendMessage(
-                    Component
-                            .text("To link your Minecraft account to your Wallet ")
-                            .append(Component.text("click here!")
-                                    .clickEvent(ClickEvent.openUrl("http://localhost:4200/register/" + user.getToken()))
-                                    .color(TextColor.color(255, 0, 0))
-                                    .decorate(TextDecoration.UNDERLINED)));
-        });
+        try {
+            var userUuid = new Gson().fromJson(data, MojangId.class);
+            var player = this.server.getPlayer(userUuid.getUuid());
+            if (player.isPresent()) {
+                this.unregisteredUserService.removeUser(player.get());
+                if (this.server.getServer("minechain").isPresent())
+                    player.get().createConnectionRequest(this.server.getServer("minechain").get()).connect();
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
     }
 
 }
