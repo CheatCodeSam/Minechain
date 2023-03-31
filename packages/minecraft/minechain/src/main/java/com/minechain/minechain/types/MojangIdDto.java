@@ -2,10 +2,10 @@ package com.minechain.minechain.types;
 
 import java.util.UUID;
 
-public class MojangId {
+public class MojangIdDto {
     UUID uuid;
 
-    public MojangId(UUID uuid) {
+    public MojangIdDto(UUID uuid) {
         this.uuid = uuid;
     }
     

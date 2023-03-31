@@ -2,14 +2,14 @@ package com.minechain.minechain.types;
 
 import java.util.UUID;
 
-public class User {
+public class UserDto {
     private Integer id;
     private Boolean isActive;
     private String publicAddress;
     private UUID mojangId;
     private String displayName;
 
-    public User(Integer id, Boolean isActive, String publicAddress, UUID mojangId, String displayName) {
+    public UserDto(Integer id, Boolean isActive, String publicAddress, UUID mojangId, String displayName) {
         this.id = id;
         this.isActive = isActive;
         this.publicAddress = publicAddress;
