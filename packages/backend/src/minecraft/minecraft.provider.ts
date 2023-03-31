@@ -13,7 +13,6 @@ export class MinecraftProvider {
     queueOptions: { autoDelete: true },
   })
   public async authenticate({ uuid }: MojangIdDto) {
-    console.log(uuid)
     return await this.minecraftService.getUser(uuid)
   }
 

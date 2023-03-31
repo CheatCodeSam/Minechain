@@ -8,7 +8,6 @@ export class MinecraftService {
 
   public async getUser(uuid: string) {
     const user = await this.userService.findOne({ mojangId: uuid })
-    console.log(user)
     return instanceToPlain(user)
   }
 
