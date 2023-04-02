@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   ensName: string
 
   @Exclude({ toPlainOnly: true })
-  @Column({ nullable: true, type: 'timestamptz' })
+  @Column({ type: 'timestamptz' })
   ensRefresh: Date
 
   @BeforeInsert()

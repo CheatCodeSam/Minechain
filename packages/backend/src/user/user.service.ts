@@ -26,8 +26,8 @@ export class UserService {
   }
 
   async createUser(publicAddress: string) {
-    const newUser = this.userRepo.create({ publicAddress })
-    this.updateEns(newUser)
+    let newUser = this.userRepo.create({ publicAddress })
+    await this.updateEns(newUser)
     return this.userRepo.save(newUser)
   }
 
@@ -39,7 +39,7 @@ export class UserService {
 
   async findOne(findOperators: FindOptionsWhere<User>) {
     const user = await this.userRepo.findOne({ where: findOperators })
-    await this.updateEnsNameIfNeeded(user)
+    if(user) await this.updateEnsNameIfNeeded(user)
     return user;
   }
 
