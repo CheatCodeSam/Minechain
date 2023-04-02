@@ -10,8 +10,8 @@ export class EnsService {
         private readonly ethProvider: providers.AlchemyProvider,
     ) {}
 
-    public async getEnsName() {
-        const str = await this.ethProvider.lookupAddress("0x2061dd3a9f09186b5CD82436467dDB79dC737227")
+    public async getEnsName(publicAddress: string) {
+        const str = await this.ethProvider.lookupAddress(publicAddress)
         return str
     }
 }

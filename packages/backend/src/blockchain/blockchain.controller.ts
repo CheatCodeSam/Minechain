@@ -25,6 +25,6 @@ export class BlockchainController {
       abi
     ) as Lock
 
-    return { gasPrice: await this.ensService.getEnsName() }
+    return { gasPrice: await this.ensService.getEnsName("") }
   }
 }
