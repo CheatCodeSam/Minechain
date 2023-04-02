@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class AccountLinkService {
+
   constructor(
     private readonly amqpConnection: AmqpConnection,
     private readonly userService: UserService,
@@ -34,6 +35,11 @@ export class AccountLinkService {
 
   public async generateRegistrationToken(uuid: string) {
     return { token: await this.createJwt(uuid), uuid }
+  }
+
+  public async unlinkAccount(user: User)
+  {
+    return this.userService.unlinkMinecraftAccount(user.id)
   }
 
   private async createJwt(mojangId: string): Promise<string> {

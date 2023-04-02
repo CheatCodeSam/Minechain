@@ -12,7 +12,16 @@ export class AccountLinkController {
   @Post()
   @HttpCode(202)
   @UseGuards(AuthenticatedGuard)
-  async register(@Body() { token }: RegisterTokenDto, @CurrentUser() user: User) {
+  async register(
+    @Body() { token }: RegisterTokenDto,
+    @CurrentUser() user: User
+  ) {
     return this.accountLinkService.validateRegistration(token, user)
+  }
+
+  @Post('/unlink')
+  @UseGuards(AuthenticatedGuard)
+  async unlink(@CurrentUser() user: User) {
+    return this.accountLinkService.unlinkAccount(user)
   }
 }
