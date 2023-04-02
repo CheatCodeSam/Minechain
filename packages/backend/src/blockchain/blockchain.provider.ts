@@ -12,9 +12,9 @@ import { BlockchainService } from './blockchain.service';
 @Injectable()
 export class BlockchainProvider {
   constructor(
-    @InjectContractProvider()
+    @InjectContractProvider("lcl")
     private readonly ethersContract: EthersContract,
-    @InjectEthersProvider()
+    @InjectEthersProvider("lcl")
     private readonly rpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly configService: ConfigService,
     private readonly blockchainService: BlockchainService

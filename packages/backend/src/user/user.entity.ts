@@ -1,14 +1,13 @@
-import { generate as generateShortUuid } from "short-uuid"
+import { generate as generateShortUuid } from 'short-uuid'
 import {
   BaseEntity,
   BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn
-} from "typeorm"
-import { Exclude, Expose } from 'class-transformer';
-
+  PrimaryGeneratedColumn,
+} from 'typeorm'
+import { Exclude, Expose } from 'class-transformer'
 
 @Entity()
 export class User extends BaseEntity {
@@ -40,6 +39,13 @@ export class User extends BaseEntity {
   @Column({ default: true })
   isSuperUser: boolean
 
+  @Column({ nullable: true })
+  ensName: string
+
+  @Exclude({ toPlainOnly: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  ensRefresh: Date
+
   @BeforeInsert()
   private addNonce() {
     this.nonce = generateShortUuid()
@@ -47,9 +53,9 @@ export class User extends BaseEntity {
 
   @Expose()
   public get displayName(): string {
-    return (
+    return this.ensName || (
       this.publicAddress.substring(0, 5) +
-      "..." +
+      '...' +
       this.publicAddress.substring(this.publicAddress.length - 4)
     )
   }
