@@ -46,6 +46,14 @@ export class User extends BaseEntity {
   @Column({ type: 'timestamptz' })
   ensRefresh: Date
 
+  @Exclude({ toPlainOnly: true })
+  @Column({ nullable: true })
+  playerHeadKey: string
+
+  @Exclude({ toPlainOnly: true })
+  @Column({ type: 'timestamptz', nullable: true })
+  playerHeadRefresh: Date
+
   @BeforeInsert()
   private addNonce() {
     this.nonce = generateShortUuid()
@@ -59,4 +67,10 @@ export class User extends BaseEntity {
       this.publicAddress.substring(this.publicAddress.length - 4)
     )
   }
+
+  @Expose()
+  public get profilePicture(): string {
+    return "/api/player-head/" + this.playerHeadKey
+  }
+
 }

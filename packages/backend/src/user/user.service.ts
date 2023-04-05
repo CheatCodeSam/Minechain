@@ -4,12 +4,14 @@ import { FindOptionsWhere, Repository } from 'typeorm'
 import { User } from './user.entity'
 import { generate as generateShortUuid } from 'short-uuid'
 import { EnsService } from '../blockchain/ens.service'
+import { PlayerHeadService } from '../player-head/player-head.service'
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
-    private readonly ensService: EnsService
+    private readonly ensService: EnsService,
+    private readonly playerHeadService: PlayerHeadService
   ) {}
 
   async activateUser(id: number) {
@@ -22,6 +24,7 @@ export class UserService {
   async updateUserMojangId(id: number, uuid: string) {
     const user = await this.findOne({ id })
     user.mojangId = uuid
+    await this.updatePlayerHead(user)
     return this.userRepo.save(user)
   }
 
@@ -39,28 +42,46 @@ export class UserService {
 
   async findOne(findOperators: FindOptionsWhere<User>) {
     const user = await this.userRepo.findOne({ where: findOperators })
-    if(user) await this.updateEnsNameIfNeeded(user)
-    return user;
+    if (user) {
+      await this.updateEnsNameIfNeeded(user)
+      if (user.mojangId) await this.updatePlayerHeadIfNeeded(user)
+    }
+    return user
   }
 
   async unlinkMinecraftAccount(id: number) {
     const user = await this.findOne({ id })
     user.mojangId = null
+    user.playerHeadRefresh = null
     return this.userRepo.save(user)
   }
 
   private async updateEnsNameIfNeeded(user: User) {
-    if (user.ensRefresh.getTime() < Date.now()) {
+    if (user.ensRefresh?.getTime() < Date.now()) {
       await this.updateEns(user)
       user.save()
     }
-    return user
   }
 
-  private async updateEns(user: User)
-  {
+  private async updateEns(user: User) {
     user.ensName = await this.ensService.getEnsName(user.publicAddress)
     // Three Days
     user.ensRefresh = new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000)
+  }
+
+  private async updatePlayerHeadIfNeeded(user: User) {
+    if (user.playerHeadRefresh?.getTime() < Date.now()) {
+      await this.updatePlayerHead(user)
+      user.save()
+    }
+  }
+
+  private async updatePlayerHead(user: User) {
+    const uploadData = await this.playerHeadService.getPlayerHead(user)
+    user.playerHeadKey = uploadData.Key
+    // Three Days
+    user.playerHeadRefresh = new Date(
+      new Date().getTime() + 3 * 24 * 60 * 60 * 1000
+    )
   }
 }

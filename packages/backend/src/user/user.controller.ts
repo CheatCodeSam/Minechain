@@ -1,14 +1,13 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { AuthenticatedGuard } from '../auth/guard/authenticated.guard';
-import { PlayerHeadService } from '../player-head/player-head.service';
-import { CurrentUser } from './decorator/current-user.decorator';
-import { User } from './user.entity';
+import { Controller, Get, UseGuards } from '@nestjs/common'
+import { AuthenticatedGuard } from '../auth/guard/authenticated.guard'
+import { CurrentUser } from './decorator/current-user.decorator'
+import { User } from './user.entity'
 
 @Controller('user')
 export class UserController {
   @Get()
   @UseGuards(AuthenticatedGuard)
   async whoami(@CurrentUser() user: User) {
-    return user;
+    return user
   }
 }
