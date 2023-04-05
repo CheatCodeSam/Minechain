@@ -1,5 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../auth/guard/authenticated.guard';
+import { PlayerHeadService } from '../player-head/player-head.service';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { User } from './user.entity';
 

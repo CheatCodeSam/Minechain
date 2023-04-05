@@ -9,6 +9,7 @@ import { BlockchainModule } from './blockchain/blockchain.module'
 import { MinecraftModule } from './minecraft/minecraft.module'
 import { AccountLinkModule } from './account-link/account-link.module'
 import { MessagingModule } from './messaging/messaging.module'
+import { PlayerHeadModule } from './player-head/player-head.module'
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MessagingModule } from './messaging/messaging.module'
     MessagingModule,
     MinecraftModule,
     AccountLinkModule,
+    PlayerHeadModule,
   ],
 })
 export class AppModule {}
