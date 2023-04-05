@@ -6,12 +6,12 @@ export class PlayerHeadController {
 
     constructor( @InjectS3() private readonly s3: S3) {}
     
-    @Get(':publicAddress')
+    @Get(':userKey')
     @Header('Content-Disposition', 'inline')
     @Header('Content-Type', 'image/png')
-    async getPlayerHead(@Param('publicAddress') publicAddress: string)
+    async getPlayerHead(@Param('userKey') userKey: string)
     {
-        const stream = this.s3.getObject({Bucket: "bucket", Key: publicAddress}).createReadStream()
+        const stream = this.s3.getObject({Bucket: "bucket", Key: userKey}).createReadStream()
         return new StreamableFile(stream)
     }
 }
