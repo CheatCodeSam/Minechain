@@ -28,6 +28,10 @@ export class UserController {
   }
 
 
+<<<<<<< HEAD
+=======
+  //refresh mc head
+>>>>>>> 691c5191c4c9ec0ee2b8aae0897039a9f77fae3c
   @Post("refresh-head")
   @UseGuards(AuthenticatedGuard)
   async refreshHead(@CurrentUser() user: User) {
