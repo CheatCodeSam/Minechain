@@ -17,6 +17,7 @@
     "@nestjs/typeorm": "^9.0.1",
     "@nrwl/nest": "^15.8.5",
     "@nxtensions/astro": "^3.3.0",
+    "@openzeppelin/contracts": "^4.8.3",
     "@reduxjs/toolkit": "^1.9.3",
     "@swc/helpers": "~0.4.11",
     "aws-sdk": "^2.1349.0",
