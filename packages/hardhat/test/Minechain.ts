@@ -112,7 +112,9 @@ describe('Minechain', () => {
       await time.increase(priceChangeCooldown)
       await minechain.connect(addr1).setPriceOf(1, ethers.utils.parseEther('2'))
 
-      await minechain.connect(addr2).buy(1, ethers.utils.parseEther('5'), { value: ethers.utils.parseEther('2')})
+      await minechain.connect(addr2).buy(1, ethers.utils.parseEther('5'), {
+        value: ethers.utils.parseEther('2'),
+      })
 
       const token = await minechain.tokens(1)
       expect(token.priceChangeCount).to.equal(0)
@@ -134,6 +136,26 @@ describe('Minechain', () => {
       const token = await minechain.tokens(1)
       expect(token.priceChangeCount).to.equal(0)
       expect(token.cumulativePrice).to.equal(ethers.utils.parseEther('2'))
+    })
+    it('should emit price changed', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      const priceChangeCooldown = await minechain.priceChangeCooldown()
+      await time.increase(priceChangeCooldown)
+      await expect(
+        minechain.connect(addr1).setPriceOf(1, ethers.utils.parseEther('2'))
+      )
+        .to.emit(minechain, 'PriceChanged')
+        .withArgs(
+          addr1.address,
+          1,
+          ethers.utils.parseEther('1'),
+          ethers.utils.parseEther('2')
+        )
     })
   })
 })
