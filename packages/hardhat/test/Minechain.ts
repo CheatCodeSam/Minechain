@@ -2,6 +2,8 @@ import { time, loadFixture } from '@nomicfoundation/hardhat-network-helpers'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { Minechain } from '../../eth-types/src'
+import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+
 
 describe('Minechain', () => {
   const deployTokenFixture = async () => {
@@ -115,6 +117,11 @@ describe('Minechain', () => {
       await minechain.connect(addr2).buy(1, ethers.utils.parseEther('5'), {
         value: ethers.utils.parseEther('2'),
       })
+      await minechain
+        .connect(addr2)
+        .buy(1, ethers.utils.parseEther('5'), {
+          value: ethers.utils.parseEther('2'),
+        })
 
       const token = await minechain.tokens(1)
       expect(token.priceChangeCount).to.equal(0)
