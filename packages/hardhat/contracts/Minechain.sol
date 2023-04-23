@@ -74,7 +74,7 @@ contract Minechain is Ownable {
     function setPriceOf(
         uint256 tokenId,
         uint256 price
-    ) public onlyTokenHolder(tokenId) onlyValidToken(tokenId) {
+    ) public onlyValidToken(tokenId) onlyTokenHolder(tokenId)  {
         Token storage token = tokens[tokenId];
 
         require(
@@ -96,7 +96,7 @@ contract Minechain is Ownable {
     function buy(
         uint256 tokenId,
         uint256 newPrice
-    ) public payable onlyNonTokenHolder(tokenId) onlyValidToken(tokenId) {
+    ) public payable onlyValidToken(tokenId) onlyNonTokenHolder(tokenId)  {
         Token storage token = tokens[tokenId];
 
         require(msg.value >= token.price, 'Minechain: Insufficient payment');
@@ -142,7 +142,7 @@ contract Minechain is Ownable {
     function withdrawRent(
         uint256 tokenId,
         uint256 amount
-    ) public onlyTokenHolder(tokenId) onlyValidToken(tokenId) {
+    ) public onlyValidToken(tokenId) onlyTokenHolder(tokenId)  {
         Token storage token = tokens[tokenId];
         token.deposit -= amount;
         payable(msg.sender).transfer(amount);
@@ -150,7 +150,7 @@ contract Minechain is Ownable {
 
     function collectRent(
         uint256 tokenId
-    ) public onlyOwner onlyValidToken(tokenId) {
+    ) public onlyValidToken(tokenId) onlyOwner  {
         Token storage token = tokens[tokenId];
         uint256 outstandingTax = calculateTaxAmount(token);
 
