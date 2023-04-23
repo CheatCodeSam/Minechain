@@ -2,7 +2,6 @@ import { time, loadFixture } from '@nomicfoundation/hardhat-network-helpers'
 import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { Minechain } from '../../eth-types/src'
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 
 
 describe('Minechain', () => {
@@ -23,30 +22,6 @@ describe('Minechain', () => {
 
     const { owner } = await minechain.tokens(1)
     expect(owner).to.equal(addr1.address)
-  })
-
-  it('should charge 10 percent tax per year', async () => {
-    const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-
-    await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
-      value: ethers.utils.parseEther('1'),
-    })
-    await time.increase(60 * 60 * 24 * 365)
-
-    const rent = await minechain.currentRent(1)
-    expect(ethers.utils.parseEther('1').div(10)).to.equal(rent)
-  })
-
-  it('should charge 8.493 percent over a 31 day span ', async () => {
-    const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-
-    await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
-      value: ethers.utils.parseEther('1'),
-    })
-    await time.increase(60 * 60 * 24 * 31)
-
-    const rent = await minechain.currentRent(1)
-    expect(ethers.BigNumber.from('8493150684931506')).to.equal(rent)
   })
 
   describe('Price Change', () => {
@@ -163,6 +138,52 @@ describe('Minechain', () => {
           ethers.utils.parseEther('1'),
           ethers.utils.parseEther('2')
         )
+    })
+  })
+  describe('Tax Amount', () => {
+    it('should charge 10 percent tax per year', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+  
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+      await time.increase(60 * 60 * 24 * 365)
+  
+      const rent = await minechain.currentRent(1)
+      expect(ethers.utils.parseEther('1').div(10)).to.equal(rent)
+    })
+  
+    it('should charge 8.493 percent over a 31 day span', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+  
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+      await time.increase(60 * 60 * 24 * 31)
+  
+      const rent = await minechain.currentRent(1)
+      expect(ethers.BigNumber.from('8493150684931506')).to.equal(rent)
+    })
+
+    it('should correctly calculate average price after three price changes', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+  
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      const yearFromNow = (await time.latest()) + (60 * 60 * 24 * 365)
+
+      const priceChangeCooldown = await minechain.priceChangeCooldown()
+      await time.increase(priceChangeCooldown)
+      await minechain.connect(addr1).setPriceOf(1, ethers.utils.parseEther('2'))
+      await time.increase(priceChangeCooldown)
+      await minechain.connect(addr1).setPriceOf(1, ethers.utils.parseEther('3'))
+
+      await time.increaseTo(yearFromNow)
+
+      const rent = await minechain.currentRent(1)
+      expect(ethers.utils.parseEther('0.2')).to.equal(rent)
     })
   })
 })
