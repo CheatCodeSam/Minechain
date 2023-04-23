@@ -8,6 +8,7 @@ contract Minechain is Ownable {
     uint256 public constant numberOfTokens = 1024;
     uint256 public constant priceChangeCooldown = 3 days;
     uint256 public constant taxRateInPercent = 10;
+    uint256 public constant taxPeriod = 365 days;
 
     struct Token {
         address owner;
@@ -63,15 +64,10 @@ contract Minechain is Ownable {
         _;
     }
 
-    function calculateTaxAmount(
-        Token storage token
-    ) internal view returns (uint256) {
+    function calculateTaxAmount(Token storage token) internal view returns (uint256) {
         uint256 holdingDuration = block.timestamp - token.lastTaxPaidDate;
-        uint256 averagePrice = (token.cumulativePrice + token.price) /
-            (token.priceChangeCount + 1);
-        uint256 taxAmount = (averagePrice *
-            taxRateInPercent *
-            holdingDuration) / (100 * 365 days);
+        uint256 averagePrice = (token.cumulativePrice) / (token.priceChangeCount + 1);
+        uint256 taxAmount = (averagePrice * taxRateInPercent * holdingDuration) / (100 * taxPeriod);
         return taxAmount;
     }
 
@@ -88,7 +84,7 @@ contract Minechain is Ownable {
 
         uint256 oldPrice = token.price;
 
-        token.cumulativePrice += token.price;
+        token.cumulativePrice += price;
         token.priceChangeCount += 1;
 
         token.price = price;
@@ -119,7 +115,7 @@ contract Minechain is Ownable {
         token.lastTaxPaidDate = block.timestamp;
 
         token.cumulativePrice = newPrice;
-        token.priceChangeCount = 1;
+        token.priceChangeCount = 0;
         token.price = newPrice;
         token.lastPriceChangeDate = block.timestamp;
 
@@ -161,6 +157,9 @@ contract Minechain is Ownable {
         if (token.deposit >= outstandingTax) {
             token.deposit -= outstandingTax;
             token.lastTaxPaidDate = block.timestamp;
+            token.lastPriceChangeDate = block.timestamp;
+            token.cumulativePrice = token.price;
+            token.priceChangeCount = 0;
         } else {
             if (token.deposit > 0) {
                 payable(token.owner).transfer(token.deposit);
