@@ -3,7 +3,6 @@ import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { Minechain } from '../../eth-types/src'
 
-
 describe('Minechain', () => {
   const deployTokenFixture = async () => {
     const Minechain = await ethers.getContractFactory('Minechain')
@@ -92,11 +91,9 @@ describe('Minechain', () => {
       await minechain.connect(addr2).buy(1, ethers.utils.parseEther('5'), {
         value: ethers.utils.parseEther('2'),
       })
-      await minechain
-        .connect(addr2)
-        .buy(1, ethers.utils.parseEther('5'), {
-          value: ethers.utils.parseEther('2'),
-        })
+      await minechain.connect(addr2).buy(1, ethers.utils.parseEther('5'), {
+        value: ethers.utils.parseEther('2'),
+      })
 
       const token = await minechain.tokens(1)
       expect(token.priceChangeCount).to.equal(0)
@@ -143,36 +140,36 @@ describe('Minechain', () => {
   describe('Tax Amount', () => {
     it('should charge 10 percent tax per year', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-  
+
       await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
         value: ethers.utils.parseEther('1'),
       })
       await time.increase(60 * 60 * 24 * 365)
-  
+
       const rent = await minechain.currentRent(1)
       expect(ethers.utils.parseEther('1').div(10)).to.equal(rent)
     })
-  
+
     it('should charge 8.493 percent over a 31 day span', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-  
+
       await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
         value: ethers.utils.parseEther('1'),
       })
       await time.increase(60 * 60 * 24 * 31)
-  
+
       const rent = await minechain.currentRent(1)
       expect(ethers.BigNumber.from('8493150684931506')).to.equal(rent)
     })
 
     it('should correctly calculate average price after three price changes', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-  
+
       await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
         value: ethers.utils.parseEther('1'),
       })
 
-      const yearFromNow = (await time.latest()) + (60 * 60 * 24 * 365)
+      const yearFromNow = (await time.latest()) + 60 * 60 * 24 * 365
 
       const priceChangeCooldown = await minechain.priceChangeCooldown()
       await time.increase(priceChangeCooldown)
@@ -186,4 +183,102 @@ describe('Minechain', () => {
       expect(ethers.utils.parseEther('0.2')).to.equal(rent)
     })
   })
+
+  describe('Deposit', () => {
+    it('should correctly deposit the one ether', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: 0,
+      })
+
+      await minechain
+        .connect(addr1)
+        .depositRent(1, { value: ethers.utils.parseEther('1') })
+
+      const token = await minechain.tokens(1)
+      expect(token.deposit).to.equal(ethers.utils.parseEther('1'))
+    })
+    it('should correctly add an ether to an initial deposit of one ether', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      await minechain
+        .connect(addr1)
+        .depositRent(1, { value: ethers.utils.parseEther('1') })
+
+      const token = await minechain.tokens(1)
+      expect(token.deposit).to.equal(ethers.utils.parseEther('2'))
+    })
+    it('should correctly add an ether to a deposit of one ether', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: 0,
+      })
+
+      await minechain
+        .connect(addr1)
+        .depositRent(1, { value: ethers.utils.parseEther('1') })
+      await minechain
+        .connect(addr1)
+        .depositRent(1, { value: ethers.utils.parseEther('1') })
+
+      const token = await minechain.tokens(1)
+      expect(token.deposit).to.equal(ethers.utils.parseEther('2'))
+    })
+  })
+
+  describe('Withdrawl', () => {
+    it('should withdrawl all of one eth deposit', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      await minechain.connect(addr1).withdrawRent(1, ethers.utils.parseEther('1'))
+
+      const token = await minechain.tokens(1)
+      expect(token.deposit).to.equal(0)
+    })
+
+    it('should withdrawl half of one eth deposit', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      const halfOfEth = ethers.utils.parseEther('1').div(2)
+      await minechain.connect(addr1).withdrawRent(1, halfOfEth)
+
+      const token = await minechain.tokens(1)
+      expect(token.deposit).to.equal(halfOfEth)
+    })
+
+    it('should withdrawl 25% of one eth deposit', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      const twentyFivePercentOfEth = ethers.utils.parseEther('1').mul(25).div(100)
+      await minechain.connect(addr1).withdrawRent(1, twentyFivePercentOfEth)
+
+      const seventyFivePercentOfEth = ethers.utils.parseEther('1').mul(75).div(100)
+      const token = await minechain.tokens(1)
+      expect(token.deposit).to.equal(seventyFivePercentOfEth)
+    })
+  })
+
+  describe('Buy', () => {})
+
+  describe('Collect', () => {})
 })
