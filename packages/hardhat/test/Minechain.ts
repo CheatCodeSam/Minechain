@@ -276,6 +276,18 @@ describe('Minechain', () => {
       const token = await minechain.tokens(1)
       expect(token.deposit).to.equal(seventyFivePercentOfEth)
     })
+
+    it('should not withdrawl one eth from a 0.5 eth deposit', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('0.5'),
+      })
+
+      await expect(minechain.connect(addr1).withdrawRent(1, ethers.utils.parseEther('1'))).to.revertedWith("Minechain: Requested payment is more then token deposit")
+
+    })
   })
 
   describe('Buy', () => {})
