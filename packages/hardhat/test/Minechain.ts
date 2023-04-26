@@ -12,17 +12,6 @@ describe('Minechain', () => {
     return { Minechain, minechain, owner, addr1, addr2 }
   }
 
-  it('should have the correct user as the token owner', async () => {
-    const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-
-    await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
-      value: ethers.utils.parseEther('1'),
-    })
-
-    const { owner } = await minechain.tokens(1)
-    expect(owner).to.equal(addr1.address)
-  })
-
   describe('Price Change', () => {
     it('should prevent changes before cooldown', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
@@ -307,11 +296,32 @@ describe('Minechain', () => {
 
       await expect(
         minechain.withdrawRent(10000, ethers.utils.parseEther('1'))
-      ).to.revertedWith('Minechain: attempt to perform action on nonexistent token')
+      ).to.revertedWith(
+        'Minechain: attempt to perform action on nonexistent token'
+      )
     })
   })
+  describe('Buy', () => {
+    it('should have the correct user as the token owner', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
-  describe('Buy', () => {})
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
 
+      const { owner } = await minechain.tokens(1)
+      expect(owner).to.equal(addr1.address)
+    })
+
+    it('should not allow token holder to purchase token', async () => {})
+    it('should deny purchase with wrong buy amount', async () => {})
+    it('should payout to previous owner', async () => {})
+    it('should apply tax to previous owner before sending payout', async () => {})
+    it('should collect tax from payment if previous owner does not have sufficient deposit', async () => {})
+    it('should forgive partial tax if payment and deposit cannot cover tax', async () => {})
+    it('should transfer ownership after purchase', async () => {})
+    it('should emit sold event', async () => {})
+
+  })
   describe('Collect', () => {})
 })
