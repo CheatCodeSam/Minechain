@@ -180,7 +180,6 @@ describe('Minechain', () => {
       expect(ethers.utils.parseEther('0.2')).to.equal(rent)
     })
   })
-
   describe('Deposit', () => {
     it('should correctly deposit the one ether', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
@@ -228,7 +227,6 @@ describe('Minechain', () => {
       expect(token.deposit).to.equal(ethers.utils.parseEther('2'))
     })
   })
-
   describe('Withdrawl', () => {
     it('should withdrawl all of one eth deposit', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
@@ -237,7 +235,9 @@ describe('Minechain', () => {
         value: ethers.utils.parseEther('1'),
       })
 
-      await minechain.connect(addr1).withdrawRent(1, ethers.utils.parseEther('1'))
+      await minechain
+        .connect(addr1)
+        .withdrawRent(1, ethers.utils.parseEther('1'))
 
       const token = await minechain.tokens(1)
       expect(token.deposit).to.equal(0)
@@ -246,7 +246,6 @@ describe('Minechain', () => {
     it('should withdrawl half of one eth deposit', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
-      
       await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
         value: ethers.utils.parseEther('1'),
       })
@@ -261,15 +260,20 @@ describe('Minechain', () => {
     it('should withdrawl 25% of one eth deposit', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
-      
       await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
         value: ethers.utils.parseEther('1'),
       })
 
-      const twentyFivePercentOfEth = ethers.utils.parseEther('1').mul(25).div(100)
+      const twentyFivePercentOfEth = ethers.utils
+        .parseEther('1')
+        .mul(25)
+        .div(100)
       await minechain.connect(addr1).withdrawRent(1, twentyFivePercentOfEth)
 
-      const seventyFivePercentOfEth = ethers.utils.parseEther('1').mul(75).div(100)
+      const seventyFivePercentOfEth = ethers.utils
+        .parseEther('1')
+        .mul(75)
+        .div(100)
       const token = await minechain.tokens(1)
       expect(token.deposit).to.equal(seventyFivePercentOfEth)
     })
@@ -277,13 +281,33 @@ describe('Minechain', () => {
     it('should not withdrawl one eth from a 0.5 eth deposit', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
-      
       await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
         value: ethers.utils.parseEther('0.5'),
       })
 
-      await expect(minechain.connect(addr1).withdrawRent(1, ethers.utils.parseEther('1'))).to.revertedWith("Minechain: Requested amount is higher than deposit")
+      await expect(
+        minechain.connect(addr1).withdrawRent(1, ethers.utils.parseEther('1'))
+      ).to.revertedWith('Minechain: Requested amount is higher than deposit')
+    })
 
+    it('should not allow withdrawl from non-token holder', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      await expect(
+        minechain.connect(addr2).withdrawRent(1, ethers.utils.parseEther('1'))
+      ).to.revertedWith('Minechain: only token holder can perform this action')
+    })
+
+    it('should not allow withdrawl from invalid token', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await expect(
+        minechain.withdrawRent(10000, ethers.utils.parseEther('1'))
+      ).to.revertedWith('Minechain: attempt to perform action on nonexistent token')
     })
   })
 
