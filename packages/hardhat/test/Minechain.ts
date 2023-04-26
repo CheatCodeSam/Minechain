@@ -91,9 +91,6 @@ describe('Minechain', () => {
       await minechain.connect(addr2).buy(1, ethers.utils.parseEther('5'), {
         value: ethers.utils.parseEther('2'),
       })
-      await minechain.connect(addr2).buy(1, ethers.utils.parseEther('5'), {
-        value: ethers.utils.parseEther('2'),
-      })
 
       const token = await minechain.tokens(1)
       expect(token.priceChangeCount).to.equal(0)
@@ -285,7 +282,7 @@ describe('Minechain', () => {
         value: ethers.utils.parseEther('0.5'),
       })
 
-      await expect(minechain.connect(addr1).withdrawRent(1, ethers.utils.parseEther('1'))).to.revertedWith("Minechain: Requested payment is more then token deposit")
+      await expect(minechain.connect(addr1).withdrawRent(1, ethers.utils.parseEther('1'))).to.revertedWith("Minechain: Requested amount is higher than deposit")
 
     })
   })

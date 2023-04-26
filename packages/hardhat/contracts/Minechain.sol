@@ -144,6 +144,7 @@ contract Minechain is Ownable {
         uint256 amount
     ) public onlyValidToken(tokenId) onlyTokenHolder(tokenId)  {
         Token storage token = tokens[tokenId];
+        require(token.deposit >= amount, "Minechain: Requested amount is higher than deposit");
         token.deposit -= amount;
         payable(msg.sender).transfer(amount);
     }
