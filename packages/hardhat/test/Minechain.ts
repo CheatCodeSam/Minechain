@@ -312,16 +312,81 @@ describe('Minechain', () => {
       const { owner } = await minechain.tokens(1)
       expect(owner).to.equal(addr1.address)
     })
+    it('should not allow token holder to purchase token', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
-    it('should not allow token holder to purchase token', async () => {})
-    it('should deny purchase with wrong buy amount', async () => {})
-    it('should payout to previous owner', async () => {})
+      await minechain.connect(addr1).buy(1, 10, {
+        value: ethers.utils.parseEther('1'),
+      })
+
+      await expect(
+        minechain.connect(addr1).buy(1, 11, {
+          value: 10,
+        })
+      ).to.revertedWith(
+        'Minechain: only non-token holders can perform this action'
+      )
+    })
+    it('should deny purchase with wrong buy amount', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: 0,
+      })
+
+      await expect(minechain.connect(addr2).buy(1, 0, {
+        value: 0,
+      })).to.revertedWith("Minechain: Insufficient payment")
+    })
+    it('should payout to previous owner', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+
+      await expect( minechain.connect(addr2).buy(1, 0, {
+        value: 1000,
+      })).to.changeEtherBalance(addr1, +1000)
+    })
     it('should apply tax to previous owner before sending payout', async () => {})
     it('should collect tax from payment if previous owner does not have sufficient deposit', async () => {})
     it('should forgive partial tax if payment and deposit cannot cover tax', async () => {})
-    it('should transfer ownership after purchase', async () => {})
-    it('should emit sold event', async () => {})
+    it('should transfer ownership after purchase', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
 
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+
+      await minechain.connect(addr2).buy(1, 2000, {
+        value: 1000,
+      })
+
+      const token = await minechain.tokens(1)
+      expect(token.owner).to.equal(addr2.address)
+    })
+    it('should change price after purchase', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+
+      await minechain.connect(addr2).buy(1, 2000, {
+        value: 1000,
+      })
+
+      const token = await minechain.tokens(1)
+      expect(token.price).to.equal(2000)
+    })
+    it('should emit sold event', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await expect(minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })).to.emit(minechain, "Sold").withArgs(ethers.constants.AddressZero, addr1.address, 1, 1000)
+    })
   })
   describe('Collect', () => {})
-})
+}) 
