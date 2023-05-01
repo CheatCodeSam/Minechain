@@ -11,7 +11,6 @@ export class EnsService {
     ) {}
 
     public async getEnsName(publicAddress: string) {
-        const str = await this.ethProvider.lookupAddress(publicAddress)
-        return str
+        return this.ethProvider.lookupAddress(publicAddress)
     }
 }

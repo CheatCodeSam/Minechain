@@ -334,9 +334,11 @@ describe('Minechain', () => {
         value: 0,
       })
 
-      await expect(minechain.connect(addr2).buy(1, 0, {
-        value: 0,
-      })).to.revertedWith("Minechain: Insufficient payment")
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 0,
+        })
+      ).to.revertedWith('Minechain: Insufficient payment')
     })
     it('should payout to previous owner', async () => {
       const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
@@ -345,13 +347,68 @@ describe('Minechain', () => {
         value: 0,
       })
 
-      await expect( minechain.connect(addr2).buy(1, 0, {
-        value: 1000,
-      })).to.changeEtherBalance(addr1, +1000)
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 1000,
+        })
+      ).to.changeEtherBalance(addr1, +1000)
     })
-    it('should apply tax to previous owner before sending payout', async () => {})
-    it('should collect tax from payment if previous owner does not have sufficient deposit', async () => {})
-    it('should forgive partial tax if payment and deposit cannot cover tax', async () => {})
+    it('should apply tax to previous owner before sending payout', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 1000,
+      })
+
+      await time.increase(60 * 60 * 24 * 365)
+
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 1000,
+        })
+      ).to.changeEtherBalance(addr1, +1900)
+    })
+    it('should collect tax from payment if previous owner does not have sufficient deposit', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+
+      await time.increase(60 * 60 * 24 * 365)
+
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 1000,
+        })
+      ).to.changeEtherBalance(addr1, +900)
+    })
+    it('should forgive partial tax if payment and deposit cannot cover tax', async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      const initialDeposit = 0
+
+      await minechain.connect(addr1).buy(1, 1000000, {
+        value: initialDeposit,
+      })
+
+      const yearFromNow = (await time.latest()) + 60 * 60 * 24 * 365
+      const priceChangeCooldown = await minechain.priceChangeCooldown()
+      await time.increase(priceChangeCooldown)
+      await minechain.connect(addr1).setPriceOf(1, 100)
+      await time.increaseTo(yearFromNow)
+
+      const rent = Math.floor(Math.floor((1000000 + 100) / 2) / 10)
+      expect(await minechain.currentRent(1)).to.equal(rent)
+      expect(rent).to.be.greaterThan(initialDeposit)
+
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 10001,
+        })
+      ).to.changeEtherBalance(addr1, 0)
+      
+    })
     it('should transfer ownership after purchase', async () => {
       const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
 
@@ -383,10 +440,14 @@ describe('Minechain', () => {
     it('should emit sold event', async () => {
       const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
 
-      await expect(minechain.connect(addr1).buy(1, 1000, {
-        value: 0,
-      })).to.emit(minechain, "Sold").withArgs(ethers.constants.AddressZero, addr1.address, 1, 1000)
+      await expect(
+        minechain.connect(addr1).buy(1, 1000, {
+          value: 0,
+        })
+      )
+        .to.emit(minechain, 'Sold')
+        .withArgs(ethers.constants.AddressZero, addr1.address, 1, 1000)
     })
   })
   describe('Collect', () => {})
-}) 
+})

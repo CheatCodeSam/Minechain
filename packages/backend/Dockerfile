@@ -1,6 +1,6 @@
 FROM docker.io/node:lts-alpine
 
-LABEL com.minechain.name="Minechain Landing Backend Nest Server"
+LABEL com.minechain.name="Minechain Backend Nest.js Server"
 LABEL com.minechain.image.authors="mail@carsonweeks.com"
 
 ENV HOST=0.0.0.0
