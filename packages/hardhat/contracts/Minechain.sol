@@ -64,17 +64,22 @@ contract Minechain is Ownable {
         _;
     }
 
-    function calculateTaxAmount(Token storage token) internal view returns (uint256) {
+    function calculateTaxAmount(
+        Token storage token
+    ) internal view returns (uint256) {
         uint256 holdingDuration = block.timestamp - token.lastTaxPaidDate;
-        uint256 averagePrice = (token.cumulativePrice) / (token.priceChangeCount + 1);
-        uint256 taxAmount = (averagePrice * taxRateInPercent * holdingDuration) / (100 * taxPeriod);
+        uint256 averagePrice = (token.cumulativePrice) /
+            (token.priceChangeCount + 1);
+        uint256 taxAmount = (averagePrice *
+            taxRateInPercent *
+            holdingDuration) / (100 * taxPeriod);
         return taxAmount;
     }
 
     function setPriceOf(
         uint256 tokenId,
         uint256 price
-    ) public onlyValidToken(tokenId) onlyTokenHolder(tokenId)  {
+    ) public onlyValidToken(tokenId) onlyTokenHolder(tokenId) {
         Token storage token = tokens[tokenId];
 
         require(
@@ -96,16 +101,19 @@ contract Minechain is Ownable {
     function buy(
         uint256 tokenId,
         uint256 newPrice
-    ) public payable onlyValidToken(tokenId) onlyNonTokenHolder(tokenId)  {
+    ) public payable onlyValidToken(tokenId) onlyNonTokenHolder(tokenId) {
         Token storage token = tokens[tokenId];
 
         require(msg.value >= token.price, 'Minechain: Insufficient payment');
 
         uint256 outstandingTax = calculateTaxAmount(token);
+        uint256 rentPayment = 0;
         uint256 payment = token.deposit + token.price;
         if (outstandingTax < payment) {
+            rentPayment = outstandingTax;
             payment -= outstandingTax;
         } else {
+            rentPayment = payment;
             payment = 0;
         }
 
@@ -121,6 +129,12 @@ contract Minechain is Ownable {
 
         (bool success, ) = previousOwner.call{value: payment}('');
         require(success, 'Minechain: Transfer failed');
+
+        (bool rentSuccess, ) = payable(owner()).call{value: rentPayment}('');
+        require(
+            rentSuccess,
+            'Minechain: Transfer of rent to contract owner failed'
+        );
 
         emit Sold(previousOwner, msg.sender, tokenId, newPrice);
     }
@@ -142,21 +156,31 @@ contract Minechain is Ownable {
     function withdrawRent(
         uint256 tokenId,
         uint256 amount
-    ) public onlyValidToken(tokenId) onlyTokenHolder(tokenId)  {
+    ) public onlyValidToken(tokenId) onlyTokenHolder(tokenId) {
         Token storage token = tokens[tokenId];
-        require(token.deposit >= amount, "Minechain: Requested amount is higher than deposit");
+        require(
+            token.deposit >= amount,
+            'Minechain: Requested amount is higher than deposit'
+        );
         token.deposit -= amount;
         payable(msg.sender).transfer(amount);
     }
 
     function collectRent(
         uint256 tokenId
-    ) public onlyValidToken(tokenId) onlyOwner  {
+    ) public onlyValidToken(tokenId) onlyOwner {
         Token storage token = tokens[tokenId];
         uint256 outstandingTax = calculateTaxAmount(token);
 
         if (token.deposit >= outstandingTax) {
             token.deposit -= outstandingTax;
+            
+            (bool success, ) = payable(owner()).call{value: outstandingTax}('');
+            require(
+                success,
+                'Minechain: Transfer of rent to contract owner failed'
+            );
+
             token.lastTaxPaidDate = block.timestamp;
             token.lastPriceChangeDate = block.timestamp;
             token.cumulativePrice = token.price;
@@ -174,7 +198,7 @@ contract Minechain is Ownable {
             token.cumulativePrice = 0;
             token.priceChangeCount = 0;
 
-            emit Repossessed(previousOwner, owner(), tokenId);
+            emit Repossessed(previousOwner, address(0), tokenId);
         }
     }
 }

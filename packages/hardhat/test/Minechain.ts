@@ -340,6 +340,19 @@ describe('Minechain', () => {
         })
       ).to.revertedWith('Minechain: Insufficient payment')
     })
+    it("should take the correct payment from the buyer", async () => {
+      const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 1000,
+        })
+      ).to.changeEtherBalance(addr2, -1000)
+    })
     it('should payout to previous owner', async () => {
       const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
 
@@ -407,7 +420,6 @@ describe('Minechain', () => {
           value: 10001,
         })
       ).to.changeEtherBalance(addr1, 0)
-
     })
     it('should transfer ownership after purchase', async () => {
       const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
@@ -448,89 +460,167 @@ describe('Minechain', () => {
         .to.emit(minechain, 'Sold')
         .withArgs(ethers.constants.AddressZero, addr1.address, 1, 1000)
     })
+    it("should pay contract owner outstanding tax", async () => {
+      const { minechain, addr1, addr2, owner } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 1000,
+      })
+
+      await time.increase(60 * 60 * 24 * 365)
+
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 1000,
+        })
+      ).to.changeEtherBalance(owner, +100)
+    })
+    it("should pay contract owner full payment if payment and deposit cannot cover tax", async () => {
+      const { minechain, addr1, addr2, owner } = await loadFixture(deployTokenFixture)
+      const initialDeposit = 0
+
+      await minechain.connect(addr1).buy(1, 1000000, {
+        value: initialDeposit,
+      })
+
+      const yearFromNow = (await time.latest()) + 60 * 60 * 24 * 365
+      const priceChangeCooldown = await minechain.priceChangeCooldown()
+      await time.increase(priceChangeCooldown)
+      await minechain.connect(addr1).setPriceOf(1, 100)
+      await time.increaseTo(yearFromNow)
+
+      const rent = Math.floor(Math.floor((1000000 + 100) / 2) / 10)
+      expect(await minechain.currentRent(1)).to.equal(rent)
+      expect(rent).to.be.greaterThan(initialDeposit)
+
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 10001,
+        })
+      ).to.changeEtherBalance(owner, 100)
+    })
+    it("should pay the contract owner using the payment when the deposit can't cover the outstanding tax.", async () => {
+      const { minechain, addr1, addr2, owner } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+
+      await time.increase(60 * 60 * 24 * 365)
+
+      await expect(
+        minechain.connect(addr2).buy(1, 0, {
+          value: 1000,
+        })
+      ).to.changeEtherBalance(owner, +100)
+    })
   })
   describe('Collect', () => {
-    it("should only allow valid tokens", async () => {
+    it('should only allow valid tokens', async () => {
       const { minechain } = await loadFixture(deployTokenFixture)
 
-      await expect(minechain.collectRent(1024)).to.be.revertedWith("Minechain: attempt to perform action on nonexistent token")
+      await expect(minechain.collectRent(1024)).to.be.revertedWith(
+        'Minechain: attempt to perform action on nonexistent token'
+      )
     })
-    it("should only be able to be called by contract owner", async () => {
-        const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-        
-        await expect(minechain.connect(addr1).collectRent(1)).to.be.revertedWith("Ownable: caller is not the owner")
-        await expect(minechain.collectRent(1)).not.to.be.reverted
+    it('should only be able to be called by contract owner', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      await expect(minechain.connect(addr1).collectRent(1)).to.be.revertedWith(
+        'Ownable: caller is not the owner'
+      )
+      await expect(minechain.collectRent(1)).not.to.be.reverted
     })
-    it("should reposses if deposit is zero", async () => {
+    it('should reposses if deposit is zero', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
       await minechain.connect(addr1).buy(1, 1000, {
         value: 0,
       })
       await time.increase(60 * 60 * 24 * 365)
-        
-      await expect(minechain.collectRent(1)).not.to.be.reverted;
-    
 
+      await expect(minechain.collectRent(1)).not.to.be.reverted
     })
-    it("should pay user back deposit if repossessed", async () => {
+    it('should pay user back deposit if repossessed', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
       await minechain.connect(addr1).buy(1, 1000, {
         value: 50,
       })
       await time.increase(60 * 60 * 24 * 365)
-        
+
       await expect(minechain.collectRent(1)).to.changeEtherBalance(addr1, 50)
     })
-    it("should emit Repossessed if token is repossessed", async () => {
-      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
-
-      await minechain.connect(addr1).buy(1, 1000, {
-        value: 0,
-      })     
-      await time.increase(60 * 60 * 24 * 365)
-      await expect(minechain.collectRent(1)).to.emit(minechain, "Repossessed").withArgs(addr1.address, ethers.constants.AddressZero, 1)
-    })
-    it("should reset ownership if token is repossessed", async () => {
+    it('should emit Repossessed if token is repossessed', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
       await minechain.connect(addr1).buy(1, 1000, {
         value: 0,
       })
       await time.increase(60 * 60 * 24 * 365)
-        
-      await minechain.collectRent(1);
-      
+      await expect(minechain.collectRent(1))
+        .to.emit(minechain, 'Repossessed')
+        .withArgs(addr1.address, ethers.constants.AddressZero, 1)
+    })
+    it('should reset ownership if token is repossessed', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+      await time.increase(60 * 60 * 24 * 365)
+
+      await minechain.collectRent(1)
+
       const token = await minechain.tokens(1)
       expect(token.owner).to.equal(ethers.constants.AddressZero)
       expect(token.price).to.equal(0)
     })
-    it("should collect tax from deposit", async () => {
+    it('should collect tax from deposit', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
       await minechain.connect(addr1).buy(1, 1000, {
         value: 1000,
       })
       await time.increase(60 * 60 * 24 * 365)
-        
-      await minechain.collectRent(1);
-      
+
+      await minechain.collectRent(1)
+
       const token = await minechain.tokens(1)
       expect(token.deposit).to.equal(900)
     })
-    it("should collect tax from deposit if deposit is equal to tax", async () => {
+    it('should collect tax from deposit if deposit is equal to tax', async () => {
       const { minechain, addr1 } = await loadFixture(deployTokenFixture)
 
       await minechain.connect(addr1).buy(1, 1000, {
         value: 100,
       })
       await time.increase(60 * 60 * 24 * 365)
-        
-      await minechain.collectRent(1);
-      
+
+      await minechain.collectRent(1)
+
       const token = await minechain.tokens(1)
       expect(token.deposit).to.equal(0)
+    })
+    it('should pay contract owner rent', async () => {
+      const { minechain, addr1, owner } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 1000,
+      })
+      await time.increase(60 * 60 * 24 * 365)
+
+      await expect(minechain.collectRent(1)).to.changeEtherBalance(owner, 100)
+    })
+    it('should not pay contract owner rent if repossessed', async () => {
+      const { minechain, addr1, owner } = await loadFixture(deployTokenFixture)
+
+      await minechain.connect(addr1).buy(1, 1000, {
+        value: 0,
+      })
+      await time.increase(60 * 60 * 24 * 365)
+
+      await expect(minechain.collectRent(1)).to.changeEtherBalance(owner, 0)
     })
   })
 })
