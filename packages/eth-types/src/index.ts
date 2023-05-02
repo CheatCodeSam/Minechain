@@ -1,5 +1,5 @@
-import { Lock__factory } from "./lib/types"
+import { Minechain__factory } from "./lib/types"
 
 export * from "./lib/types"
 
-export const abi = Lock__factory.abi
+export const abi = Minechain__factory.abi
