@@ -31,7 +31,7 @@ export class BlockchainProvider {
       contract.on(contract.filters.PriceChanged(), this.pricechanged)
     })
   }
-  
+
   pricechanged(
     owner: string,
     tokenId: BigNumber,
