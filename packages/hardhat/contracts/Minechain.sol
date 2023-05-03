@@ -17,7 +17,7 @@ contract Minechain is Ownable {
         uint256 lastTaxPaidDate;
         uint256 lastPriceChangeDate;
         uint256 cumulativePrice;
-        uint256 priceChangeCount;
+        uint8 priceChangeCount;
     }
 
     mapping(uint256 => Token) public tokens;
