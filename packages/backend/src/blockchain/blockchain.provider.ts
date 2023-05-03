@@ -32,20 +32,20 @@ export class BlockchainProvider {
     })
   }
 
-  pricechanged(
+  async pricechanged(
     owner: string,
     tokenId: BigNumber,
     oldPrice: BigNumber,
     newPrice: BigNumber
   ) {
-    throw new Error('Method not implemented.')
+    this.blockchainService.priceChanged(owner, tokenId, oldPrice, newPrice)
   }
 
-  repossessed(from: string, to: string, tokenId: BigNumber) {
-    throw new Error('Method not implemented.')
+  async repossessed(from: string, to: string, tokenId: BigNumber) {
+    this.blockchainService.repossessed(from,to,tokenId)
   }
 
-  sold(from: string, to: string, tokenId: BigNumber, price: BigNumber) {
-    console.log(from, to, tokenId.toString(), price.toString())
+  async sold(from: string, to: string, tokenId: BigNumber, price: BigNumber) {
+    this.blockchainService.sold(from, to, tokenId, price)
   }
 }

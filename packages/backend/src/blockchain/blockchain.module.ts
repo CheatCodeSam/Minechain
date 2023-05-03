@@ -5,10 +5,12 @@ import { BlockchainController } from './blockchain.controller';
 import { BlockchainProvider } from './blockchain.provider';
 import { BlockchainService } from './blockchain.service';
 import { EnsService } from './ens.service';
+import { MessagingModule } from '../messaging/messaging.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({}),
+    MessagingModule,
     EthersModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -36,6 +38,6 @@ import { EnsService } from './ens.service';
   ],
   controllers: [BlockchainController],
   providers: [BlockchainService, BlockchainProvider, EnsService],
-  exports: [EnsService]
+  exports: [EnsService, BlockchainService]
 })
 export class BlockchainModule {}
