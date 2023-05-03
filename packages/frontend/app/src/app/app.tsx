@@ -15,7 +15,7 @@ const App = () => {
     dispatch(whoAmI())
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const contract = new ethers.Contract("0x5fbdb2315678afecb367f032d93f642f64180aa3", abi, provider) as Minechain
+    const contract = new ethers.Contract(__CONTRACT_ADDRESS__, abi, provider) as Minechain
     contract.tokens(0).then(t => console.log(t))
   })
 

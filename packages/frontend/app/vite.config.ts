@@ -23,6 +23,10 @@ export default defineConfig({
     }),
   ],
 
+  define: {
+    __CONTRACT_ADDRESS__: JSON.stringify(process.env.CONTRACT_ADDRESS)
+  },
+
   test: {
     globals: true,
     cache: {
