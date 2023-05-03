@@ -13,7 +13,7 @@ export interface AuthState {
     dateJoined: string
     lastLogin: string | null
     isSuperUser: boolean
-    display: string
+    displayName: string
   } | null
 }
 

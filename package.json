@@ -8,6 +8,7 @@
   "private": true,
   "dependencies": {
     "@golevelup/nestjs-rabbitmq": "^3.5.0",
+    "@headlessui/react": "^1.7.14",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
@@ -27,8 +28,6 @@
     "connect-typeorm": "^2.0.0",
     "ethers": "^5.7.2",
     "express-session": "^1.17.3",
-    "flowbite": "^1.6.4",
-    "flowbite-react": "^0.4.2",
     "jose": "^4.13.1",
     "nestjs-ethers": "^2.0.3",
     "nestjs-s3": "^1.0.1",
