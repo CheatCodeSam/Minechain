@@ -5,21 +5,23 @@ import { Minechain, abi } from '@minechain/eth-types'
 
 export interface propertyState {
   properties: Record<number, Token> | null
-  initialized: boolean;
+  initialized: boolean
 }
 
 const initialState = {
-    properties:  null,
-    initialized: false
+  properties: null,
+  initialized: false,
 }
 
 export const propertySlice = createSlice({
   name: 'property',
   initialState,
   reducers: {
-    sold: (state, payload) => {console.log(payload.payload)},
+    sold: (state, payload) => {
+      console.log(payload.payload)
+    },
     repossessed: (state, payload) => {},
-    priceChanged: (state, payload) => {}
+    priceChanged: (state, payload) => {},
   },
 })
 

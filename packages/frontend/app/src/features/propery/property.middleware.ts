@@ -12,14 +12,32 @@ export const propertyMiddlware: Middleware = (store) => {
   ) as Minechain
 
   provider.once('block', () => {
-    contract.on(contract.filters.Sold(), (...args) =>
-      store.dispatch(propertyActions.sold({...args}))
+    contract.on(contract.filters.Sold(), (from, to, tokenId, price, _) =>
+      store.dispatch(
+        propertyActions.sold({
+          from,
+          to,
+          tokenId: tokenId.toNumber(),
+          price: price.toString(),
+        })
+      )
     )
-    contract.on(contract.filters.Repossessed(), (...args) =>
-      store.dispatch(propertyActions.repossessed({...args}))
+    contract.on(contract.filters.Repossessed(), (from, to, tokenId, _) =>
+      store.dispatch(
+        propertyActions.repossessed({ from, to, tokenId: tokenId.toNumber() })
+      )
     )
-    contract.on(contract.filters.PriceChanged(), (...args) =>
-      store.dispatch(propertyActions.priceChanged({...args}))
+    contract.on(
+      contract.filters.PriceChanged(),
+      (owner, tokenId, oldPrice, newPrice, _) =>
+        store.dispatch(
+          propertyActions.priceChanged({
+            owner,
+            tokenId: tokenId.toNumber(),
+            oldPrice: oldPrice.toString(),
+            newPrice: newPrice.toString(),
+          })
+        )
     )
   })
 

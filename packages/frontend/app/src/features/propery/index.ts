@@ -1,3 +1,3 @@
-export * from "./property.middleware"
-export * from "./property.slice"
-export {default} from "./property.slice"
+export * from './property.middleware'
+export * from './property.slice'
+export { default } from './property.slice'
