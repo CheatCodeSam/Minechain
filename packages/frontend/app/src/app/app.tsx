@@ -1,7 +1,19 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { login, whoAmI } from '../features/auth/auth.actions'
+import { whoAmI } from '../features/auth/auth.actions'
 import { AppDispatch } from './store'
+
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Index from './pages/Index'
+import Property from './pages/Property'
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Index />,
+    children: [{ path: 'property/:id', element: <Property/> }],
+  },
+])
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -10,11 +22,7 @@ const App = () => {
     dispatch(whoAmI())
   })
 
-  return (
-    <div className="" onClick={() => dispatch(login())}>
-      Login
-    </div>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App
