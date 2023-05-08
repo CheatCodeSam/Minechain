@@ -29,7 +29,7 @@ export class UserService {
   }
 
   async createUser(publicAddress: string) {
-    let newUser = this.userRepo.create({ publicAddress })
+    const newUser = this.userRepo.create({ publicAddress })
     await this.updateEns(newUser)
     return this.userRepo.save(newUser)
   }

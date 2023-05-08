@@ -10,6 +10,7 @@ import { MinecraftModule } from './minecraft/minecraft.module'
 import { AccountLinkModule } from './account-link/account-link.module'
 import { MessagingModule } from './messaging/messaging.module'
 import { PlayerHeadModule } from './player-head/player-head.module'
+import { PropertyModule } from './property/property.module'
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { PlayerHeadModule } from './player-head/player-head.module'
     MinecraftModule,
     AccountLinkModule,
     PlayerHeadModule,
+    PropertyModule,
   ],
 })
 export class AppModule {}
