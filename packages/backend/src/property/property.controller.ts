@@ -7,6 +7,6 @@ export class PropertyController {
 
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return this.propertyService.serializeProperty(id)
+    return this.propertyService.findOne(id)
   }
 }

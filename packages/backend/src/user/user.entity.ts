@@ -5,9 +5,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Exclude, Expose } from 'class-transformer'
+import { Property } from '../property/property.entity'
 
 @Entity()
 export class User extends BaseEntity {
@@ -53,6 +55,9 @@ export class User extends BaseEntity {
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'timestamptz', nullable: true })
   playerHeadRefresh: Date
+
+  @OneToMany(() => Property, (property: Property) => property.owner)
+  properties: Property[]
 
   @BeforeInsert()
   private addNonce() {

@@ -1,41 +1,65 @@
 import { Injectable } from '@nestjs/common'
 import { BlockchainService } from '../blockchain/blockchain.service'
-import { ethers } from 'ethers'
+import { BigNumber } from 'ethers'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Property } from './property.entity'
+import { Repository } from 'typeorm'
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class PropertyService {
-  constructor(private readonly blockchainService: BlockchainService) {}
+  constructor(
+    private readonly blockchainService: BlockchainService,
+    @InjectRepository(Property)
+    private readonly propertyRepo: Repository<Property>,
+    private readonly userService: UserService
+  ) {}
 
-  private SECONDS_IN_YEAR = 31536000
-  
-  public async serializeProperty(tokenId: number) {
-    const prop = await this.blockchainService.findOne(tokenId)
-
-    const firstDayOfNextMonth = new Date()
-    firstDayOfNextMonth.setMonth(firstDayOfNextMonth.getMonth() + 1, 1)
-    const now = new Date(Date.now())
-
-    return {
-      owner: prop.owner,
-      price: prop.price.toString(),
-      deposit: prop.deposit.toString(),
-      lastTaxPaidDate: prop.lastTaxPaidDate.toString(),
-      lastPriceChangeDate: prop.lastPriceChangeDate.toString(),
-      cumulativePrice: prop.cumulativePrice.toString(),
-      priceChangeCount: prop.priceChangeCount.toString(),
-
-      dueNow: this.calculateTax(prop, now).toString(),
-      dueOnFirst: this.calculateTax(prop, firstDayOfNextMonth).toString(),
-    }
+  async findOne(tokenId: number) {
+    let property: Property = null
+    if (!property) property = await this.updateProperty(tokenId)
+    console.log(property.owner);
+    
+    return property
   }
 
-  private calculateTax(token: Awaited<ReturnType<typeof this.blockchainService.findOne>>, when: Date): ethers.BigNumber {
-    const whenInSeconds = ethers.BigNumber.from(
-      Math.floor(when.getTime() / 1000)
+  // public async priceChange(
+  //   owner: string,
+  //   tokenId: BigNumber,
+  //   oldPrice: BigNumber,
+  //   newPrice: BigNumber
+  // ) {}
+
+  // public async sold(
+  //   from: string,
+  //   to: string,
+  //   tokenId: BigNumber,
+  //   price: BigNumber
+  // ) {}
+
+  // public async repossessed(from: string, to: string, tokenId: BigNumber) {}
+
+  private async updateProperty(tokenId: number): Promise<Property> {
+    const property = await this.blockchainService.findOne(tokenId)
+    const user = await this.userService.findOne({
+      publicAddress: property.owner,
+    })
+
+    await this.propertyRepo.upsert(
+      {
+        id: tokenId,
+        ownerAddress: property.owner,
+        price: property.price.toString(),
+        deposit: property.deposit.toString(),
+        lastTaxPaidDate: property.lastTaxPaidDate.toString(),
+        cumulativePrice: property.cumulativePrice.toString(),
+        lastPriceChangeDate: property.lastPriceChangeDate.toString(),
+        priceChangeCount: property.priceChangeCount,
+        ownerId: user?.id,
+      },
+      ['id']
     )
-    const holdingDuration = whenInSeconds.sub(token.lastTaxPaidDate)
-    const averagePrice = token.cumulativePrice.div(token.priceChangeCount + 1)
-    const taxAmount = averagePrice.mul(10).mul(holdingDuration)
-    return taxAmount.div(100 * this.SECONDS_IN_YEAR)
+
+    return this.propertyRepo.findOne({ where: {id: tokenId}, relations: ['owner'] })
   }
 }

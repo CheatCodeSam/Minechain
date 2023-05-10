@@ -11,6 +11,7 @@ import { AccountLinkModule } from './account-link/account-link.module'
 import { MessagingModule } from './messaging/messaging.module'
 import { PlayerHeadModule } from './player-head/player-head.module'
 import { PropertyModule } from './property/property.module'
+import { Property } from './property/property.entity'
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { PropertyModule } from './property/property.module'
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         synchronize: configService.get('ENV') === 'DEBUG',
-        entities: [User, Session],
+        entities: [User, Session, Property],
       }),
     }),
     AuthModule,
