@@ -14,7 +14,8 @@ export class AccountLinkService {
     private readonly amqpConnection: AmqpConnection,
     private readonly userService: UserService,
     private readonly configService: ConfigService
-  ) {}
+  ) {
+  }
 
   public async validateRegistration(token: string, user: User) {
     if (user.mojangId)
@@ -72,7 +73,7 @@ export class AccountLinkService {
     }
   }
 
-  private async authorizeJoin(uuid: String) {
+  private async authorizeJoin(uuid: string) {
     this.amqpConnection.publish('account-link', 'authorizeJoin', {uuid})
   }
 }

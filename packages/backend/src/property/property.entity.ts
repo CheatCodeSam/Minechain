@@ -8,6 +8,7 @@ import {
 } from 'typeorm'
 import { User } from '../user/user.entity'
 import { BigNumber as bn } from 'ethers'
+import { Exclude, Expose } from 'class-transformer'
 
 @Entity()
 export class Property extends BaseEntity {
@@ -17,6 +18,7 @@ export class Property extends BaseEntity {
   @Column()
   ownerAddress: string
 
+  @Exclude({ toPlainOnly: true })
   @Column({ nullable: true })
   ownerId: number
 
@@ -48,5 +50,17 @@ export class Property extends BaseEntity {
       .div(this.priceChangeCount + 1)
     const taxAmount = averagePrice.mul(TAX_RATE_IN_PERCENT).mul(holdingDuration)
     return taxAmount.div(100 * SECONDS_IN_YEAR)
+  }
+
+  @Expose()
+  public get dueNow(): string {
+    return this.calculateTax(new Date()).toString()
+  }
+
+  @Expose()
+  public get dueNext(): string {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 1, 1);
+    return this.calculateTax(d).toString()
   }
 }

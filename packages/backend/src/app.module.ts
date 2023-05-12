@@ -33,11 +33,11 @@ import { Property } from './property/property.entity'
     }),
     AuthModule,
     BlockchainModule,
+    PropertyModule,
     MessagingModule,
     MinecraftModule,
     AccountLinkModule,
     PlayerHeadModule,
-    PropertyModule,
   ],
 })
 export class AppModule {}

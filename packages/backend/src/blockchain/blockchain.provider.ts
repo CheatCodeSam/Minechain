@@ -1,13 +1,13 @@
 import { abi, Minechain } from '@minechain/eth-types'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { BigNumber, ethers } from 'ethers'
+import { BigNumber as bn, ethers } from 'ethers'
 import {
   EthersContract,
   InjectContractProvider,
   InjectEthersProvider,
 } from 'nestjs-ethers'
-import { BlockchainService } from './blockchain.service'
+import { PropertyService } from '../property/property.service'
 
 @Injectable()
 export class BlockchainProvider {
@@ -17,7 +17,7 @@ export class BlockchainProvider {
     @InjectEthersProvider('lcl')
     private readonly rpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly configService: ConfigService,
-    private readonly blockchainService: BlockchainService
+    private readonly propertyService: PropertyService
   ) {
     const contractAddress = this.configService.get('CONTRACT_ADDRESS')
     const contract = this.ethersContract.create(
@@ -26,26 +26,21 @@ export class BlockchainProvider {
     ) as Minechain
 
     this.rpcProvider.once('block', () => {
-      contract.on(contract.filters.Sold(), this.sold)
-      contract.on(contract.filters.Repossessed(), this.repossessed)
-      contract.on(contract.filters.PriceChanged(), this.pricechanged)
+      contract.on(
+        contract.filters.Sold(),
+        (from: string, to: string, tokenId: bn, price: bn) =>
+          this.propertyService.sold(from, to, tokenId, price)
+      )
+      contract.on(
+        contract.filters.Repossessed(),
+        (from: string, to: string, tokenId: bn) =>
+          this.propertyService.repossessed(from, to, tokenId)
+      )
+      contract.on(
+        contract.filters.PriceChanged(),
+        (owner: string, tokenId: bn, oldPrice: bn, newPrice: bn) =>
+          this.propertyService.priceChange(owner, tokenId, oldPrice, newPrice)
+      )
     })
-  }
-
-  async pricechanged(
-    owner: string,
-    tokenId: BigNumber,
-    oldPrice: BigNumber,
-    newPrice: BigNumber
-  ) {
-    this.blockchainService.priceChanged(owner, tokenId, oldPrice, newPrice)
-  }
-
-  async repossessed(from: string, to: string, tokenId: BigNumber) {
-    this.blockchainService.repossessed(from,to,tokenId)
-  }
-
-  async sold(from: string, to: string, tokenId: BigNumber, price: BigNumber) {
-    this.blockchainService.sold(from, to, tokenId, price)
   }
 }
