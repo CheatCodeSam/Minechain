@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { BlockchainService } from '../blockchain/blockchain.service'
 import { BigNumber as bn } from 'ethers'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -8,7 +8,10 @@ import { UserService } from '../user/user.service'
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 
 @Injectable()
-export class PropertyService {
+export class PropertyService implements OnModuleInit {
+
+  private readonly logger = new Logger(PropertyService.name);
+  
   constructor(
     private readonly blockchainService: BlockchainService,
     @InjectRepository(Property)
@@ -17,10 +20,45 @@ export class PropertyService {
     private readonly amqpConnection: AmqpConnection
   ) {}
 
+  async onModuleInit() {
+    const items = await this.propertyRepo
+      .createQueryBuilder()
+      .where('Property.id >= :startId AND Property.id <= :endId', {
+        startId: 0,
+        endId: 1023,
+      })
+      .getMany()
+    const foundItemIds = new Set(items.map((item) => item.id))
+    const allIds = Array.from({ length: 1024 }, (_, i) => i)
+    const missingIds = allIds.filter((id) => !foundItemIds.has(id))
+    let i = 1
+    const logStep = missingIds.length / 10
+    for (const id of missingIds) {
+      await this.updateProperty(id)
+      i++
+      if (Math.floor(i % logStep) === 0) {
+        this.logger.log(`Caching smart contract: ${Math.floor((i / missingIds.length) * 100)}%`)
+      }
+    }
+    if(missingIds.length) this.logger.log(`Caching smart contract: 100%`)
+  }
+
   async findOne(tokenId: number) {
-    let property: Property = null
-    if (!property) property = await this.updateProperty(tokenId)
-    return property
+    return this.propertyRepo.findOneBy({ id: tokenId })
+  }
+
+  async findAll(take: number, skip: number) {
+    take = take || 10
+    skip = skip || 0
+    const [result, total] = await this.propertyRepo.findAndCount({
+      order: { id: 'ASC' },
+      take: take,
+      skip: skip,
+    })
+    return {
+      data: result,
+      count: total,
+    }
   }
 
   public async priceChange(
@@ -29,6 +67,7 @@ export class PropertyService {
     oldPrice: bn,
     newPrice: bn
   ) {
+    this.updateProperty(tokenId.toNumber())
     this.amqpConnection.publish('blockchain', 'priceChanged', {
       owner,
       tokenId: tokenId.toNumber(),
@@ -38,9 +77,7 @@ export class PropertyService {
   }
 
   public async sold(from: string, to: string, tokenId: bn, price: bn) {
-    console.log(from, to, tokenId.toNumber())
-    console.log(this.amqpConnection)
-
+    this.updateProperty(tokenId.toNumber())
     this.amqpConnection.publish('blockchain', 'sold', {
       from,
       to,
@@ -50,6 +87,7 @@ export class PropertyService {
   }
 
   public async repossessed(from: string, to: string, tokenId: bn) {
+    this.updateProperty(tokenId.toNumber())
     this.amqpConnection.publish('blockchain', 'repossessed', {
       from,
       to,
