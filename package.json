@@ -29,7 +29,6 @@
     "ethers": "^5.7.2",
     "express-session": "^1.17.3",
     "jose": "^4.13.1",
-    "nestjs-ethers": "^2.0.3",
     "nestjs-s3": "^1.0.1",
     "passport-local": "^1.0.0",
     "pg": "^8.10.0",
