@@ -6,7 +6,7 @@
   "implicitDependencies": ["hardhat"],
   "targets": {
     "build": {
-      "executor": "@nrwl/js:swc",
+      "executor": "@nx/js:swc",
       "outputs": ["{options.outputPath}"],
       "dependsOn": ["^build"],
       "options": {
@@ -15,7 +15,7 @@
         "tsConfig": "packages/eth-types/tsconfig.lib.json",
         "assets": []
       }
-    },
+    }
   },
   "tags": []
 }

@@ -1,5 +1,19 @@
 {
-  "plugins": ["@nxtensions/astro"],
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx-cloud",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e", "check"],
+        "accessToken": "YjU3YmMxOWYtNWI1MS00MmIzLWI0YTQtNWZmMzBkNTExZjVifHJlYWQtd3JpdGU="
+      }
+    }
+  },
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeSourceFiles": true
+    }
+  },
+  "plugins": [],
   "targetDefaults": {
     "test": {
       "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
@@ -12,22 +26,8 @@
       ]
     }
   },
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": true
-    }
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/nx-cloud",
-      "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e", "check"],
-        "accessToken": "YjU3YmMxOWYtNWI1MS00MmIzLWI0YTQtNWZmMzBkNTExZjVifHJlYWQtd3JpdGU="
-      }
-    }
-  },
   "generators": {
-    "@nrwl/react": {
+    "@nx/react": {
       "application": {
         "style": "css",
         "linter": "eslint",
