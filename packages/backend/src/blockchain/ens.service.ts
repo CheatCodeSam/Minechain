@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InjectEthersProvider } from '../nestjs-ethers'
+import { InjectEthersProvider } from './nestjs-ethers'
 import { providers } from 'ethers'
 
 @Injectable()

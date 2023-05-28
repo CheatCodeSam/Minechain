@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { EthersContract, InjectContractProvider } from '../nestjs-ethers'
+import { EthersContract, InjectContractProvider } from './nestjs-ethers'
 import { Minechain, abi } from '@minechain/eth-types'
 import { ConfigService } from '@nestjs/config'
 

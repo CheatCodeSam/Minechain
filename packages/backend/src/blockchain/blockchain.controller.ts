@@ -3,7 +3,7 @@ import {
   EthersContract,
   InjectContractProvider,
   InjectEthersProvider,
-} from '../nestjs-ethers'
+} from './nestjs-ethers'
 import { BigNumber, ethers } from 'ethers'
 import { abi, Minechain } from '@minechain/eth-types'
 import { BlockchainService } from './blockchain.service'

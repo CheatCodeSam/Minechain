@@ -6,7 +6,7 @@ import {
   EthersContract,
   InjectContractProvider,
   InjectEthersProvider,
-} from '../nestjs-ethers'
+} from './nestjs-ethers'
 import { PropertyService } from '../property/property.service'
 
 @Injectable()
