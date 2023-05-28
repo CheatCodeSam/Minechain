@@ -6,17 +6,18 @@ import { Property } from './property.entity'
 import { Repository } from 'typeorm'
 import { UserService } from '../user/user.service'
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
+import { WebSocketGateway } from '../websocket/websocket.gateway'
 
 @Injectable()
 export class PropertyService implements OnModuleInit {
+  private readonly logger = new Logger(PropertyService.name)
 
-  private readonly logger = new Logger(PropertyService.name);
-  
   constructor(
     private readonly blockchainService: BlockchainService,
     @InjectRepository(Property)
     private readonly propertyRepo: Repository<Property>,
     private readonly userService: UserService,
+    private readonly webSocketGateway: WebSocketGateway,
     private readonly amqpConnection: AmqpConnection
   ) {}
 
@@ -37,10 +38,14 @@ export class PropertyService implements OnModuleInit {
       await this.updateProperty(id)
       i++
       if (Math.floor(i % logStep) === 0) {
-        this.logger.log(`Caching smart contract: ${Math.floor((i / missingIds.length) * 100)}%`)
+        this.logger.log(
+          `Caching smart contract: ${Math.floor(
+            (i / missingIds.length) * 100
+          )}%`
+        )
       }
     }
-    if(missingIds.length) this.logger.log(`Caching smart contract: 100%`)
+    if (missingIds.length) this.logger.log(`Caching smart contract: 100%`)
   }
 
   async findOne(tokenId: number) {
@@ -68,6 +73,12 @@ export class PropertyService implements OnModuleInit {
     newPrice: bn
   ) {
     this.updateProperty(tokenId.toNumber())
+    this.webSocketGateway.emit('blockchain', 'priceChanged', {
+      owner,
+      tokenId: tokenId.toNumber(),
+      oldPrice: oldPrice.toString(),
+      newPrice: newPrice.toString(),
+    })
     this.amqpConnection.publish('blockchain', 'priceChanged', {
       owner,
       tokenId: tokenId.toNumber(),
@@ -78,6 +89,12 @@ export class PropertyService implements OnModuleInit {
 
   public async sold(from: string, to: string, tokenId: bn, price: bn) {
     this.updateProperty(tokenId.toNumber())
+    this.webSocketGateway.emit('blockchain', 'sold', {
+      from,
+      to,
+      tokenId: tokenId.toNumber(),
+      price: price.toString(),
+    })
     this.amqpConnection.publish('blockchain', 'sold', {
       from,
       to,
@@ -88,6 +105,11 @@ export class PropertyService implements OnModuleInit {
 
   public async repossessed(from: string, to: string, tokenId: bn) {
     this.updateProperty(tokenId.toNumber())
+    this.webSocketGateway.emit('blockchain', 'repossessed', {
+      from,
+      to,
+      tokenId: tokenId.toNumber(),
+    })
     this.amqpConnection.publish('blockchain', 'repossessed', {
       from,
       to,

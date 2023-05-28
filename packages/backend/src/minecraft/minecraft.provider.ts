@@ -5,7 +5,9 @@ import { MinecraftService } from './minecraft.service'
 
 @Injectable()
 export class MinecraftProvider {
-  constructor(private readonly minecraftService: MinecraftService) {}
+  constructor(
+    private readonly minecraftService: MinecraftService,
+  ) {}
 
   @RabbitRPC({
     exchange: 'minecraft',

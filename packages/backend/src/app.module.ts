@@ -12,6 +12,7 @@ import { MessagingModule } from './messaging/messaging.module'
 import { PlayerHeadModule } from './player-head/player-head.module'
 import { PropertyModule } from './property/property.module'
 import { Property } from './property/property.entity'
+import { WebsocketModule } from './websocket/websocket.module'
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { Property } from './property/property.entity'
     MinecraftModule,
     AccountLinkModule,
     PlayerHeadModule,
+    WebsocketModule,
   ],
 })
 export class AppModule {}

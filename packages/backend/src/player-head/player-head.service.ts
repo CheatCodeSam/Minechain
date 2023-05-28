@@ -1,6 +1,5 @@
 import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { InjectS3, S3 } from 'nestjs-s3'
 import { firstValueFrom } from 'rxjs'
 import { User } from '../user/user.entity'
