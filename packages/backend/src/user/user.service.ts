@@ -77,8 +77,8 @@ export class UserService {
   }
 
   private async updatePlayerHead(user: User) {
-    const uploadData = await this.playerHeadService.getPlayerHead(user)
-    user.playerHeadKey = uploadData.Key
+    const key = await this.playerHeadService.getPlayerHead(user)
+    user.playerHeadKey = key
     // Three Days
     user.playerHeadRefresh = new Date(
       new Date().getTime() + 3 * 24 * 60 * 60 * 1000

@@ -20,14 +20,14 @@ export class PlayerHeadService {
     )
 
     const contentType: string = nameServerResponse.headers['content-type']
-    return await this.s3
-      .upload({
-        Bucket: 'bucket',
-        Body: nameServerResponse.data,
-        Key: user.publicAddress + ".png",
-        ContentType: contentType,
-        ContentDisposition: 'inline',
-      })
-      .promise()
+    const key = user.publicAddress + '.png'
+    await this.s3.putObject({
+      Bucket: 'bucket',
+      Body: nameServerResponse.data,
+      Key: key,
+      ContentType: contentType,
+      ContentDisposition: 'inline',
+    })
+    return key
   }
 }
