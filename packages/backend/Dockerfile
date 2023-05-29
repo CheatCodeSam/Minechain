@@ -1,4 +1,4 @@
-FROM docker.io/node:lts-alpine
+FROM docker.io/node:18.12.1-alpine
 
 LABEL com.minechain.name="Minechain Backend Nest.js Server"
 LABEL com.minechain.image.authors="mail@carsonweeks.com"
