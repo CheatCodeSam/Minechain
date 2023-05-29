@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
 import { AuthenticatedGuard } from '../auth/guard/authenticated.guard'
 import { CurrentUser } from './decorator/current-user.decorator'
 import { User } from './user.entity'
@@ -6,7 +6,6 @@ import { UserService } from './user.service'
 
 @Controller('user')
 export class UserController {
-
   constructor(private readonly userService: UserService) {}
 
   @Get()
@@ -15,23 +14,26 @@ export class UserController {
     return user
   }
 
-  @Post("unlink-account")
+  @Get(':publicaddress')
+  async findOne(@Param('publicaddress') publicAddress: string) {
+    return this.userService.findOne({ publicAddress })
+  }
+
+  @Post('unlink-account')
   @UseGuards(AuthenticatedGuard)
   async unlinkAccount(@CurrentUser() user: User) {
     return this.unlinkAccount(user)
   }
 
-  @Post("refresh-ens")
+  @Post('refresh-ens')
   @UseGuards(AuthenticatedGuard)
   async refreshEns(@CurrentUser() user: User) {
     return this.refreshEns(user)
   }
 
-
-  @Post("refresh-head")
+  @Post('refresh-head')
   @UseGuards(AuthenticatedGuard)
   async refreshHead(@CurrentUser() user: User) {
     return this.refreshHead(user)
   }
-
 }
