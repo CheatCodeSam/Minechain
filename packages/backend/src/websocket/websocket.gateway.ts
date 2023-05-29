@@ -16,6 +16,6 @@ export class WebSocketGateway {
   server: Server
 
   async emit(namespace: string, event: string, body: any) {
-    this.server.of(`/${namespace}`).emit(event, body)
+    this.server.emit(event, body)
   }
 }

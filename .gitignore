@@ -44,3 +44,6 @@ testem.log
 Thumbs.db
 
 .astro
+
+# Next.js
+.next
