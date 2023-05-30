@@ -11,6 +11,7 @@ export class Web3Strategy extends PassportStrategy(Strategy, "web3") {
     super({ usernameField: "publicAddress", passwordField: "signedNonce" })
   }
   async validate(publicAddress: string, signedNonce: string) {
-    return await this.authService.verify( publicAddress, signedNonce )
+    const lowerAddress = publicAddress.toLowerCase()
+    return await this.authService.verify( lowerAddress, signedNonce )
   }
 }
