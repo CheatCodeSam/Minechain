@@ -11,7 +11,6 @@ import {
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signIn.dto';
 import { Web3Guard } from './guard/web3.guard';
-import { Session as ExpressSession } from 'express-session';
 import { CurrentUser } from '../user/decorator/current-user.decorator';
 import { User } from '../user/user.entity';
 
@@ -33,9 +32,4 @@ export class AuthController {
     return user;
   }
 
-  @Post('logout')
-  logout(@Session() req: ExpressSession) {
-    req.destroy(() => '');
-    return;
-  }
 }

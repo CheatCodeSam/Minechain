@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
-import { Session } from './auth/session/session.entity'
 import { User } from './user/user.entity'
 import { BlockchainModule } from './blockchain/blockchain.module'
 import { MinecraftModule } from './minecraft/minecraft.module'
@@ -29,7 +28,7 @@ import { WebsocketModule } from './websocket/websocket.module'
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         synchronize: configService.get('ENV') === 'DEBUG',
-        entities: [User, Session, Property],
+        entities: [User, Property],
       }),
     }),
     AuthModule,

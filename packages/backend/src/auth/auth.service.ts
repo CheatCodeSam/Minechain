@@ -6,6 +6,7 @@ import {
 import { ethers } from 'ethers'
 import { UserService } from '../user/user.service'
 import { JwtService } from '@nestjs/jwt'
+import { instanceToPlain } from 'class-transformer'
 
 @Injectable()
 export class AuthService {
@@ -34,9 +35,10 @@ export class AuthService {
     const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce)
     if (publicAddress.toLowerCase() === decodedAddress.toLowerCase()) {
       const authenticatedUser = await this.userService.activateUser(user.id)
-      const jwt = await this.jwtService.signAsync({ id: authenticatedUser.id })
-      console.log(jwt)
-      return authenticatedUser
+      const access_token = await this.jwtService.signAsync({ sub: authenticatedUser.id })
+      const plainuser = instanceToPlain(authenticatedUser)
+      const returnValue = {...plainuser, access_token }
+      return returnValue
     } else {
       throw new ForbiddenException('Invalid public address.')
     }
