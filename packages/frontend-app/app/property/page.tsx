@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from 'next/link'
 
 async function getProperties(page = '1') {
   const realPage = parseInt(page) - 1
@@ -18,7 +18,7 @@ export default async function PropertyIndex(props: {
   return (
     <div>
       {data.map((property: any) => (
-        <div key={property.id}>
+        <div key={property.id} className="border">
           <div className="">{property.id}</div>
           <div className="">{property.ownerAddress}</div>
           <div className="">

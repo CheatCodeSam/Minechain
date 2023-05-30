@@ -1,3 +1,5 @@
+import SignInButton from "./components/SignInButton"
+
 async function getData() {
   const res = await fetch('https://icanhazdadjoke.com/', {
     headers: { Accept: 'application/json' },
@@ -12,5 +14,10 @@ async function getData() {
 export default async function Index() {
   const data = await getData()
 
-  return <div className="underline">{data.joke}</div>
+  return <div className="underline">
+    {data.joke}
+    <div className="">
+      <SignInButton/>
+    </div>
+  </div>
 }

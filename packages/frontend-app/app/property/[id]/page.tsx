@@ -5,10 +5,7 @@ async function getProperty(id: string) {
   }
  
 export default async function FindOne(props: { params: {id: string} }) {
- const property = await getProperty(props.params.id)
-
-  console.log(property);
- 
+ const property = await getProperty(props.params.id) 
   return <div className="">
     <div className="">{property.ownerAddress}</div>
     <div className="">{property.price}</div>
