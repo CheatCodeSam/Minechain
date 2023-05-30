@@ -16,7 +16,7 @@ export class UserController {
 
   @Get(':publicaddress')
   async findOne(@Param('publicaddress') publicAddress: string) {
-    return this.userService.findOne({ publicAddress })
+    return this.userService.findOne({ publicAddress: publicAddress.toLowerCase() })
   }
 
   @Post('unlink-account')
