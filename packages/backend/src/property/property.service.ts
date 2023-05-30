@@ -119,9 +119,10 @@ export class PropertyService implements OnModuleInit {
 
   private async updateProperty(tokenId: number): Promise<Property> {
     const property = await this.blockchainService.findOne(tokenId)
-    const user = await this.userService.findOne({
-      publicAddress: property.owner,
+    let user = await this.userService.findOne({
+      publicAddress: property.owner.toLowerCase(),
     })
+    if (!user) user = await this.userService.createUser(property.owner.toLowerCase())
 
     await this.propertyRepo.upsert(
       {
@@ -133,7 +134,7 @@ export class PropertyService implements OnModuleInit {
         cumulativePrice: property.cumulativePrice.toString(),
         lastPriceChangeDate: property.lastPriceChangeDate.toString(),
         priceChangeCount: property.priceChangeCount,
-        ownerId: user?.id,
+        ownerId: user.id,
       },
       ['id']
     )

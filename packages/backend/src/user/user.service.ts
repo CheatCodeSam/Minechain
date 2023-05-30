@@ -41,7 +41,7 @@ export class UserService {
   }
 
   async findOne(findOperators: FindOptionsWhere<User>) {
-    const user = await this.userRepo.findOne({ where: findOperators })
+    const user = await this.userRepo.findOne({ where: findOperators, relations: ["properties"] })
     if (user) {
       await this.updateEnsNameIfNeeded(user)
       if (user.mojangId) await this.updatePlayerHeadIfNeeded(user)
