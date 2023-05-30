@@ -12,7 +12,7 @@ export default async function FindOne(props: { params: { id: string } }) {
   return (
     <div className="">
       <div className="">
-        <Link href={`/user/${property.ownerAddress}`}>
+        <Link className='underline' href={`/user/${property.ownerAddress}`}>
           {property.ownerAddress}
         </Link>
       </div>

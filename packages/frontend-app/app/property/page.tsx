@@ -21,7 +21,7 @@ export default async function PropertyIndex(props: {
         <div key={property.id} className="border">
           <div className="">{property.id}</div>
           <div className="">{property.ownerAddress}</div>
-          <div className="">
+          <div className="underline">
             <Link href={`/property/${property.id}`}>View Property</Link>
           </div>
         </div>

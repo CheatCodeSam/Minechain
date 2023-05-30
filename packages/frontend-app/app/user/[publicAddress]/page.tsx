@@ -18,7 +18,7 @@ export default async function FindOne(props: {
       {user.properties.map((property: any) => {
         return (
           <div className="" key={property.id}>
-            <Link href={`/property/${property.id}`}>{property.id}</Link>
+            <Link href={`/property/${property.id}`} className='underline'>{property.id}</Link>
           </div>
         )
       })}
