@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import BuyButton from '../../components/BuyButton'
 
 async function getProperty(id: string) {
   const res = await fetch(`http://localhost:3333/api/property/${id}`, {
@@ -17,7 +18,7 @@ export default async function FindOne(props: { params: { id: string } }) {
         </Link>
       </div>
       <div className="">{property.price}</div>
-      <button className="underline">Buy</button>
+      <BuyButton id={parseInt(props.params.id)}/>
     </div>
   )
 }
