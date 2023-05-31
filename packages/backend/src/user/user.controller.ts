@@ -19,12 +19,6 @@ export class UserController {
     return this.userService.findOne({ publicAddress: publicAddress.toLowerCase() })
   }
 
-  @Post('unlink-account')
-  @UseGuards(AuthenticatedGuard)
-  async unlinkAccount(@CurrentUser() user: User) {
-    return this.unlinkAccount(user)
-  }
-
   @Post('refresh-ens')
   @UseGuards(AuthenticatedGuard)
   async refreshEns(@CurrentUser() user: User) {

@@ -1,6 +1,10 @@
+import { getServerSession } from 'next-auth'
 import Link from 'next/link'
+import { AuthOptions } from '../api/auth/[...nextauth]/route'
 
 async function getProperties(page = '1') {
+  const session = await getServerSession(AuthOptions)
+  console.log(session)
   const realPage = parseInt(page) - 1
   const res = await fetch(
     `http://localhost:3333/api/property/?skip=${10 * realPage}&take=10`,

@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-const handler = NextAuth({
+export const AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Ethereum',
@@ -15,7 +15,7 @@ const handler = NextAuth({
           label: 'Public Address',
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const signature = credentials?.signature || ''
         const publicAddress = credentials?.publicAddress || ''
 
@@ -33,9 +33,29 @@ const handler = NextAuth({
       },
     }),
   ],
-  pages: {
-    signIn: '/signin',
+  jwt: {
+    maxAge: 604800
   },
-})
+  callbacks: {
+    async signIn({ user, account, credentials }) {
+      account.access_token = user.access_token
+      return true
+    },
+    async jwt({ user, token, account, profile }) {
+      if(account){
+        token.access_token = account.access_token
+        token.id = account.id
+      }
+      return token;
+    },
+    async session({session, token, user}) {
+      session.access_token = token.access_token
+      session.user.id = token.sub
+      return session
+    },
+  },
+}
+
+const handler = NextAuth(AuthOptions)
 
 export { handler as GET, handler as POST }
