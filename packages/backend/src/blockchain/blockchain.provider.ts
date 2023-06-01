@@ -13,6 +13,8 @@ import {
   PriceChangedEvent,
   RepossessedEvent,
   SoldEvent,
+  DepositEvent,
+  WithdrawalEvent,
 } from './blockchain.events'
 
 @Injectable()
@@ -20,10 +22,14 @@ export class BlockchainProvider {
   private soldSubject = new Subject<SoldEvent>()
   private repossessedSubject = new Subject<RepossessedEvent>()
   private priceChangedSubject = new Subject<PriceChangedEvent>()
+  private withdrawalSubject = new Subject<WithdrawalEvent>()
+  private depositSubject = new Subject<DepositEvent>()
 
   public sold$ = this.soldSubject.asObservable()
   public repossessed$ = this.repossessedSubject.asObservable()
   public priceChanged$ = this.priceChangedSubject.asObservable()
+  public withdrawal$ = this.withdrawalSubject.asObservable()
+  public deposit$ = this.depositSubject.asObservable()
 
   constructor(
     @InjectContractProvider('lcl')
@@ -53,6 +59,16 @@ export class BlockchainProvider {
         contract.filters.PriceChanged(),
         (owner: string, tokenId: bn, oldPrice: bn, newPrice: bn) =>
           this.priceChangedSubject.next({ owner, tokenId, oldPrice, newPrice })
+      )
+      contract.on(
+        contract.filters.Deposit(),
+        (from: string, tokenId: bn, newAmount: bn, amountAdded: bn) =>
+          this.depositSubject.next({ from, tokenId, newAmount, amountAdded })
+      )
+      contract.on(
+        contract.filters.Withdrawal(),
+        (to: string, tokenId: bn, newAmount: bn, amountWithdrawn: bn) =>
+          this.withdrawalSubject.next({ to, tokenId, newAmount, amountWithdrawn })
       )
     })
   }

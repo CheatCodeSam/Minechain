@@ -20,10 +20,29 @@ export class PropertyProvider {
         this.priceChange(owner, tokenId, oldPrice, newPrice)
       }
     )
+    this.blockchainProvider.deposit$.subscribe(
+      ({ from, tokenId, newAmount, amountAdded }) => {
+        this.deposit(from, tokenId, newAmount, amountAdded)
+      }
+    )
+    this.blockchainProvider.withdrawal$.subscribe(
+      ({ to, tokenId, newAmount, amountWithdrawn }) => {
+        this.withdrawal(to, tokenId, newAmount, amountWithdrawn)
+      }
+    )
+  }
+
+  withdrawal(to: string, tokenId: bn, newAmount: bn, amountWithdrawn: bn) {
+    console.log(newAmount.toString())
+    console.log(amountWithdrawn.toString())
+  }
+
+  deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
+    console.log(newAmount.toString(), amountAdded.toString())
   }
 
   sold(from: string, to: string, tokenId: bn, price: bn) {
-    console.log("sold")
+    console.log('sold')
     this.propertyService.sold(from, to, tokenId, price)
   }
 

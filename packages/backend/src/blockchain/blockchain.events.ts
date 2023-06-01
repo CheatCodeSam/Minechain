@@ -19,3 +19,17 @@ export interface PriceChangedEvent {
   oldPrice: BigNumber
   newPrice: BigNumber
 }
+
+export interface DepositEvent {
+  from: string
+  tokenId: BigNumber
+  newAmount: BigNumber
+  amountAdded: BigNumber
+}
+
+export interface WithdrawalEvent {
+  to: string
+  tokenId: BigNumber
+  newAmount: BigNumber
+  amountWithdrawn: BigNumber
+}
