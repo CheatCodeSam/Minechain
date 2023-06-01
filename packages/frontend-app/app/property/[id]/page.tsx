@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import axios from 'axios'
 import { notFound } from "next/navigation"
+import BuyButton from './BuyButton'
 
-export const revalidate = 0
+export const dynamic = 'force-dynamic'
 
 interface PropTypes {
   params: {
@@ -21,8 +22,8 @@ export default async function FindOne({ params }: PropTypes) {
 
   return (
     <div className="">
+      <div><Link href={"/all"}>View all properties</Link></div>
             <h1>id: {property.id}</h1>
-
       <div className="">
         <Link className="underline" href={`/`}>
           {property.ownerAddress}
@@ -47,6 +48,7 @@ export default async function FindOne({ params }: PropTypes) {
           )}
         </span>
       </div>
+      <BuyButton id={id}/>
     </div>
   )
 }
