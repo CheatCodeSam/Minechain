@@ -7,17 +7,30 @@ import {
   InjectContractProvider,
   InjectEthersProvider,
 } from './nestjs-ethers'
-import { PropertyService } from '../property/property.service'
+
+import { Subject } from 'rxjs'
+import {
+  PriceChangedEvent,
+  RepossessedEvent,
+  SoldEvent,
+} from './blockchain.events'
 
 @Injectable()
 export class BlockchainProvider {
+  private soldSubject = new Subject<SoldEvent>()
+  private repossessedSubject = new Subject<RepossessedEvent>()
+  private priceChangedSubject = new Subject<PriceChangedEvent>()
+
+  public sold$ = this.soldSubject.asObservable()
+  public repossessed$ = this.repossessedSubject.asObservable()
+  public priceChanged$ = this.priceChangedSubject.asObservable()
+
   constructor(
     @InjectContractProvider('lcl')
     private readonly ethersContract: EthersContract,
     @InjectEthersProvider('lcl')
     private readonly rpcProvider: ethers.providers.StaticJsonRpcProvider,
-    private readonly configService: ConfigService,
-    private readonly propertyService: PropertyService
+    private readonly configService: ConfigService
   ) {
     const contractAddress = this.configService.get('CONTRACT_ADDRESS')
     const contract = this.ethersContract.create(
@@ -29,18 +42,24 @@ export class BlockchainProvider {
       contract.on(
         contract.filters.Sold(),
         (from: string, to: string, tokenId: bn, price: bn) =>
-          this.propertyService.sold(from, to, tokenId, price)
+          this.soldSubject.next({ from, to, tokenId, price })
       )
       contract.on(
         contract.filters.Repossessed(),
         (from: string, to: string, tokenId: bn) =>
-          this.propertyService.repossessed(from, to, tokenId)
+          this.repossessedSubject.next({ from, to, tokenId })
       )
       contract.on(
         contract.filters.PriceChanged(),
         (owner: string, tokenId: bn, oldPrice: bn, newPrice: bn) =>
-          this.propertyService.priceChange(owner, tokenId, oldPrice, newPrice)
+          this.priceChangedSubject.next({ owner, tokenId, oldPrice, newPrice })
       )
     })
+  }
+
+  onModuleDestroy() {
+    this.soldSubject.complete()
+    this.repossessedSubject.complete()
+    this.priceChangedSubject.complete()
   }
 }

@@ -1,16 +1,13 @@
 import { Module, forwardRef } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { EthersModule, MAINNET_NETWORK } from './nestjs-ethers'
-import { BlockchainController } from './blockchain.controller'
 import { BlockchainProvider } from './blockchain.provider'
 import { BlockchainService } from './blockchain.service'
 import { EnsService } from './ens.service'
-import { PropertyModule } from '../property/property.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({}),
-    forwardRef(() => PropertyModule),
     EthersModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -34,8 +31,8 @@ import { PropertyModule } from '../property/property.module'
       }),
     }),
   ],
-  controllers: [BlockchainController],
+  controllers: [],
   providers: [BlockchainService, BlockchainProvider, EnsService],
-  exports: [EnsService, BlockchainService],
+  exports: [EnsService, BlockchainService, BlockchainProvider],
 })
 export class BlockchainModule {}

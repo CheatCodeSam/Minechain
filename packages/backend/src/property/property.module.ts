@@ -7,17 +7,18 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from '../user/user.module'
 import { MessagingModule } from '../messaging/messaging.module'
 import { WebsocketModule } from '../websocket/websocket.module'
+import { PropertyProvider } from './property.provider'
 
 @Module({
   imports: [
     MessagingModule,
-    forwardRef(() => BlockchainModule),
+    BlockchainModule,
     TypeOrmModule.forFeature([Property]),
-    forwardRef(() => UserModule),
-    WebsocketModule
+    UserModule,
+    WebsocketModule,
   ],
   controllers: [PropertyController],
-  providers: [PropertyService],
+  providers: [PropertyService, PropertyProvider],
   exports: [PropertyService],
 })
 export class PropertyModule {}
