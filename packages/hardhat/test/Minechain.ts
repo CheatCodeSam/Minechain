@@ -215,6 +215,24 @@ describe('Minechain', () => {
       const token = await minechain.tokens(1)
       expect(token.deposit).to.equal(ethers.utils.parseEther('2'))
     })
+    it('should emit witdrawal', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+      await expect(
+        minechain
+          .connect(addr1)
+          .depositRent(1, { value: ethers.utils.parseEther('1') })
+      )
+        .to.emit(minechain, 'Deposit')
+        .withArgs(
+          addr1.address,
+          1,
+          ethers.utils.parseEther('2'),
+          ethers.utils.parseEther('1')
+        )
+    })
   })
   describe('Withdrawl', () => {
     it('should withdrawl all of one eth deposit', async () => {
@@ -300,6 +318,30 @@ describe('Minechain', () => {
         'Minechain: attempt to perform action on nonexistent token'
       )
     })
+    it('should emit witdrawal', async () => {
+      const { minechain, addr1 } = await loadFixture(deployTokenFixture)
+      await minechain.connect(addr1).buy(1, ethers.utils.parseEther('1'), {
+        value: ethers.utils.parseEther('1'),
+      })
+      const twentyFivePercentOfEth = ethers.utils
+        .parseEther('1')
+        .mul(25)
+        .div(100)
+      const seventyFivePercentOfEth = ethers.utils
+        .parseEther('1')
+        .mul(75)
+        .div(100)
+      await expect(
+        minechain.connect(addr1).withdrawRent(1, twentyFivePercentOfEth)
+      )
+        .to.emit(minechain, 'Withdrawal')
+        .withArgs(
+          addr1.address,
+          1,
+          seventyFivePercentOfEth,
+          twentyFivePercentOfEth
+        )
+    })
   })
   describe('Buy', () => {
     it('should have the correct user as the token owner', async () => {
@@ -340,7 +382,7 @@ describe('Minechain', () => {
         })
       ).to.revertedWith('Minechain: Insufficient payment')
     })
-    it("should take the correct payment from the buyer", async () => {
+    it('should take the correct payment from the buyer', async () => {
       const { minechain, addr1, addr2 } = await loadFixture(deployTokenFixture)
 
       await minechain.connect(addr1).buy(1, 1000, {
@@ -460,8 +502,10 @@ describe('Minechain', () => {
         .to.emit(minechain, 'Sold')
         .withArgs(ethers.constants.AddressZero, addr1.address, 1, 1000)
     })
-    it("should pay contract owner outstanding tax", async () => {
-      const { minechain, addr1, addr2, owner } = await loadFixture(deployTokenFixture)
+    it('should pay contract owner outstanding tax', async () => {
+      const { minechain, addr1, addr2, owner } = await loadFixture(
+        deployTokenFixture
+      )
 
       await minechain.connect(addr1).buy(1, 1000, {
         value: 1000,
@@ -475,8 +519,10 @@ describe('Minechain', () => {
         })
       ).to.changeEtherBalance(owner, +100)
     })
-    it("should pay contract owner full payment if payment and deposit cannot cover tax", async () => {
-      const { minechain, addr1, addr2, owner } = await loadFixture(deployTokenFixture)
+    it('should pay contract owner full payment if payment and deposit cannot cover tax', async () => {
+      const { minechain, addr1, addr2, owner } = await loadFixture(
+        deployTokenFixture
+      )
       const initialDeposit = 0
 
       await minechain.connect(addr1).buy(1, 1000000, {
@@ -500,7 +546,9 @@ describe('Minechain', () => {
       ).to.changeEtherBalance(owner, 100)
     })
     it("should pay the contract owner using the payment when the deposit can't cover the outstanding tax.", async () => {
-      const { minechain, addr1, addr2, owner } = await loadFixture(deployTokenFixture)
+      const { minechain, addr1, addr2, owner } = await loadFixture(
+        deployTokenFixture
+      )
 
       await minechain.connect(addr1).buy(1, 1000, {
         value: 0,

@@ -40,6 +40,20 @@ contract Minechain is Ownable {
         uint256 indexed tokenId
     );
 
+    event Deposit(
+        address indexed from,
+        uint256 indexed tokenId,
+        uint256 indexed newAmount,
+        uint256 amountAdded
+    );
+
+    event Withdrawal(
+        address indexed to,
+        uint256 indexed tokenId,
+        uint256 indexed newAmount,
+        uint256 amountWithdrawn
+    );
+
     modifier onlyTokenHolder(uint256 tokenId) {
         require(
             msg.sender == tokens[tokenId].owner,
@@ -151,6 +165,7 @@ contract Minechain is Ownable {
     ) public payable onlyValidToken(tokenId) {
         Token storage token = tokens[tokenId];
         token.deposit += msg.value;
+        emit Deposit(msg.sender, tokenId, token.deposit, msg.value);
     }
 
     function withdrawRent(
@@ -164,6 +179,7 @@ contract Minechain is Ownable {
         );
         token.deposit -= amount;
         payable(msg.sender).transfer(amount);
+        emit Withdrawal(msg.sender, tokenId, token.deposit, amount);
     }
 
     function collectRent(
