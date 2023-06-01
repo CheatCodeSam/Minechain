@@ -42,7 +42,6 @@ export class PropertyProvider {
   }
 
   sold(from: string, to: string, tokenId: bn, price: bn) {
-    console.log('sold')
     this.propertyService.sold(from, to, tokenId, price)
   }
 
