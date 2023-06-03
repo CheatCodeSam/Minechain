@@ -1,6 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { useSelector } from 'react-redux'
+import { RootState } from "../../store"
+
 
 interface PropTypes {
   property: {
@@ -18,7 +21,13 @@ interface PropTypes {
 }
 
 export default function Property(props: PropTypes) {
-  const { property } = props
+  const propsProperty = props.property
+  const reduxProperties = useSelector((state: RootState) => state.property.properties)
+  const reduxProperty = reduxProperties[props.property.id]
+
+  const property = reduxProperty || propsProperty
+
+
   return (
     <div className="">
       <div className="">
