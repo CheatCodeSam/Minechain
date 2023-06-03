@@ -33,12 +33,11 @@ export class PropertyProvider {
   }
 
   withdrawal(to: string, tokenId: bn, newAmount: bn, amountWithdrawn: bn) {
-    console.log(newAmount.toString())
-    console.log(amountWithdrawn.toString())
+    this.propertyService.withdrawal(to, tokenId, newAmount, amountWithdrawn)
   }
 
   deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
-    console.log(newAmount.toString(), amountAdded.toString())
+    this.propertyService.deposit(from, tokenId, newAmount, amountAdded)
   }
 
   sold(from: string, to: string, tokenId: bn, price: bn) {

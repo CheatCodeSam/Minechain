@@ -117,12 +117,37 @@ export class PropertyService implements OnModuleInit {
     })
   }
 
+  async deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
+    this.updateProperty(tokenId.toNumber())
+    this.webSocketGateway.emit('blockchain', 'deposit', {
+      from,
+      tokenId: tokenId.toNumber(),
+      newAmount: newAmount.toString(),
+      amountAdded: amountAdded.toString()
+    })
+  }
+  async withdrawal(
+    to: string,
+    tokenId: bn,
+    newAmount: bn,
+    amountWithdrawn: bn
+  ) {
+    this.updateProperty(tokenId.toNumber())
+    this.webSocketGateway.emit('blockchain', 'withdrawal', {
+      to,
+      tokenId: tokenId.toNumber(),
+      newAmount: newAmount.toString,
+      amountWithdrawn: amountWithdrawn.toString()
+    })
+  }
+
   private async updateProperty(tokenId: number): Promise<Property> {
     const property = await this.blockchainService.findOne(tokenId)
     let user = await this.userService.findOne({
       publicAddress: property.owner.toLowerCase(),
     })
-    if (!user) user = await this.userService.createUser(property.owner.toLowerCase())
+    if (!user)
+      user = await this.userService.createUser(property.owner.toLowerCase())
 
     await this.propertyRepo.upsert(
       {
