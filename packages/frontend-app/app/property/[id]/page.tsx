@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import axios from 'axios'
-import { notFound } from "next/navigation"
+import { notFound } from 'next/navigation'
 import BuyButton from './BuyButton'
+import Property from './Property'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +15,7 @@ interface PropTypes {
 export default async function FindOne({ params }: PropTypes) {
   const id = parseInt(params.id)
 
-  if(id > 1023 || id < 0) notFound()
+  if (id > 1023 || id < 0) notFound()
 
   const { data: property } = await axios.get(
     `http://localhost:3333/api/property/${id}`
@@ -22,14 +23,13 @@ export default async function FindOne({ params }: PropTypes) {
 
   return (
     <div className="">
-      <div><Link href={"/all"}>View all properties</Link></div>
-            <h1>id: {property.id}</h1>
-      <div className="">
-        <Link className="underline" href={`/`}>
-          {property.ownerAddress}
-        </Link>
+      <div>
+        <Link href={'/all'}>View all properties</Link>
       </div>
-      <div className="">{property.price}</div>
+      <h1>id: {property.id}</h1>
+
+      <Property property={property} />
+
       <div className="">
         <span>
           {id > 0 && (
@@ -48,7 +48,7 @@ export default async function FindOne({ params }: PropTypes) {
           )}
         </span>
       </div>
-      <BuyButton id={id}/>
+      <BuyButton id={id} />
     </div>
   )
 }

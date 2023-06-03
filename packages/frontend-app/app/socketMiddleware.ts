@@ -1,5 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit'
 import { io } from 'socket.io-client'
+import { propertyActions } from './propertySlice'
 
 const socketMiddleware: Middleware = (store) => {
   const socket = io('http://localhost:3333/api/v1/ws', {
@@ -13,7 +14,8 @@ const socketMiddleware: Middleware = (store) => {
   })
 
   socket.on('sold', (payload) => {
-    console.log('buy', payload)
+    store.dispatch(propertyActions.sold(payload))
+    console.log("sold!!!")
   })
 
   return (next) => (action) => next(action)

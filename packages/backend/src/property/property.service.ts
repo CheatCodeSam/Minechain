@@ -72,7 +72,7 @@ export class PropertyService implements OnModuleInit {
     oldPrice: bn,
     newPrice: bn
   ) {
-    this.updateProperty(tokenId.toNumber())
+    const property = this.updateProperty(tokenId.toNumber())
     this.webSocketGateway.emit('blockchain', 'priceChanged', {
       owner,
       tokenId: tokenId.toNumber(),
@@ -88,12 +88,13 @@ export class PropertyService implements OnModuleInit {
   }
 
   public async sold(from: string, to: string, tokenId: bn, price: bn) {
-    this.updateProperty(tokenId.toNumber())
+    const property = await this.updateProperty(tokenId.toNumber())
     this.webSocketGateway.emit('blockchain', 'sold', {
       from,
       to,
       tokenId: tokenId.toNumber(),
       price: price.toString(),
+      property
     })
     this.amqpConnection.publish('blockchain', 'sold', {
       from,
@@ -104,7 +105,7 @@ export class PropertyService implements OnModuleInit {
   }
 
   public async repossessed(from: string, to: string, tokenId: bn) {
-    this.updateProperty(tokenId.toNumber())
+    const property = this.updateProperty(tokenId.toNumber())
     this.webSocketGateway.emit('blockchain', 'repossessed', {
       from,
       to,
@@ -118,7 +119,7 @@ export class PropertyService implements OnModuleInit {
   }
 
   async deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
-    this.updateProperty(tokenId.toNumber())
+    const property = this.updateProperty(tokenId.toNumber())
     this.webSocketGateway.emit('blockchain', 'deposit', {
       from,
       tokenId: tokenId.toNumber(),
@@ -132,7 +133,7 @@ export class PropertyService implements OnModuleInit {
     newAmount: bn,
     amountWithdrawn: bn
   ) {
-    this.updateProperty(tokenId.toNumber())
+    const property = this.updateProperty(tokenId.toNumber())
     this.webSocketGateway.emit('blockchain', 'withdrawal', {
       to,
       tokenId: tokenId.toNumber(),
