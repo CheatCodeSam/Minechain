@@ -1,17 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { property } from './types'
 
-interface property {
-  id: number
-  ownerAddress: string
-  price: string
-  deposit: string
-  lastTaxPaidDate: string
-  lastPriceChangeDate: string
-  cumulativePrice: string
-  priceChangeCount: number
-  dueNow: string
-  dueNext: string
-}
+
 
 interface SoldAction {
   from: string

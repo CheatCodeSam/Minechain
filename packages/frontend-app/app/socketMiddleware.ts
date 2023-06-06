@@ -15,7 +15,6 @@ const socketMiddleware: Middleware = (store) => {
 
   socket.on('sold', (payload) => {
     store.dispatch(propertyActions.sold(payload))
-    console.log("sold!!!")
   })
 
   return (next) => (action) => next(action)
