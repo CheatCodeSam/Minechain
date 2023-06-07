@@ -1,3 +1,4 @@
+import SignInButton from './LoginButton'
 import Provider from './Provider'
 import './global.css'
 
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Provider>
-        <body>{children}</body>
+        <body>{children}
+        <SignInButton/>
+</body>
       </Provider>
     </html>
   )
