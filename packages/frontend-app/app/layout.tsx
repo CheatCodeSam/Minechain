@@ -15,9 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Provider>
-        <body>{children}
-        <SignInButton/>
-</body>
+        <body>
+          <SignInButton />
+          {children}
+        </body>
       </Provider>
     </html>
   )

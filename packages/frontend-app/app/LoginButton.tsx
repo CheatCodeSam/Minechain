@@ -5,8 +5,7 @@ import axios from 'axios'
 import { ethers } from 'ethers'
 
 export default function SignInButton() {
-
-    const { data: session } = useSession()
+  const { data: session } = useSession()
 
   const handleLogin = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -27,8 +26,11 @@ export default function SignInButton() {
       redirect: false,
     })
   }
-  if(!session)
-    return <button onClick={() => handleLogin()}>Sign in</button>
+  if (!session) return <button onClick={() => handleLogin()}>Sign in</button>
   else
-    return <div className="" onClick={() => signOut()}>{session.user!.name}</div>
+    return (
+      <div className="" onClick={() => signOut()}>
+        {session.user!.name}
+      </div>
+    )
 }

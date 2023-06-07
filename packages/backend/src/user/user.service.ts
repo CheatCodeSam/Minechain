@@ -70,18 +70,18 @@ export class UserService {
   }
 
   private async updatePlayerHeadIfNeeded(user: User) {
-    if (user.playerHeadRefresh?.getTime() < Date.now()) {
-      await this.updatePlayerHead(user)
-      user.save()
-    }
+    // if (user.playerHeadRefresh?.getTime() < Date.now()) {
+    //   await this.updatePlayerHead(user)
+    //   user.save()
+    // }
   }
 
   private async updatePlayerHead(user: User) {
-    const key = await this.playerHeadService.getPlayerHead(user)
-    user.playerHeadKey = key
-    // Three Days
-    user.playerHeadRefresh = new Date(
-      new Date().getTime() + 3 * 24 * 60 * 60 * 1000
-    )
+    // const key = await this.playerHeadService.getPlayerHead(user)
+    // user.playerHeadKey = key
+    // // Three Days
+    // user.playerHeadRefresh = new Date(
+    //   new Date().getTime() + 3 * 24 * 60 * 60 * 1000
+    // )
   }
 }
