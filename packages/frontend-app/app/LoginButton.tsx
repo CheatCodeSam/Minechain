@@ -1,6 +1,6 @@
 'use client'
 
-import { signIn, useSession } from 'next-auth/react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import axios from 'axios'
 import { ethers } from 'ethers'
 
@@ -30,5 +30,5 @@ export default function SignInButton() {
   if(!session)
     return <button onClick={() => handleLogin()}>Sign in</button>
   else
-    return <div className="">{session.user.name}</div>
+    return <div className="" onClick={() => signOut()}>{session.user!.name}</div>
 }
