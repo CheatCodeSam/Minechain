@@ -5,3 +5,4 @@ description: The main server plugin for Minechain
 author: Carson Weeks
 website: https://github.com/CheatCodeSam/Minechain
 api-version: 1.19
+depend: [WorldGuard]

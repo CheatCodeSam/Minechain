@@ -46,6 +46,8 @@ public class RabbitMQ {
     public void addConsumer(ISubscriber subscriber, String exchange, String routingKey) {
         try {
 
+            var channel = this.createChannel();
+
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,

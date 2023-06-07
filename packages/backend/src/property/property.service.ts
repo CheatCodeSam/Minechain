@@ -101,6 +101,7 @@ export class PropertyService implements OnModuleInit {
       to,
       tokenId: tokenId.toNumber(),
       price: price.toString(),
+      property
     })
   }
 

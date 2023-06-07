@@ -37,6 +37,13 @@
     <version>5.1.0</version>
 </dependency>
 
+      <dependency>
+        <groupId>com.sk89q.worldguard</groupId>
+        <artifactId>worldguard-bukkit</artifactId>
+        <version>7.0.8</version>
+        <scope>provided</scope>
+      </dependency>
+
   </dependencies>
 
   <build>

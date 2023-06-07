@@ -9,6 +9,7 @@ import com.google.inject.Guice;
 import com.minechain.minechain.di.InjectModule;
 import com.minechain.minechain.listeners.PlayerEntry;
 import com.minechain.minechain.messaging.RabbitMQ;
+import com.minechain.minechain.subscribers.BlockchainSoldSubscriber;
 
 public class App extends JavaPlugin implements Listener {
 
@@ -27,6 +28,7 @@ public class App extends JavaPlugin implements Listener {
             this.getLogger().warning(e.getMessage());
         }
 
+        this.mqqt.addConsumer(injector.getInstance(BlockchainSoldSubscriber.class), "blockchain", "sold");
         Bukkit.getPluginManager().registerEvents(injector.getInstance(PlayerEntry.class), this);
     }
 
