@@ -1,7 +1,6 @@
 package com.minechain.minechain.subscribers;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -36,7 +35,7 @@ public class BlockchainSoldSubscriber implements ISubscriber {
             var gson = new Gson();
             var sold = gson.fromJson(data, SoldDto.class);
 
-            this.propertyService.setPropertyOwner(sold.getTokenId(), sold.getProperty().getOwner().getMojangId());
+            this.propertyService.sold(sold);
 
         } catch (Exception e) {
             // TODO: handle exception
