@@ -1,5 +1,7 @@
 package com.minechain.minechain.types;
 
+import java.util.UUID;
+
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.math.BlockVector3;
@@ -26,9 +28,9 @@ public class Region {
         return region;
     }
 
-    public void updateOwner(Player owner) {
+    public void updateOwner(UUID owner) {
         var playerDomain = new DefaultDomain();
-        playerDomain.addPlayer(owner.getUniqueId());
+        playerDomain.addPlayer(owner);
         region.setOwners(playerDomain);
     }
 }

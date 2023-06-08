@@ -1,14 +1,17 @@
 package com.minechain.minechain.subscribers;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.minechain.minechain.services.PropertyService;
+import com.minechain.minechain.types.SoldDto;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
 
 public class BlockchainSoldSubscriber implements ISubscriber {
-    
+
     private PropertyService propertyService;
 
     @Inject
@@ -28,14 +31,16 @@ public class BlockchainSoldSubscriber implements ISubscriber {
         }
     }
 
-
     private void handleData(String data) {
         try {
-            System.out.println(data);
+            var gson = new Gson();
+            var sold = gson.fromJson(data, SoldDto.class);
+
+            this.propertyService.setPropertyOwner(sold.getTokenId(), sold.getProperty().getOwner().getMojangId());
+
         } catch (Exception e) {
             // TODO: handle exception
         }
     }
-
 
 }
