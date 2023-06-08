@@ -7,6 +7,8 @@ import { Repository } from 'typeorm'
 import { UserService } from '../user/user.service'
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 import { WebSocketGateway } from '../websocket/websocket.gateway'
+import { instanceToPlain } from 'class-transformer'
+import { User } from '../user/user.entity'
 
 @Injectable()
 export class PropertyService implements OnModuleInit {
@@ -89,6 +91,8 @@ export class PropertyService implements OnModuleInit {
 
   public async sold(from: string, to: string, tokenId: bn, price: bn) {
     const property = await this.updateProperty(tokenId.toNumber())
+    console.log(property);
+
     this.webSocketGateway.emit('blockchain', 'sold', {
       from,
       to,
@@ -120,7 +124,7 @@ export class PropertyService implements OnModuleInit {
   }
 
   async deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
-    const property = this.updateProperty(tokenId.toNumber())
+    const property = this.updateProperty(tokenId.toNumber())    
     this.webSocketGateway.emit('blockchain', 'deposit', {
       from,
       tokenId: tokenId.toNumber(),
@@ -166,9 +170,11 @@ export class PropertyService implements OnModuleInit {
       ['id']
     )
 
-    return this.propertyRepo.findOne({
+    const retVal = await this.propertyRepo.findOne({
       where: { id: tokenId },
       relations: ['owner'],
     })
+    retVal.owner = instanceToPlain(retVal.owner) as User
+    return retVal;
   }
 }

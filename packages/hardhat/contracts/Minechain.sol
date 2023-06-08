@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
 import 'hardhat/console.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
@@ -39,7 +39,6 @@ contract Minechain is Ownable {
         address indexed to,
         uint256 indexed tokenId
     );
-
     event Deposit(
         address indexed from,
         uint256 indexed tokenId,

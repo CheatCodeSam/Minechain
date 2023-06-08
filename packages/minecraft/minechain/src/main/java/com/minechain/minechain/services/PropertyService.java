@@ -2,10 +2,12 @@ package com.minechain.minechain.services;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.minechain.minechain.types.Region;
+import com.minechain.minechain.types.RepossessedDto;
 import com.minechain.minechain.types.SoldDto;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -15,9 +17,11 @@ import com.sk89q.worldguard.WorldGuard;
 public class PropertyService {
 
   private Region[] properties;
+  private JavaPlugin app;
 
   @Inject
   public PropertyService(JavaPlugin app) {
+    this.app = app;
 
     var container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 
@@ -50,7 +54,25 @@ public class PropertyService {
 
   public void sold(SoldDto soldDto) {
     var property = this.properties[soldDto.getTokenId()];
-    property.updateOwner(soldDto.getProperty().getOwner().getMojangId());
+    if (soldDto.hasLinkedAccount()) {
+      property.updateOwner(soldDto.getLinkedAccount());
+    } else {
+      property.setGhostProperty(soldDto.getTo());
+    }
+
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        property.updateScoreBoard(soldDto.getTokenId(), soldDto.getOwnerDisplayName(), soldDto.getPrice());
+        property.emitFirework();
+      }
+    }.runTaskLater(this.app, 20);
+
+  }
+
+  public void repossessed(RepossessedDto repossessedDto) {
+    var property = this.properties[repossessedDto.getTokenId()];
+    property.setGhostProperty(repossessedDto.getTo());
   }
 
 }

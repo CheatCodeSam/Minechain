@@ -2,7 +2,11 @@ package com.minechain.minechain.types;
 
 import java.util.UUID;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.World;
+import org.bukkit.entity.Firework;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.domains.DefaultDomain;
@@ -55,6 +59,33 @@ public class Region {
 
     public Integer getIndex() {
         return index;
+    }
+
+    public void emitFirework() {
+        Integer middleX = (this.min.getBlockX() + this.max.getBlockX()) / 2;
+        Integer middleZ = (this.min.getBlockZ() + this.max.getBlockZ()) / 2;
+
+        var highestBlockLocation = this.world.getHighestBlockAt(middleX, middleZ).getLocation().add(0, 1, 0);
+
+        Color[] colors = {Color.RED, Color.BLUE, Color.GREEN};
+        for (Color color : colors) {
+            Firework firework = (Firework) this.world.spawn(highestBlockLocation, Firework.class);
+                var meta = firework.getFireworkMeta();
+            meta.setPower(2);
+            meta.addEffect(FireworkEffect.builder()
+                    .withColor(color)
+                    .with(FireworkEffect.Type.BALL_LARGE)
+                    .build());
+            firework.setFireworkMeta(meta);
+        }
+    }
+
+    public void setGhostProperty(String to) {
+        System.out.println(to + " ghost property");
+    }
+
+    public void updateScoreBoard(Integer tokenId, String ownerDisplayName, String price) {
+        System.out.println(tokenId.toString() + " " + ownerDisplayName + " " + price);
     }
 
 }

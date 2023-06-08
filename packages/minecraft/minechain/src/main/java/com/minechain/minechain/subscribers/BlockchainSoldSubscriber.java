@@ -32,6 +32,7 @@ public class BlockchainSoldSubscriber implements ISubscriber {
 
     private void handleData(String data) {
         try {
+            System.out.println(data);
             var gson = new Gson();
             var sold = gson.fromJson(data, SoldDto.class);
 
