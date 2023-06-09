@@ -80,12 +80,11 @@ public class Region {
         }
     }
 
-    public void setGhostProperty(String to) {
-        System.out.println(to + " ghost property");
+    public void setGhostProperty() {
     }
 
-    public void updateScoreBoard(Integer tokenId, String ownerDisplayName, String price) {
-        System.out.println(tokenId.toString() + " " + ownerDisplayName + " " + price);
+    public void updateScoreBoard(String ownerDisplayName, String price) {
+        System.out.println(ownerDisplayName + " " + price);
     }
 
 }
