@@ -177,4 +177,16 @@ export class PropertyService implements OnModuleInit {
     retVal.owner = instanceToPlain(retVal.owner) as User
     return retVal;
   }
+
+
+  public async getHighestBlocks(tokenId: number): Promise<string[][]> {
+    return this.amqpConnection.request<string[][]>({
+      exchange: 'minecraft',
+      routingKey: 'getBlock',
+      payload: {
+        tokenId: tokenId.toString(),
+      },
+      timeout: 10000,
+    });
+  }
 }

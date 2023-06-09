@@ -66,10 +66,10 @@ public class Region {
 
         var highestBlockLocation = this.world.getHighestBlockAt(middleX, middleZ).getLocation().add(0, 1, 0);
 
-        Color[] colors = {Color.RED, Color.BLUE, Color.GREEN};
+        Color[] colors = { Color.RED, Color.BLUE, Color.GREEN };
         for (Color color : colors) {
-            Firework firework = (Firework) this.world.spawn(highestBlockLocation, Firework.class);
-                var meta = firework.getFireworkMeta();
+            var firework = this.world.spawn(highestBlockLocation, Firework.class);
+            var meta = firework.getFireworkMeta();
             meta.setPower(2);
             meta.addEffect(FireworkEffect.builder()
                     .withColor(color)

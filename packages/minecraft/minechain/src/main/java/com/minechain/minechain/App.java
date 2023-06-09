@@ -24,6 +24,7 @@ public class App extends JavaPlugin implements Listener {
         this.mqqt = injector.getInstance(RabbitMQ.class);
         try {
             this.mqqt.connect();
+            this.mqqt.startRPCServer();
         } catch (Exception e) {
             this.getLogger().warning(e.getMessage());
         }

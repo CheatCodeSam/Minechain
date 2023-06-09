@@ -85,4 +85,8 @@ public class RegionService {
         Bukkit.getScheduler().runTaskLater(app, task, 0);
     }
 
+    public String[][] getRegionBlocks(Integer tokenId) {
+        return this.regions[tokenId].getHighestBlocks();
+    }
+
 }
