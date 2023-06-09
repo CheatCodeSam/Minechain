@@ -2,7 +2,6 @@ package com.minechain.minechain.listeners;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,16 +65,11 @@ public class PlayerEntry implements Listener {
     @EventHandler
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent  event) throws Exception {
         var rpc = this.authenticateRpc;
-        var result = CompletableFuture.supplyAsync(new Supplier<String>() {
-            @Override
-            public String get() {
-                String retVal = "";
-                try {
-                    retVal = rpc.stringCall(new Gson().toJson(new MojangIdDto(event.getUniqueId())));
-                } catch (Exception e) {
-                    throw new IllegalStateException(e);
-                }
-                return retVal;
+        var result = CompletableFuture.supplyAsync(() -> {
+            try {
+                return rpc.stringCall(new Gson().toJson(new MojangIdDto(event.getUniqueId())));
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
             }
         });
         var user = new Gson().fromJson(result.get(), UserDto.class);

@@ -6,7 +6,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.World;
 import org.bukkit.entity.Firework;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.domains.DefaultDomain;
@@ -81,6 +80,7 @@ public class Region {
     }
 
     public void setGhostProperty() {
+        this.region.getOwners().clear();
     }
 
     public void updateScoreBoard(String ownerDisplayName, String price) {
