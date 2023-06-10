@@ -100,8 +100,6 @@ public class RabbitMQ {
                         .correlationId(properties.getCorrelationId())
                         .build();
 
-
-
                 String response = "";
                 try {
                     String request = new String(body, "UTF-8");

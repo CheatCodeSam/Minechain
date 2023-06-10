@@ -79,6 +79,8 @@ public class Region {
         }
     }
 
+
+
     public void setGhostProperty() {
         this.region.getOwners().clear();
     }

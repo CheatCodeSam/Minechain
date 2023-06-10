@@ -32,7 +32,6 @@ public class RegionService {
             }
 
             Integer index = 0;
-
             this.regions = new Region[1024];
 
             for (Integer y = -16; y < 16; y++) {
