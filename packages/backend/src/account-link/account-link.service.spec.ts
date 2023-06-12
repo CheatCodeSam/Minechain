@@ -68,5 +68,24 @@ describe('CatsController', () => {
       expect(jwt.token).toMatch(jwtRegex)
       expect(jwt.uuid).toEqual(user.mojangId)
     })
+
+    it('should recognize linked account', async () => {
+      const findOneFunction = userService.findOne.mockResolvedValue(user)
+
+      const result = await accountLinkService.isLinked(user.mojangId)
+
+      expect(result).toEqual(true)
+      expect(findOneFunction).toBeCalledWith({
+        mojangId: 'd772f296-60a0-4917-bf8f-7f33ffed41d9',
+      })
+    })
+
+    it('should recognize not linked account', async () => {
+      userService.findOne.mockResolvedValue(null)
+
+      const result = await accountLinkService.isLinked(user.mojangId)
+
+      expect(result).toEqual(false)
+    })
   })
 })
