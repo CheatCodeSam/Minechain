@@ -5,6 +5,9 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import { UserService } from '../user/user.service'
 import { User } from '../user/user.entity'
 import { ConfigService } from '@nestjs/config'
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
+
+import { ForbiddenException } from '@nestjs/common'
 
 const createUser = (user: Partial<User> = {}) => {
   const retVal = new User()
@@ -26,10 +29,11 @@ const createUser = (user: Partial<User> = {}) => {
   return retVal
 }
 
-describe('CatsController', () => {
+describe('accountLinkService', () => {
   let accountLinkService: AccountLinkService
   let userService: DeepMocked<UserService>
   let configService: DeepMocked<ConfigService>
+  let amqpConnection: DeepMocked<AmqpConnection>
   let user: User
 
   beforeEach(async () => {
@@ -42,10 +46,11 @@ describe('CatsController', () => {
     accountLinkService = moduleRef.get<AccountLinkService>(AccountLinkService)
     userService = moduleRef.get(UserService)
     configService = moduleRef.get(ConfigService)
+    amqpConnection = moduleRef.get(AmqpConnection)
     user = createUser({})
   })
 
-  describe('accountLinkService', () => {
+  describe('unlinkAccount', () => {
     it('should call unlink account', async () => {
       const mockUser = createUser()
       const unlinkMinecraftAccountFunction =
@@ -56,7 +61,9 @@ describe('CatsController', () => {
       expect(unlinkedUser).toEqual(mockUser)
       expect(unlinkMinecraftAccountFunction).toBeCalledWith(1)
     })
+  })
 
+  describe('createJwt', () => {
     it('should create a JWT', async () => {
       configService.get.mockReturnValueOnce('secret')
       const jwtRegex = /^[\w-]+\.[\w-]+\.[\w-]+$/g
@@ -68,7 +75,9 @@ describe('CatsController', () => {
       expect(jwt.token).toMatch(jwtRegex)
       expect(jwt.uuid).toEqual(user.mojangId)
     })
+  })
 
+  describe('isLinked', () => {
     it('should recognize linked account', async () => {
       const findOneFunction = userService.findOne.mockResolvedValue(user)
 
@@ -86,6 +95,56 @@ describe('CatsController', () => {
       const result = await accountLinkService.isLinked(user.mojangId)
 
       expect(result).toEqual(false)
+    })
+  })
+
+  describe('validateRegistration', () => {
+    it('should update user if successful account link', async () => {
+      const amqpPublishFunction = amqpConnection.publish
+      const updateUserMojangIdFunction = userService.updateUserMojangId
+      configService.get.mockReturnValue('secret')
+      const mojangId = user.mojangId
+      user.mojangId = null
+
+      const jwt = await accountLinkService.generateRegistrationToken(mojangId)
+      console.log("'" + jwt.token + "'")
+
+      await accountLinkService.validateRegistration(jwt.token, user)
+
+      expect(amqpPublishFunction).toBeCalledWith(
+        'account-link',
+        'authorizeJoin',
+        { uuid: mojangId }
+      )
+
+      expect(updateUserMojangIdFunction).toBeCalledWith(user.id, mojangId)
+    })
+
+    it('should throw if user already has linked account', async () => {
+      configService.get.mockReturnValueOnce('secret')
+
+      const jwt = await accountLinkService.generateRegistrationToken(
+        user.mojangId
+      )
+
+      await expect(
+        accountLinkService.validateRegistration(jwt, user)
+      ).rejects.toThrowError(
+        new ForbiddenException(
+          'User already has linked account, unlink account to reregister'
+        )
+      )
+    })
+
+    it('should throw if token is invalid', async () => {
+      configService.get.mockReturnValueOnce('secret')
+      user.mojangId = null
+
+      const jwt = 'bogus.jwt.token'
+
+      await expect(
+        accountLinkService.validateRegistration(jwt, user)
+      ).rejects.toThrowError(new ForbiddenException('Token is invalid.'))
     })
   })
 })
