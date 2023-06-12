@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Test } from '@nestjs/testing'
 import { AccountLinkService } from './account-link.service'
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
@@ -128,7 +127,7 @@ describe('accountLinkService', () => {
       )
 
       await expect(
-        accountLinkService.validateRegistration(jwt, user)
+        accountLinkService.validateRegistration(jwt.token, user)
       ).rejects.toThrowError(
         new ForbiddenException(
           'User already has linked account, unlink account to reregister'
