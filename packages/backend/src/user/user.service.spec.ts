@@ -6,11 +6,13 @@ import { createUser } from '../testing/utils'
 import { Repository } from 'typeorm'
 import { EnsService } from '../blockchain/ens.service'
 import { getRepositoryToken } from '@nestjs/typeorm'
+import { PlayerHeadService } from '../player-head/player-head.service'
 
 describe('MinecraftService', () => {
   let userService: UserService
   let userRepo: DeepMocked<Repository<User>>
   let ensService: DeepMocked<EnsService>
+  let playerHeadService: DeepMocked<PlayerHeadService>
 
   let user: User
 
@@ -36,6 +38,7 @@ describe('MinecraftService', () => {
     userService = moduleRef.get<UserService>(UserService)
     userRepo = moduleRef.get(getRepositoryToken(User))
     ensService = moduleRef.get(EnsService)
+    playerHeadService = moduleRef.get(PlayerHeadService)
   })
 
   describe('activateUser', () => {
@@ -90,6 +93,63 @@ describe('MinecraftService', () => {
       const userNotFound = await userService.findOne({ id: user.id })
 
       expect(userNotFound).toEqual(null)
+    })
+    it('should return user', async () => {
+      const yearFromNow = new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      )
+      const getEnsNameFunction = ensService.getEnsName
+      const getPlayerHeadFunction = playerHeadService.getPlayerHead
+      user.ensRefresh = yearFromNow
+      user.playerHeadRefresh = yearFromNow
+
+      const foundUser = await userService.findOne({ id: user.id })
+      expect(getEnsNameFunction).not.toBeCalled()
+      expect(getPlayerHeadFunction).not.toBeCalled()
+      expect(foundUser).toEqual(user)
+    })
+    it('should refresh ens name while getting user', async () => {
+      const yearInPast = new Date(
+        new Date().setFullYear(new Date().getFullYear() - 1)
+      )
+      const yearFromNow = new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      )
+      const getEnsNameFunction =
+        ensService.getEnsName.mockResolvedValueOnce('newname.eth')
+      const getPlayerHeadFunction = playerHeadService.getPlayerHead
+
+      user.ensRefresh = yearInPast
+      user.playerHeadRefresh = yearFromNow
+
+      const foundUser = await userService.findOne({ id: user.id })
+
+      expect(getPlayerHeadFunction).not.toBeCalled()
+      expect(getEnsNameFunction).toBeCalledWith(user.publicAddress)
+      expect(foundUser?.ensName).toEqual('newname.eth')
+      expect(foundUser?.ensRefresh.getTime()).toBeGreaterThan(Date.now())
+    })
+
+    it('should refresh player head while getting user', async () => {
+      const yearInPast = new Date(
+        new Date().setFullYear(new Date().getFullYear() - 1)
+      )
+      const yearFromNow = new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      )
+      const getEnsNameFunction = ensService.getEnsName
+      const getPlayerHeadFunction =
+        playerHeadService.getPlayerHead.mockResolvedValueOnce('steve.png')
+
+      user.ensRefresh = yearFromNow
+      user.playerHeadRefresh = yearInPast
+
+      const foundUser = await userService.findOne({ id: user.id })
+
+      expect(getEnsNameFunction).not.toBeCalled()
+      expect(getPlayerHeadFunction).toBeCalledWith(user)
+      expect(foundUser?.playerHeadKey).toEqual('steve.png')
+      expect(foundUser?.playerHeadRefresh.getTime()).toBeGreaterThan(Date.now())
     })
   })
 })
