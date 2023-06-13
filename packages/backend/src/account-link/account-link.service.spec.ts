@@ -28,7 +28,7 @@ const createUser = (user: Partial<User> = {}) => {
   return retVal
 }
 
-describe('accountLinkService', () => {
+describe('AccountLinkService', () => {
   let accountLinkService: AccountLinkService
   let userService: DeepMocked<UserService>
   let configService: DeepMocked<ConfigService>

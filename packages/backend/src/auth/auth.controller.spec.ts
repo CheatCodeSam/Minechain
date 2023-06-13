@@ -1,10 +1,9 @@
 import { Test } from '@nestjs/testing'
-import { AccountLinkController } from './account-link.controller'
+import { AuthController } from './auth.controller'
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import { User } from '../user/user.entity'
-
-import { AccountLinkService } from './account-link.service'
-import { RegisterTokenDto } from './dto/register-token.dto'
+import { AuthService } from './auth.service'
+import { SignInDto } from './dto/signIn.dto'
 
 const createUser = (user: Partial<User> = {}) => {
   const retVal = new User()
@@ -26,42 +25,40 @@ const createUser = (user: Partial<User> = {}) => {
   return retVal
 }
 
-describe('AccountLinkController', () => {
-  let accountLinkController: AccountLinkController
-  let accountLinkService: DeepMocked<AccountLinkService>
+describe('AuthController', () => {
+  let authService: DeepMocked<AuthService>
+  let authController: AuthController
   let user: User
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      controllers: [AccountLinkController],
+      controllers: [AuthController],
     })
       .useMocker(createMock)
       .compile()
 
-    accountLinkController = moduleRef.get(AccountLinkController)
-    accountLinkService = moduleRef.get(AccountLinkService)
+    authController = moduleRef.get(AuthController)
+    authService = moduleRef.get(AuthService)
     user = createUser({})
   })
-  describe('register', () => {
-    it('should validate user registration', async () => {
-      const validateRegistrationFunction =
-        accountLinkService.validateRegistration
-      const token = 'bogus.dto.token'
-      const registerDto: RegisterTokenDto = { token }
 
-      accountLinkController.register(registerDto, user)
+  describe('signin', () => {
+    it('should sign in the user and return the nonce', async () => {
+      const nonce = 'mySecretNonce'
+      const signInFunction = authService.signIn.mockResolvedValueOnce(nonce)
+      const signinDto: SignInDto = { publicAddress: user.publicAddress }
 
-      expect(validateRegistrationFunction).toBeCalledWith(token, user)
+      const result = await authController.signin(signinDto)
+      expect(signInFunction).toBeCalledWith(user.publicAddress)
+      expect(result).toEqual({ nonce })
     })
   })
 
-  describe('unlink', () => {
-    it('should unlink account', async () => {
-      const unlinkAccountFunction = accountLinkService.unlinkAccount
+  describe('verify', () => {
+    it('should return the user', async () => {
+      const result = await authController.verify(user)
 
-      accountLinkController.unlink(user)
-
-      expect(unlinkAccountFunction).toBeCalledWith(user)
+      expect(result).toEqual(user)
     })
   })
 })

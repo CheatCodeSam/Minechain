@@ -3,7 +3,6 @@ import { AuthService } from './auth.service'
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import { UserService } from '../user/user.service'
 import { User } from '../user/user.entity'
-import { JwtService } from '@nestjs/jwt'
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
 import { ethers } from 'ethers'
 

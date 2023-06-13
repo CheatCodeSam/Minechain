@@ -5,7 +5,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest'
 import { AccountLinkService } from './account-link.service'
 import { MojangIdDto } from './dto/mojang-id-dto'
 
-describe('accountLinkProvider', () => {
+describe('AccountLinkProvider', () => {
   let accountLinkProvider: AccountLinkProvider
   let accountLinkService: DeepMocked<AccountLinkService>
 
