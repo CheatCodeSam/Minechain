@@ -49,7 +49,7 @@ export class UserService {
     return user
   }
 
-  async unlinkMinecraftAccount(id: number) {
+  async unlinkMinecraftAccount(id: number): Promise<User> {
     const user = await this.findOne({ id })
     user.mojangId = null
     user.playerHeadRefresh = null
