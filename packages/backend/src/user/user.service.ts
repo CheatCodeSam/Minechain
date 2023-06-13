@@ -14,34 +14,39 @@ export class UserService {
     private readonly playerHeadService: PlayerHeadService
   ) {}
 
-  async activateUser(id: number) {
+  async activateUser(id: number): Promise<User> {
     const user = await this.findOne({ id })
     user.isActive = true
     user.nonce = generateShortUuid()
     return this.userRepo.save(user)
   }
 
-  async updateUserMojangId(id: number, uuid: string) {
+  async updateUserMojangId(id: number, uuid: string): Promise<User> {
     const user = await this.findOne({ id })
     user.mojangId = uuid
     await this.updatePlayerHead(user)
     return this.userRepo.save(user)
   }
 
-  async createUser(publicAddress: string) {
-    const newUser = this.userRepo.create({ publicAddress: publicAddress.toLowerCase() })
+  async createUser(publicAddress: string): Promise<User> {
+    const newUser = this.userRepo.create({
+      publicAddress: publicAddress.toLowerCase(),
+    })
     await this.updateEns(newUser)
     return this.userRepo.save(newUser)
   }
 
-  async refreshNonce(id: number) {
+  async refreshNonce(id: number): Promise<User> {
     const user = await this.findOne({ id })
     user.nonce = generateShortUuid()
     return this.userRepo.save(user)
   }
 
   async findOne(findOperators: FindOptionsWhere<User>) {
-    const user = await this.userRepo.findOne({ where: findOperators, relations: ["properties"] })
+    const user = await this.userRepo.findOne({
+      where: findOperators,
+      relations: ['properties'],
+    })
     if (user) {
       await this.updateEnsNameIfNeeded(user)
       if (user.mojangId) await this.updatePlayerHeadIfNeeded(user)
@@ -59,7 +64,7 @@ export class UserService {
   private async updateEnsNameIfNeeded(user: User) {
     if (user.ensRefresh?.getTime() < Date.now()) {
       await this.updateEns(user)
-      user.save()
+      this.userRepo.save(user)
     }
   }
 
@@ -72,7 +77,7 @@ export class UserService {
   private async updatePlayerHeadIfNeeded(user: User) {
     // if (user.playerHeadRefresh?.getTime() < Date.now()) {
     //   await this.updatePlayerHead(user)
-    //   user.save()
+    //   this.userRepo.save(user)
     // }
   }
 
