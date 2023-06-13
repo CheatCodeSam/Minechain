@@ -26,7 +26,7 @@ describe('MinecraftService', () => {
           provide: getRepositoryToken(User),
           useValue: {
             findOne: jest.fn().mockResolvedValue(user),
-            create: jest.fn().mockResolvedValue(user),
+            create: jest.fn().mockReturnValue(user),
             save: jest.fn().mockResolvedValue(user),
           },
         },
@@ -57,12 +57,14 @@ describe('MinecraftService', () => {
     it("should update user's Mojang uuid", async () => {
       user.mojangId = null
       const uuid = '7e8ad72b-2bb8-4708-a09a-e1097b5ba908'
+      const getPlayerHeadFunction = playerHeadService.getPlayerHead
 
       const userWithNewMojangId = await userService.updateUserMojangId(
         user.id,
         uuid
       )
 
+      expect(getPlayerHeadFunction).toBeCalledWith(user)
       expect(userWithNewMojangId.mojangId).toEqual(uuid)
     })
   })
@@ -150,6 +152,21 @@ describe('MinecraftService', () => {
       expect(getPlayerHeadFunction).toBeCalledWith(user)
       expect(foundUser?.playerHeadKey).toEqual('steve.png')
       expect(foundUser?.playerHeadRefresh.getTime()).toBeGreaterThan(Date.now())
+    })
+  })
+
+  describe('createUser', () => {
+    it('should create a user', async () => {
+      const createUserFunction = jest.spyOn(userRepo, 'create')
+      const getEnsNameFunction = ensService.getEnsName
+      const publicAddress = '0x2061dd3a9f09186b5CD82436467dDB79dC737227'
+
+      await userService.createUser(publicAddress)
+
+      expect(createUserFunction).toBeCalledWith({
+        publicAddress: publicAddress.toLowerCase(),
+      })
+      expect(getEnsNameFunction).toBeCalledWith(publicAddress)
     })
   })
 })
