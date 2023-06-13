@@ -169,4 +169,26 @@ describe('MinecraftService', () => {
       expect(getEnsNameFunction).toBeCalledWith(publicAddress)
     })
   })
+
+  describe('updateEns', () => {
+    it('should update ens name', async () => {
+      const getEnsNameFunction = ensService.getEnsName
+    
+      await userService.updateEns(user)
+
+      expect(getEnsNameFunction).toBeCalledWith(user.publicAddress)
+      expect(user.ensRefresh.getTime()).toBeGreaterThan(Date.now())
+    })
+  })
+
+  describe('updatePlayerHead', () => {
+    it('should update player head', async () => {
+      const getPlayerHeadFunction = playerHeadService.getPlayerHead
+    
+      await userService.updatePlayerHead(user)
+
+      expect(getPlayerHeadFunction).toBeCalledWith(user)
+      expect(user.playerHeadRefresh.getTime()).toBeGreaterThan(Date.now())
+    })
+  })
 })

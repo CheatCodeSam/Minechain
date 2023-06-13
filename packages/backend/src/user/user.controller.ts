@@ -22,12 +22,12 @@ export class UserController {
   @Post('refresh-ens')
   @UseGuards(AuthenticatedGuard)
   async refreshEns(@CurrentUser() user: User) {
-    return this.refreshEns(user)
+    return this.userService.updateEns(user)
   }
 
   @Post('refresh-head')
   @UseGuards(AuthenticatedGuard)
   async refreshHead(@CurrentUser() user: User) {
-    return this.refreshHead(user)
+    return this.userService.updatePlayerHead(user)
   }
 }

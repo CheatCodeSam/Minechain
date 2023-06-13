@@ -68,7 +68,7 @@ export class UserService {
     }
   }
 
-  private async updateEns(user: User) {
+  async updateEns(user: User) {
     user.ensName = await this.ensService.getEnsName(user.publicAddress)
     // Three Days
     user.ensRefresh = new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000)
@@ -81,7 +81,7 @@ export class UserService {
     }
   }
 
-  private async updatePlayerHead(user: User) {
+  async updatePlayerHead(user: User) {
     const key = await this.playerHeadService.getPlayerHead(user)
     user.playerHeadKey = key
     // Three Days
