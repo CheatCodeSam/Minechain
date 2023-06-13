@@ -106,7 +106,6 @@ describe('accountLinkService', () => {
       user.mojangId = null
 
       const jwt = await accountLinkService.generateRegistrationToken(mojangId)
-      console.log("'" + jwt.token + "'")
 
       await accountLinkService.validateRegistration(jwt.token, user)
 

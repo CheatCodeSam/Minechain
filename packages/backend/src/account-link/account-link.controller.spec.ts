@@ -42,22 +42,26 @@ describe('accountLinkController', () => {
     accountLinkService = moduleRef.get(AccountLinkService)
     user = createUser({})
   })
+  describe('register', () => {
+    it('should validate user registration', async () => {
+      const validateRegistrationFunction =
+        accountLinkService.validateRegistration
+      const token = 'bogus.dto.token'
+      const registerDto: RegisterTokenDto = { token }
 
-  it('should validate user registration', async () => {
-    const validateRegistrationFunction = accountLinkService.validateRegistration
-    const token = 'bogus.dto.token'
-    const registerDto: RegisterTokenDto = { token }
+      accountLinkController.register(registerDto, user)
 
-    accountLinkController.register(registerDto, user)
-
-    expect(validateRegistrationFunction).toBeCalledWith(token, user)
+      expect(validateRegistrationFunction).toBeCalledWith(token, user)
+    })
   })
 
-  it('should unlink account', async () => {
-    const unlinkAccountFunction = accountLinkService.unlinkAccount
+  describe('unlink', () => {
+    it('should unlink account', async () => {
+      const unlinkAccountFunction = accountLinkService.unlinkAccount
 
-    accountLinkController.unlink(user)
+      accountLinkController.unlink(user)
 
-    expect(unlinkAccountFunction).toBeCalledWith(user)
+      expect(unlinkAccountFunction).toBeCalledWith(user)
+    })
   })
 })
