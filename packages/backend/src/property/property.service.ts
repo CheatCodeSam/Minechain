@@ -56,7 +56,7 @@ export class PropertyService {
     return property
   }
 
-  public async findAll(take: number, skip: number) {
+  public async findAll(take: number | null, skip: number | null) {
     take = take || 10
     skip = skip || 0
     const [result, total] = await this.propertyRepo.findAndCount({
