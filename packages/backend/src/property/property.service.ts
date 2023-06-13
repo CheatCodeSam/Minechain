@@ -4,9 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Property } from './property.entity'
 import { Repository } from 'typeorm'
 import { UserService } from '../user/user.service'
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 import { instanceToPlain } from 'class-transformer'
 import { User } from '../user/user.entity'
+import { PropertyRenderService } from '../property-render/property-render.service'
 
 @Injectable()
 export class PropertyService {
@@ -17,11 +17,11 @@ export class PropertyService {
     @InjectRepository(Property)
     private readonly propertyRepo: Repository<Property>,
     private readonly userService: UserService,
-    private readonly amqpConnection: AmqpConnection
+    private readonly propertyRenderService: PropertyRenderService
   ) {}
 
   public async initialize() {
-    this.logger.log("Initializing property information from blockchain")
+    this.logger.log('Initializing property information from blockchain')
     const items = await this.propertyRepo
       .createQueryBuilder()
       .where('Property.id >= :startId AND Property.id <= :endId', {
@@ -49,7 +49,11 @@ export class PropertyService {
   }
 
   public async findOne(tokenId: number) {
-    return this.propertyRepo.findOneBy({ id: tokenId })
+    const property = await this.propertyRepo.findOneBy({ id: tokenId })
+    if (property) {
+      this.updatePropertyRenderIfNeeded(property)
+    }
+    return property
   }
 
   public async findAll(take: number, skip: number) {
@@ -94,17 +98,22 @@ export class PropertyService {
       relations: ['owner'],
     })
     retVal.owner = instanceToPlain(retVal.owner) as User
-    return retVal;
+    return retVal
   }
 
-  public async getHighestBlocks(tokenId: number): Promise<string[][]> {
-    return this.amqpConnection.request<string[][]>({
-      exchange: 'minecraft',
-      routingKey: 'getBlock',
-      payload: {
-        tokenId: tokenId.toString(),
-      },
-      timeout: 10000,
-    });
+  private async updatePropertyRenderIfNeeded(property: Property) {
+    if (property.propertyRenderRefresh.getTime() < Date.now()) {
+      await this.updatePropertyRender(property)
+      this.propertyRepo.save(property)
+    }
+  }
+
+  private async updatePropertyRender(property: Property) {
+    const key = await this.propertyRenderService.getPropertyRender(property.id)
+    property.propertyRenderKey = key
+    // 15 Minutes
+    property.propertyRenderRefresh = new Date(
+      new Date().getTime() + 15 * 60 * 1000
+    )
   }
 }

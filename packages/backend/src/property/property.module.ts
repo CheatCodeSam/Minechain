@@ -9,6 +9,7 @@ import { MessagingModule } from '../messaging/messaging.module'
 import { WebsocketModule } from '../websocket/websocket.module'
 import { PropertyProvider } from './property.provider'
 import { PropertyEventsService } from './property-events.service'
+import { PropertyRenderModule } from '../property-render/property-render.module'
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PropertyEventsService } from './property-events.service'
     TypeOrmModule.forFeature([Property]),
     UserModule,
     WebsocketModule,
+    PropertyRenderModule
   ],
   controllers: [PropertyController],
   providers: [PropertyService, PropertyProvider, PropertyEventsService],

@@ -39,6 +39,13 @@ export class Property extends BaseEntity {
   @Column()
   priceChangeCount: number
 
+  @Column({ nullable: true })
+  propertyRenderKey: string
+
+  @Exclude({ toPlainOnly: true })
+  @Column({ type: 'timestamptz' })
+  propertyRenderRefresh: Date
+
   private calculateTax(when: Date): bn {
     const SECONDS_IN_YEAR = 31536000
     const TAX_RATE_IN_PERCENT = 10

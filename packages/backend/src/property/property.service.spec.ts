@@ -19,13 +19,14 @@ const createProperty = (): Property => {
   retVal.cumulativePrice = '123'
   retVal.priceChangeCount = 0
   retVal.owner = createUser()
+  retVal.propertyRenderRefresh = new Date()
+  retVal.propertyRenderKey = "null.png"
   return retVal
 }
 
 describe('PropertyService', () => {
   let propertyService: PropertyService
 
-  let amqpConnection: DeepMocked<AmqpConnection>
   let propertyRepo: DeepMocked<Repository<Property>>
 
   let property: Property
@@ -42,6 +43,7 @@ describe('PropertyService', () => {
             findOneBy: jest.fn().mockResolvedValue(property),
             findAndCount: jest.fn().mockReturnValue([[property], 1]),
             findOne: jest.fn().mockResolvedValue(property),
+            save: jest.fn().mockResolvedValue(property),
           },
         },
       ],
@@ -51,7 +53,6 @@ describe('PropertyService', () => {
 
     propertyService = moduleRef.get<PropertyService>(PropertyService)
 
-    amqpConnection = moduleRef.get(AmqpConnection)
     propertyRepo = moduleRef.get(getRepositoryToken(Property))
 
   })
@@ -102,20 +103,5 @@ describe('PropertyService', () => {
     })
   })
 
-  describe('getHighestBlocks', () => {
-    it('should call the rpc with correct tokenId', async () => {
-      const x = amqpConnection.request
 
-      await propertyService.getHighestBlocks(1)
-
-      expect(x).toBeCalledWith({
-        exchange: 'minecraft',
-        routingKey: 'getBlock',
-        payload: {
-          tokenId: '1',
-        },
-        timeout: 10000,
-      })
-    })
-  })
 })
