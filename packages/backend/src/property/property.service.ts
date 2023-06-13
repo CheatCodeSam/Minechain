@@ -21,6 +21,7 @@ export class PropertyService {
   ) {}
 
   public async initialize() {
+    this.logger.log("Initializing property information from blockchain")
     const items = await this.propertyRepo
       .createQueryBuilder()
       .where('Property.id >= :startId AND Property.id <= :endId', {
