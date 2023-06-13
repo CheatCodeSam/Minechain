@@ -43,7 +43,7 @@ export class Property extends BaseEntity {
   propertyRenderKey: string
 
   @Exclude({ toPlainOnly: true })
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamptz', nullable: true })
   propertyRenderRefresh: Date
 
   private calculateTax(when: Date): bn {

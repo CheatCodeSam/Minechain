@@ -41,13 +41,13 @@ public class Region {
     }
 
     public String[][] getHighestBlocks() {
-        Integer width = Math.abs(this.min.getBlockX() - this.max.getBlockX());
-        Integer length = Math.abs(this.min.getBlockZ() - this.max.getBlockZ());
-        var highestBlocks = new String[width][length];
+        Integer width = Math.abs(this.min.getBlockX() - this.max.getBlockX()) + 1;
+        Integer length = Math.abs(this.min.getBlockZ() - this.max.getBlockZ()) + 1;
+        String[][] highestBlocks = new String[width][length];
         for (Integer x = 0; x < width; x++) {
             for (Integer z = 0; z < length; z++) {
-                Integer worldX = this.min.getBlockX() + x;
-                Integer worldZ = this.min.getBlockZ() + z;
+                Integer worldX = Math.min(this.min.getBlockX(), this.max.getBlockX()) + x;
+                Integer worldZ = Math.min(this.min.getBlockZ(), this.max.getBlockZ()) + z;
                 var highestBlock = this.world.getHighestBlockAt(worldX, worldZ);
                 var type = highestBlock.getType();
                 highestBlocks[x][z] = type.toString();

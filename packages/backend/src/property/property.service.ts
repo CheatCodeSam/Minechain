@@ -51,7 +51,7 @@ export class PropertyService {
   public async findOne(tokenId: number) {
     const property = await this.propertyRepo.findOneBy({ id: tokenId })
     if (property) {
-      this.updatePropertyRenderIfNeeded(property)
+      this.updatePropertyRender(property)
     }
     return property
   }
