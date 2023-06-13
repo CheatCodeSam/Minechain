@@ -1,17 +1,15 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { BlockchainService } from '../blockchain/blockchain.service'
-import { BigNumber as bn } from 'ethers'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Property } from './property.entity'
 import { Repository } from 'typeorm'
 import { UserService } from '../user/user.service'
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
-import { WebSocketGateway } from '../websocket/websocket.gateway'
 import { instanceToPlain } from 'class-transformer'
 import { User } from '../user/user.entity'
 
 @Injectable()
-export class PropertyService implements OnModuleInit {
+export class PropertyService {
   private readonly logger = new Logger(PropertyService.name)
 
   constructor(
@@ -19,11 +17,10 @@ export class PropertyService implements OnModuleInit {
     @InjectRepository(Property)
     private readonly propertyRepo: Repository<Property>,
     private readonly userService: UserService,
-    private readonly webSocketGateway: WebSocketGateway,
     private readonly amqpConnection: AmqpConnection
   ) {}
 
-  async onModuleInit() {
+  public async initialize() {
     const items = await this.propertyRepo
       .createQueryBuilder()
       .where('Property.id >= :startId AND Property.id <= :endId', {
@@ -50,11 +47,11 @@ export class PropertyService implements OnModuleInit {
     if (missingIds.length) this.logger.log(`Caching smart contract: 100%`)
   }
 
-  async findOne(tokenId: number) {
+  public async findOne(tokenId: number) {
     return this.propertyRepo.findOneBy({ id: tokenId })
   }
 
-  async findAll(take: number, skip: number) {
+  public async findAll(take: number, skip: number) {
     take = take || 10
     skip = skip || 0
     const [result, total] = await this.propertyRepo.findAndCount({
@@ -68,86 +65,7 @@ export class PropertyService implements OnModuleInit {
     }
   }
 
-  public async priceChange(
-    owner: string,
-    tokenId: bn,
-    oldPrice: bn,
-    newPrice: bn
-  ) {
-    const property = this.updateProperty(tokenId.toNumber())
-    this.webSocketGateway.emit('blockchain', 'priceChanged', {
-      owner,
-      tokenId: tokenId.toNumber(),
-      oldPrice: oldPrice.toString(),
-      newPrice: newPrice.toString(),
-    })
-    this.amqpConnection.publish('blockchain', 'priceChanged', {
-      owner,
-      tokenId: tokenId.toNumber(),
-      oldPrice: oldPrice.toString(),
-      newPrice: newPrice.toString(),
-    })
-  }
-
-  public async sold(from: string, to: string, tokenId: bn, price: bn) {
-    const property = await this.updateProperty(tokenId.toNumber())
-    console.log(property);
-
-    this.webSocketGateway.emit('blockchain', 'sold', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-      price: price.toString(),
-      property
-    })
-    this.amqpConnection.publish('blockchain', 'sold', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-      price: price.toString(),
-      property
-    })
-  }
-
-  public async repossessed(from: string, to: string, tokenId: bn) {
-    const property = this.updateProperty(tokenId.toNumber())
-    this.webSocketGateway.emit('blockchain', 'repossessed', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-    })
-    this.amqpConnection.publish('blockchain', 'repossessed', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-    })
-  }
-
-  async deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
-    const property = this.updateProperty(tokenId.toNumber())    
-    this.webSocketGateway.emit('blockchain', 'deposit', {
-      from,
-      tokenId: tokenId.toNumber(),
-      newAmount: newAmount.toString(),
-      amountAdded: amountAdded.toString()
-    })
-  }
-  async withdrawal(
-    to: string,
-    tokenId: bn,
-    newAmount: bn,
-    amountWithdrawn: bn
-  ) {
-    const property = this.updateProperty(tokenId.toNumber())
-    this.webSocketGateway.emit('blockchain', 'withdrawal', {
-      to,
-      tokenId: tokenId.toNumber(),
-      newAmount: newAmount.toString,
-      amountWithdrawn: amountWithdrawn.toString()
-    })
-  }
-
-  private async updateProperty(tokenId: number): Promise<Property> {
+  public async updateProperty(tokenId: number): Promise<Property> {
     const property = await this.blockchainService.findOne(tokenId)
     let user = await this.userService.findOne({
       publicAddress: property.owner.toLowerCase(),
@@ -177,7 +95,6 @@ export class PropertyService implements OnModuleInit {
     retVal.owner = instanceToPlain(retVal.owner) as User
     return retVal;
   }
-
 
   public async getHighestBlocks(tokenId: number): Promise<string[][]> {
     return this.amqpConnection.request<string[][]>({

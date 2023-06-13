@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'
+import { Module, OnModuleInit } from '@nestjs/common'
 import { PropertyController } from './property.controller'
 import { PropertyService } from './property.service'
 import { BlockchainModule } from '../blockchain/blockchain.module'
@@ -8,6 +8,7 @@ import { UserModule } from '../user/user.module'
 import { MessagingModule } from '../messaging/messaging.module'
 import { WebsocketModule } from '../websocket/websocket.module'
 import { PropertyProvider } from './property.provider'
+import { PropertyEventsService } from './property-events.service'
 
 @Module({
   imports: [
@@ -18,7 +19,13 @@ import { PropertyProvider } from './property.provider'
     WebsocketModule,
   ],
   controllers: [PropertyController],
-  providers: [PropertyService, PropertyProvider],
+  providers: [PropertyService, PropertyProvider, PropertyEventsService],
   exports: [PropertyService],
 })
-export class PropertyModule {}
+export class PropertyModule implements OnModuleInit {
+  constructor(private readonly propertyService: PropertyService) {}
+
+  onModuleInit() {
+    this.propertyService.initialize()
+  }
+}
