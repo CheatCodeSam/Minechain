@@ -1,10 +1,7 @@
 import { Test } from '@nestjs/testing'
 import { PropertyService } from './property.service'
 import { DeepMocked, createMock } from '@golevelup/ts-jest'
-import { UserService } from '../user/user.service'
-import { User } from '../user/user.entity'
 import { createUser } from '../testing/utils'
-import { BlockchainService } from '../blockchain/blockchain.service'
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { Property } from './property.entity'
@@ -27,12 +24,10 @@ const createProperty = (): Property => {
 
 describe('PropertyService', () => {
   let propertyService: PropertyService
-  let userService: DeepMocked<UserService>
-  let blockchainService: DeepMocked<BlockchainService>
+
   let amqpConnection: DeepMocked<AmqpConnection>
   let propertyRepo: DeepMocked<Repository<Property>>
 
-  let user: User
   let property: Property
 
   beforeEach(async () => {
@@ -55,12 +50,10 @@ describe('PropertyService', () => {
       .compile()
 
     propertyService = moduleRef.get<PropertyService>(PropertyService)
-    userService = moduleRef.get(UserService)
-    blockchainService = moduleRef.get(BlockchainService)
+
     amqpConnection = moduleRef.get(AmqpConnection)
     propertyRepo = moduleRef.get(getRepositoryToken(Property))
 
-    user = createUser()
   })
 
   describe('findOne', () => {
