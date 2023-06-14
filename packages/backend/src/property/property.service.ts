@@ -49,9 +49,9 @@ export class PropertyService {
   }
 
   public async findOne(tokenId: number) {
-    const property = await this.propertyRepo.findOneBy({ id: tokenId })
+    let property = await this.propertyRepo.findOneBy({ id: tokenId })
     if (property) {
-      this.updatePropertyRender(property)
+      property = await this.updatePropertyRenderIfNeeded(property)
     }
     return property
   }
@@ -64,6 +64,8 @@ export class PropertyService {
       take: take,
       skip: skip,
     })
+
+    result.forEach((p) => this.updatePropertyRenderIfNeeded(p))
     return {
       data: result,
       count: total,
@@ -102,9 +104,12 @@ export class PropertyService {
   }
 
   private async updatePropertyRenderIfNeeded(property: Property) {
-    if (property.propertyRenderRefresh.getTime() < Date.now()) {
+    if (
+      !property.propertyRenderRefresh ||
+      property.propertyRenderRefresh.getTime() < Date.now()
+    ) {
       await this.updatePropertyRender(property)
-      this.propertyRepo.save(property)
+      return this.propertyRepo.save(property)
     }
   }
 

@@ -24,7 +24,7 @@ export class PropertyRenderService {
 
   private async upload(tokenId: number, buffer: Buffer) {
     const contentType = "image/png"
-    const key =  "property/" + tokenId.toString() + '.png'
+    const key =  "property-render/" + tokenId.toString() + '.png'
     await this.s3.putObject({
       Bucket: 'minechain',
       Body: buffer,
