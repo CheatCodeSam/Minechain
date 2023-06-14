@@ -1,5 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 import { Injectable } from '@nestjs/common'
+import Jimp from 'jimp'
+import { ColorTable } from './color-table'
 
 @Injectable()
 export class PropertyRenderService {
@@ -16,10 +18,19 @@ export class PropertyRenderService {
     })
   }
 
-  public async getPropertyRender(tokenId: number): Promise<string> {
-    const map = await this.getHighestBlocks(tokenId)
-    console.log(map)
-    return "null"
+  private async drawProperty(propertyData: string[][]) {
+    const image = new Jimp(16, 16)
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
+        image.setPixelColor(ColorTable[propertyData[y][x].toLowerCase()], x, y)
+      }
+    }
+    return image.getBufferAsync(Jimp.MIME_PNG)
   }
 
+  public async getPropertyRender(tokenId: number): Promise<string> {
+    const map = await this.getHighestBlocks(tokenId)
+    await this.drawProperty(map)
+    return 'null'
+  }
 }

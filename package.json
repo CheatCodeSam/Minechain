@@ -30,6 +30,7 @@
     "connect-typeorm": "^2.0.0",
     "ethers": "^5.7.2",
     "express-session": "^1.17.3",
+    "jimp": "^0.22.8",
     "jose": "^4.13.1",
     "nestjs-s3": "^2.0.1",
     "next": "13.4.1",
