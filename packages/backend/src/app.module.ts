@@ -13,6 +13,7 @@ import { PropertyModule } from './property/property.module'
 import { Property } from './property/property.entity'
 import { WebsocketModule } from './websocket/websocket.module'
 import { PropertyRenderModule } from './property-render/property-render.module'
+import { StorageModule } from './storage/storage.module'
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { PropertyRenderModule } from './property-render/property-render.module'
     PlayerHeadModule,
     WebsocketModule,
     PropertyRenderModule,
+    StorageModule,
   ],
 })
 export class AppModule {}

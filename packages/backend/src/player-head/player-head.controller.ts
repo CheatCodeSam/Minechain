@@ -9,7 +9,7 @@ export class PlayerHeadController {
   @Header('Content-Disposition', 'inline')
   @Header('Content-Type', 'image/png')
   async getPlayerHead(@Param('userKey') userKey: string) {
-    const object = await this.s3.getObject({ Bucket: 'bucket', Key: userKey })
+    const object = await this.s3.getObject({ Bucket: 'minechain', Key: "playerhead/" + userKey })
     const stream = await object.Body.transformToByteArray()
     return new StreamableFile(stream)
   }
