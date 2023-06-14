@@ -46,7 +46,7 @@ describe('MinecraftService', () => {
       user.isActive = false
       const { nonce: oldNonce } = user
 
-      const activatedUser = await userService.activateUser(user.id)
+      await userService.activateUser(user.id)
 
       expect(user.isActive).toEqual(true)
       expect(user.nonce).not.toEqual(oldNonce)
@@ -55,6 +55,8 @@ describe('MinecraftService', () => {
 
   describe('updateUserMojangId', () => {
     it("should update user's Mojang uuid", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore: 2322
       user.mojangId = null
       const uuid = '7e8ad72b-2bb8-4708-a09a-e1097b5ba908'
       const getPlayerHeadFunction = playerHeadService.getPlayerHead

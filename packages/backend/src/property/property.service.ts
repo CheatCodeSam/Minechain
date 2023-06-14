@@ -65,9 +65,10 @@ export class PropertyService {
       skip: skip,
     })
 
-    result.forEach((p) => this.updatePropertyRenderIfNeeded(p))
+    const updatedProperties = result.map((p) => this.updatePropertyRenderIfNeeded(p))
+    const awaitedPromises = await Promise.all(updatedProperties)
     return {
-      data: result,
+      data: awaitedPromises,
       count: total,
     }
   }
@@ -111,6 +112,7 @@ export class PropertyService {
       await this.updatePropertyRender(property)
       return this.propertyRepo.save(property)
     }
+    return property
   }
 
   private async updatePropertyRender(property: Property) {

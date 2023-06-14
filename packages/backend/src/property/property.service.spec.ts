@@ -5,6 +5,7 @@ import { createUser } from '../testing/utils'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { Property } from './property.entity'
 import { Repository } from 'typeorm'
+import { PropertyRenderService } from '../property-render/property-render.service'
 
 const createProperty = (): Property => {
   const retVal = new Property()
@@ -19,7 +20,7 @@ const createProperty = (): Property => {
   retVal.priceChangeCount = 0
   retVal.owner = createUser()
   retVal.propertyRenderRefresh = new Date()
-  retVal.propertyRenderKey = "null.png"
+  retVal.propertyRenderKey = 'null.png'
   return retVal
 }
 
@@ -27,6 +28,7 @@ describe('PropertyService', () => {
   let propertyService: PropertyService
 
   let propertyRepo: DeepMocked<Repository<Property>>
+  let propertyRenderService: DeepMocked<PropertyRenderService>
 
   let property: Property
 
@@ -51,9 +53,8 @@ describe('PropertyService', () => {
       .compile()
 
     propertyService = moduleRef.get<PropertyService>(PropertyService)
-
+    propertyRenderService = moduleRef.get(PropertyRenderService)
     propertyRepo = moduleRef.get(getRepositoryToken(Property))
-
   })
 
   describe('findOne', () => {
@@ -65,6 +66,62 @@ describe('PropertyService', () => {
       expect(foundProperty).toBeDefined()
       expect(foundProperty?.id).toEqual(1)
       expect(findByOneFunction).toBeCalledWith({ id: 1 })
+    })
+
+    it('should not rerender the property', async () => {
+      const yearFromNow = new Date(
+        new Date().setFullYear(new Date().getFullYear() + 1)
+      )
+      const getPropertyRenderFunction = propertyRenderService.getPropertyRender
+      property.propertyRenderRefresh = yearFromNow
+
+      const foundProperty = await propertyService.findOne(1)
+
+      expect(getPropertyRenderFunction).not.toBeCalled()
+      expect(foundProperty).toEqual(property)
+    })
+
+    it('should rerender the property if date is expired', async () => {
+      const yearInPast = new Date(
+        new Date().setFullYear(new Date().getFullYear() - 1)
+      )
+
+      property.propertyRenderRefresh = yearInPast
+
+      const getPropertyRenderFunction =
+        propertyRenderService.getPropertyRender.mockResolvedValue('key.png')
+
+      const foundProperty = await propertyService.findOne(1)
+
+      expect(getPropertyRenderFunction).toBeCalled()
+      expect(foundProperty).toEqual(property)
+      expect(foundProperty?.propertyRenderKey).toEqual('key.png')
+      expect(foundProperty?.propertyRenderRefresh.getTime()).toBeGreaterThan(
+        Date.now()
+      )
+    })
+
+    it('should render the property if it has never been rendered before', async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore: 2322
+      property.propertyRenderRefresh = null
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore: 2322
+      property.propertyRenderKey = null
+
+      const getPropertyRenderFunction =
+        propertyRenderService.getPropertyRender.mockResolvedValue('key.png')
+
+      const foundProperty = await propertyService.findOne(1)
+
+      expect(getPropertyRenderFunction).toBeCalled()
+      expect(foundProperty).toEqual(property)
+      expect(foundProperty?.propertyRenderKey).toBeDefined()
+      expect(foundProperty?.propertyRenderRefresh).toBeDefined()
+      expect(foundProperty?.propertyRenderKey).toEqual('key.png')
+      expect(foundProperty?.propertyRenderRefresh.getTime()).toBeGreaterThan(
+        Date.now()
+      )
     })
   })
 
@@ -100,7 +157,22 @@ describe('PropertyService', () => {
         skip: 0,
       })
     })
+
+    it('should call render property if needed', async () => {
+
+      const yearInPast = new Date(
+        new Date().setFullYear(new Date().getFullYear() - 1)
+      )
+      const getPropertyRenderFunction =
+        propertyRenderService.getPropertyRender.mockResolvedValue('key.png')
+      property.propertyRenderRefresh = yearInPast
+
+      const foundProperty = await propertyService.findAll(null, null)
+
+      expect(foundProperty).toBeDefined()
+      expect(foundProperty?.count).toEqual(1)
+      expect(getPropertyRenderFunction).toBeCalled()
+      expect(foundProperty.data[0].propertyRenderKey).toEqual('key.png')
+    })
   })
-
-
 })
