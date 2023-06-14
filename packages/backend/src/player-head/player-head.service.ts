@@ -21,7 +21,7 @@ export class PlayerHeadService {
     // const contentType: string = nameServerResponse.headers['content-type']
     // const key = user.publicAddress + '.png'
     // await this.s3.putObject({
-    //   Bucket: 'bucket',
+    //   Bucket: 'minechain',
     //   Body: nameServerResponse.data,
     //   Key: key,
     //   ContentType: contentType,
