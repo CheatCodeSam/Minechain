@@ -68,8 +68,7 @@ describe('PlayerHeadService', () => {
       await playerHeadService.getPlayerHead(user)
 
       expect(getFunction).toBeCalledWith(
-        'https://crafatar.com/avatars/' +
-          'c77512ae-9583-4a0d-9971-7f9ed6533c39',
+        'https://crafatar.com/avatars/c77512ae-9583-4a0d-9971-7f9ed6533c39',
         {
           responseType: 'arraybuffer',
         }
