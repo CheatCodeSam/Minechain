@@ -3,12 +3,14 @@ import { Injectable } from '@nestjs/common'
 import Jimp from 'jimp'
 import { ColorTable } from './color-table'
 import { InjectS3, S3 } from 'nestjs-s3'
+import { StorageService } from '../storage/storage.service'
 
 @Injectable()
 export class PropertyRenderService {
   constructor(
     private readonly amqpConnection: AmqpConnection,
-    @InjectS3() private readonly s3: S3
+    @InjectS3() private readonly s3: S3,
+    private readonly storageService: StorageService
   ) {}
 
   private async getHighestBlocks(tokenId: number): Promise<string[][]> {
@@ -23,16 +25,11 @@ export class PropertyRenderService {
   }
 
   private async upload(tokenId: number, buffer: Buffer) {
-    const contentType = "image/png"
-    const key =  "property-render/" + tokenId.toString() + '.png'
-    await this.s3.putObject({
-      Bucket: 'minechain',
-      Body: buffer,
-      Key: key,
-      ContentType: contentType,
-      ContentDisposition: 'inline',
-    })
-    return key
+    return this.storageService.upload(
+      `property-render/${tokenId.toString()}.png`,
+      buffer,
+      'image/png'
+    )
   }
 
   private async drawProperty(propertyData: string[][]) {

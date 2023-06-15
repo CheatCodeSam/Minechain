@@ -1,13 +1,13 @@
 import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
-import { InjectS3, S3 } from 'nestjs-s3'
 import { firstValueFrom } from 'rxjs'
 import { User } from '../user/user.entity'
+import { StorageService } from '../storage/storage.service'
 
 @Injectable()
 export class PlayerHeadService {
   constructor(
-    @InjectS3() private readonly s3: S3,
+    private readonly storageService: StorageService,
     private readonly httpService: HttpService
   ) {}
 
@@ -19,14 +19,8 @@ export class PlayerHeadService {
     )
 
     const contentType: string = nameServerResponse.headers['content-type']
-    const key = 'player-head/' + user.publicAddress + '.png'
-    await this.s3.putObject({
-      Bucket: 'minechain',
-      Body: nameServerResponse.data,
-      Key: key,
-      ContentType: contentType,
-      ContentDisposition: 'inline',
-    })
-    return key
+    const key = `player-head/${user.publicAddress}.png`
+
+    return this.storageService.upload(key, nameServerResponse.data, contentType)
   }
 }
