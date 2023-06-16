@@ -125,13 +125,13 @@ describe('PropertyService', () => {
     })
   })
 
-  describe('findAll', () => {
+  describe('find', () => {
     it('should call findAndCount with correct take and skip', async () => {
       const take = 20
       const skip = 20
       const findAndCountFunction = propertyRepo.findAndCount
 
-      const foundProperty = await propertyService.findAll(take, skip)
+      const foundProperty = await propertyService.find(take, skip, undefined)
 
       expect(foundProperty).toBeDefined()
       expect(foundProperty?.count).toEqual(1)
@@ -146,7 +146,7 @@ describe('PropertyService', () => {
     it('should call findAndCount with default take and skip', async () => {
       const findAndCountFunction = propertyRepo.findAndCount
 
-      const foundProperty = await propertyService.findAll(null, null)
+      const foundProperty = await propertyService.find(null, null, undefined)
 
       expect(foundProperty).toBeDefined()
       expect(foundProperty?.count).toEqual(1)
@@ -167,7 +167,7 @@ describe('PropertyService', () => {
         propertyRenderService.getPropertyRender.mockResolvedValue('key.png')
       property.propertyRenderRefresh = yearInPast
 
-      const foundProperty = await propertyService.findAll(null, null)
+      const foundProperty = await propertyService.find(null, null, undefined)
 
       expect(foundProperty).toBeDefined()
       expect(foundProperty?.count).toEqual(1)

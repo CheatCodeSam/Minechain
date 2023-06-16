@@ -12,6 +12,6 @@ export class PropertyController {
 
   @Get()
   async findAll(@Query("take") take: number, @Query("skip") skip: number) {
-    return this.propertyService.findAll(take, skip)
+    return this.propertyService.find(take, skip, undefined)
   }
 }

@@ -6,16 +6,16 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { User } from '../user/user.entity'
 import { UserService } from '../user/user.service'
 import { ConfigService } from '@nestjs/config'
+import { PropertyService } from '../property/property.service'
 
 @Injectable()
 export class AccountLinkService {
-
   constructor(
     private readonly amqpConnection: AmqpConnection,
     private readonly userService: UserService,
-    private readonly configService: ConfigService
-  ) {
-  }
+    private readonly configService: ConfigService,
+    private readonly propertyService: PropertyService
+  ) {}
 
   public async validateRegistration(token: string, user: User) {
     if (user.mojangId)
@@ -26,6 +26,10 @@ export class AccountLinkService {
     const mojangId = await this.verifyJwt(token)
     if (!mojangId) throw new ForbiddenException('Token is invalid.')
     this.userService.updateUserMojangId(user.id, mojangId)
+    const properties = await this.propertyService.find(1024, 0, {
+      ownerAddress: user.publicAddress,
+    })
+    this.propertyService.updateProperties(properties.data)
     this.authorizeJoin(mojangId)
   }
 
@@ -38,8 +42,7 @@ export class AccountLinkService {
     return { token: await this.createJwt(uuid), uuid }
   }
 
-  public async unlinkAccount(user: User)
-  {
+  public async unlinkAccount(user: User) {
     return this.userService.unlinkMinecraftAccount(user.id)
   }
 
@@ -74,6 +77,6 @@ export class AccountLinkService {
   }
 
   private async authorizeJoin(uuid: string) {
-    this.amqpConnection.publish('account-link', 'authorizeJoin', {uuid})
+    this.amqpConnection.publish('account-link', 'authorizeJoin', { uuid })
   }
 }

@@ -29,7 +29,7 @@ public class App extends JavaPlugin implements Listener {
             this.getLogger().warning(e.getMessage());
         }
 
-        this.mqqt.addConsumer(injector.getInstance(BlockchainSoldSubscriber.class), "blockchain", "sold");
+        this.mqqt.addConsumer(injector.getInstance(BlockchainSoldSubscriber.class), "blockchain", "update");
         Bukkit.getPluginManager().registerEvents(injector.getInstance(PlayerEntry.class), this);
     }
 

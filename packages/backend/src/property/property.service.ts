@@ -2,11 +2,12 @@ import { Injectable, Logger } from '@nestjs/common'
 import { BlockchainService } from '../blockchain/blockchain.service'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Property } from './property.entity'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, Repository } from 'typeorm'
 import { UserService } from '../user/user.service'
 import { instanceToPlain } from 'class-transformer'
 import { User } from '../user/user.entity'
 import { PropertyRenderService } from '../property-render/property-render.service'
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 
 @Injectable()
 export class PropertyService {
@@ -17,7 +18,8 @@ export class PropertyService {
     @InjectRepository(Property)
     private readonly propertyRepo: Repository<Property>,
     private readonly userService: UserService,
-    private readonly propertyRenderService: PropertyRenderService
+    private readonly propertyRenderService: PropertyRenderService,
+    private readonly amqpConnection: AmqpConnection
   ) {}
 
   public async initialize() {
@@ -56,16 +58,24 @@ export class PropertyService {
     return property
   }
 
-  public async findAll(take: number | null, skip: number | null) {
+  public async find(
+    take: number | null,
+    skip: number | null,
+    where: FindOptionsWhere<Property> | undefined
+  ) {
     take = take || 10
     skip = skip || 0
     const [result, total] = await this.propertyRepo.findAndCount({
+      where,
       order: { id: 'ASC' },
       take: take,
       skip: skip,
+      relations: ['owner'],
     })
 
-    const updatedProperties = result.map((p) => this.updatePropertyRenderIfNeeded(p))
+    const updatedProperties = result.map((p) =>
+      this.updatePropertyRenderIfNeeded(p)
+    )
     const awaitedPromises = await Promise.all(updatedProperties)
     return {
       data: awaitedPromises,
@@ -73,7 +83,22 @@ export class PropertyService {
     }
   }
 
-  public async updateProperty(tokenId: number): Promise<Property> {
+  public async updateSinglePropertyById(tokenId: number) {
+    const retVal = await this.updateProperty(tokenId)
+    this.emitUpdatedProperties()
+    return retVal
+  }
+
+  public async updateProperties(properties: Property[]) {
+    const propertyPromises = properties.map((propertiy) =>
+      this.updateProperty(propertiy.id)
+    )
+    const awaitedProperties = await Promise.all(propertyPromises)
+    this.emitUpdatedProperties()
+    return awaitedProperties
+  }
+
+  private async updateProperty(tokenId: number): Promise<Property> {
     const property = await this.blockchainService.findOne(tokenId)
     let user = await this.userService.findOne({
       publicAddress: property.owner.toLowerCase(),
@@ -84,7 +109,7 @@ export class PropertyService {
     await this.propertyRepo.upsert(
       {
         id: tokenId,
-        ownerAddress: property.owner,
+        ownerAddress: property.owner.toLowerCase(),
         price: property.price.toString(),
         deposit: property.deposit.toString(),
         lastTaxPaidDate: property.lastTaxPaidDate.toString(),
@@ -102,6 +127,17 @@ export class PropertyService {
     })
     retVal.owner = instanceToPlain(retVal.owner) as User
     return retVal
+  }
+
+  private async emitUpdatedProperties() {
+    const properties = await this.propertyRepo.find({
+      order: { id: 'ASC' },
+      relations: ['owner'],
+    })
+    const plainProperties = instanceToPlain(properties)
+    this.amqpConnection.publish('blockchain', 'update', {
+      properties: plainProperties,
+    })
   }
 
   private async updatePropertyRenderIfNeeded(property: Property) {

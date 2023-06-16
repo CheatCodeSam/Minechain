@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { BigNumber as bn } from 'ethers'
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 import { WebSocketGateway } from '../websocket/websocket.gateway'
 import { PropertyService } from './property.service'
 
@@ -8,7 +7,6 @@ import { PropertyService } from './property.service'
 export class PropertyEventsService {
   constructor(
     private readonly webSocketGateway: WebSocketGateway,
-    private readonly amqpConnection: AmqpConnection,
     private readonly propertyService: PropertyService
   ) {}
 
@@ -18,7 +16,7 @@ export class PropertyEventsService {
     oldPrice: bn,
     newPrice: bn
   ) {
-    const property = await this.propertyService.updateProperty(
+    const property = await this.propertyService.updateSinglePropertyById(
       tokenId.toNumber()
     )
     this.webSocketGateway.emit('blockchain', 'priceChanged', {
@@ -28,17 +26,10 @@ export class PropertyEventsService {
       newPrice: newPrice.toString(),
       property,
     })
-    this.amqpConnection.publish('blockchain', 'priceChanged', {
-      owner,
-      tokenId: tokenId.toNumber(),
-      oldPrice: oldPrice.toString(),
-      newPrice: newPrice.toString(),
-      property,
-    })
   }
 
   public async sold(from: string, to: string, tokenId: bn, price: bn) {
-    const property = await this.propertyService.updateProperty(
+    const property = await this.propertyService.updateSinglePropertyById(
       tokenId.toNumber()
     )
     this.webSocketGateway.emit('blockchain', 'sold', {
@@ -48,17 +39,10 @@ export class PropertyEventsService {
       price: price.toString(),
       property,
     })
-    this.amqpConnection.publish('blockchain', 'sold', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-      price: price.toString(),
-      property,
-    })
   }
 
   public async repossessed(from: string, to: string, tokenId: bn) {
-    const property = await this.propertyService.updateProperty(
+    const property = await this.propertyService.updateSinglePropertyById(
       tokenId.toNumber()
     )
     this.webSocketGateway.emit('blockchain', 'repossessed', {
@@ -67,16 +51,10 @@ export class PropertyEventsService {
       tokenId: tokenId.toNumber(),
       property,
     })
-    this.amqpConnection.publish('blockchain', 'repossessed', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-      property,
-    })
   }
 
   async deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
-    const property = await this.propertyService.updateProperty(
+    const property = await this.propertyService.updateSinglePropertyById(
       tokenId.toNumber()
     )
     this.webSocketGateway.emit('blockchain', 'deposit', {
@@ -93,7 +71,7 @@ export class PropertyEventsService {
     newAmount: bn,
     amountWithdrawn: bn
   ) {
-    const property = await this.propertyService.updateProperty(
+    const property = await this.propertyService.updateSinglePropertyById(
       tokenId.toNumber()
     )
     this.webSocketGateway.emit('blockchain', 'withdrawal', {

@@ -5,12 +5,14 @@ import { UserModule } from '../user/user.module'
 import { AccountLinkController } from './account-link.controller'
 import { AccountLinkProvider } from './account-link.provider'
 import { AccountLinkService } from './account-link.service'
+import { PropertyModule } from '../property/property.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({}),
     MessagingModule,
     UserModule,
+    PropertyModule
   ],
   providers: [AccountLinkProvider, AccountLinkService],
   controllers: [AccountLinkController],
