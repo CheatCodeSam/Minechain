@@ -8,6 +8,7 @@ import { Logger } from '@nestjs/common'
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: ReturnType<typeof createAdapter>
   private configService: ConfigService
+  private readonly logger = new Logger(RedisIoAdapter.name)
 
   constructor(appOrHttpServer: any, configService: ConfigService) {
     super(appOrHttpServer)
@@ -22,7 +23,7 @@ export class RedisIoAdapter extends IoAdapter {
 
     this.adapterConstructor = createAdapter(pubClient, subClient)
     if (pubClient.isReady && subClient.isReady)
-      Logger.log('Connected to Redis client.')
+      this.logger.log('Connected to Redis client.')
   }
 
   createIOServer(port: number, options?: ServerOptions) {

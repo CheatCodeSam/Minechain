@@ -6,7 +6,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { User } from '../user/user.entity'
 import { UserService } from '../user/user.service'
 import { ConfigService } from '@nestjs/config'
-import { PropertyService } from '../property/property.service'
+import { PropertyService } from '../property/services/property.service'
 
 @Injectable()
 export class AccountLinkService {
@@ -26,10 +26,7 @@ export class AccountLinkService {
     const mojangId = await this.verifyJwt(token)
     if (!mojangId) throw new ForbiddenException('Token is invalid.')
     this.userService.updateUserMojangId(user.id, mojangId)
-    const properties = await this.propertyService.find(1024, 0, {
-      ownerAddress: user.publicAddress,
-    })
-    this.propertyService.updateProperties(properties.data)
+    await this.propertyService.accountLink(user)
     this.authorizeJoin(mojangId)
   }
 

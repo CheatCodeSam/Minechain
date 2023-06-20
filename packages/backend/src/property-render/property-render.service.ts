@@ -1,15 +1,13 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
-import { Injectable } from '@nestjs/common'
+import { Injectable, RequestTimeoutException } from '@nestjs/common'
 import Jimp from 'jimp'
 import { ColorTable } from './color-table'
-import { InjectS3, S3 } from 'nestjs-s3'
 import { StorageService } from '../storage/storage.service'
 
 @Injectable()
 export class PropertyRenderService {
   constructor(
     private readonly amqpConnection: AmqpConnection,
-    @InjectS3() private readonly s3: S3,
     private readonly storageService: StorageService
   ) {}
 
@@ -43,9 +41,15 @@ export class PropertyRenderService {
   }
 
   public async getPropertyRender(tokenId: number): Promise<string> {
-    const map = await this.getHighestBlocks(tokenId)
-    const buffer = await this.drawProperty(map)
-    const key = this.upload(tokenId, buffer)
-    return key
+    try {
+      const map = await this.getHighestBlocks(tokenId)
+      const buffer = await this.drawProperty(map)
+      const key = this.upload(tokenId, buffer)
+      return key
+    } catch (error) {
+      throw new RequestTimeoutException(
+        `getBlock for token ${tokenId} took too long`
+      )
+    }
   }
 }

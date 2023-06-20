@@ -1,6 +1,6 @@
 import { Module, OnModuleInit } from '@nestjs/common'
 import { PropertyController } from './property.controller'
-import { PropertyService } from './property.service'
+import { PropertyService } from './services/property.service'
 import { BlockchainModule } from '../blockchain/blockchain.module'
 import { Property } from './property.entity'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -10,6 +10,8 @@ import { WebsocketModule } from '../websocket/websocket.module'
 import { PropertyProvider } from './property.provider'
 import { PropertyEventsService } from './property-events.service'
 import { PropertyRenderModule } from '../property-render/property-render.module'
+import { PropertyFindService } from './services/property-find.service'
+import { PropertySyncService } from './services/property-sync.service'
 
 @Module({
   imports: [
@@ -18,16 +20,22 @@ import { PropertyRenderModule } from '../property-render/property-render.module'
     TypeOrmModule.forFeature([Property]),
     UserModule,
     WebsocketModule,
-    PropertyRenderModule
+    PropertyRenderModule,
   ],
   controllers: [PropertyController],
-  providers: [PropertyService, PropertyProvider, PropertyEventsService],
+  providers: [
+    PropertyService,
+    PropertyProvider,
+    PropertyEventsService,
+    PropertyFindService,
+    PropertySyncService,
+  ],
   exports: [PropertyService],
 })
 export class PropertyModule implements OnModuleInit {
   constructor(private readonly propertyService: PropertyService) {}
 
-  onModuleInit() {
-    this.propertyService.initialize()
+  async onModuleInit() {
+    await this.propertyService.initialize()
   }
 }

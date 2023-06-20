@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { BigNumber as bn } from 'ethers'
 import { WebSocketGateway } from '../websocket/websocket.gateway'
-import { PropertyService } from './property.service'
+import { PropertyService } from './services/property.service'
 
 @Injectable()
 export class PropertyEventsService {
@@ -11,58 +11,28 @@ export class PropertyEventsService {
   ) {}
 
   public async priceChange(
-    owner: string,
+    _owner: string,
     tokenId: bn,
-    oldPrice: bn,
-    newPrice: bn
+    _oldPrice: bn,
+    _newPrice: bn
   ) {
-    const property = await this.propertyService.updateSinglePropertyById(
-      tokenId.toNumber()
-    )
-    this.webSocketGateway.emit('blockchain', 'priceChanged', {
-      owner,
-      tokenId: tokenId.toNumber(),
-      oldPrice: oldPrice.toString(),
-      newPrice: newPrice.toString(),
-      property,
-    })
+    this.propertyService.priceChange(tokenId.toNumber())
   }
 
-  public async sold(from: string, to: string, tokenId: bn, price: bn) {
-    const property = await this.propertyService.updateSinglePropertyById(
-      tokenId.toNumber()
-    )
-    this.webSocketGateway.emit('blockchain', 'sold', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-      price: price.toString(),
-      property,
-    })
+  public async sold(_from: string, _to: string, tokenId: bn, _price: bn) {
+    this.propertyService.sold(tokenId.toNumber())
   }
 
   public async repossessed(from: string, to: string, tokenId: bn) {
-    const property = await this.propertyService.updateSinglePropertyById(
-      tokenId.toNumber()
-    )
-    this.webSocketGateway.emit('blockchain', 'repossessed', {
-      from,
-      to,
-      tokenId: tokenId.toNumber(),
-      property,
-    })
+    this.propertyService.repossessed(tokenId.toNumber())
   }
 
   async deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {
-    const property = await this.propertyService.updateSinglePropertyById(
-      tokenId.toNumber()
-    )
     this.webSocketGateway.emit('blockchain', 'deposit', {
       from,
       tokenId: tokenId.toNumber(),
       newAmount: newAmount.toString(),
       amountAdded: amountAdded.toString(),
-      property,
     })
   }
   async withdrawal(
@@ -71,15 +41,11 @@ export class PropertyEventsService {
     newAmount: bn,
     amountWithdrawn: bn
   ) {
-    const property = await this.propertyService.updateSinglePropertyById(
-      tokenId.toNumber()
-    )
     this.webSocketGateway.emit('blockchain', 'withdrawal', {
       to,
       tokenId: tokenId.toNumber(),
       newAmount: newAmount.toString,
       amountWithdrawn: amountWithdrawn.toString(),
-      property,
     })
   }
 }

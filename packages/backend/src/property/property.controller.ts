@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common'
-import { PropertyService } from './property.service'
+import { PropertyService } from './services/property.service'
 
 @Controller('property')
 export class PropertyController {
@@ -11,7 +11,7 @@ export class PropertyController {
   }
 
   @Get()
-  async findAll(@Query("take") take: number, @Query("skip") skip: number) {
-    return this.propertyService.find(take, skip, undefined)
+  async findAll(@Query('take') take: number, @Query('skip') skip: number) {
+    return this.propertyService.findAll(take, skip)
   }
 }
