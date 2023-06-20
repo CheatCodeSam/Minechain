@@ -33,11 +33,17 @@ export class PropertyService {
   }
 
   public async accountLink(owner: User) {
-    const { data: properties } = await this.propertyFindService.find(1024, 0, {
-      ownerAddress: owner.publicAddress,
-    })
-    await this.propertySyncService.syncProperties(properties)
-    this.emitUpdates(properties)
+    const { data: properties, count } = await this.propertyFindService.find(
+      1024,
+      0,
+      {
+        ownerAddress: owner.publicAddress,
+      }
+    )
+    if (count !== 0) {
+      await this.propertySyncService.syncProperties(properties)
+      this.emitUpdates(properties)
+    }
   }
 
   public async sold(tokenId: number) {
@@ -61,7 +67,7 @@ export class PropertyService {
     return retVal
   }
 
-  public async findAll(take: number, skip: number) {
+  public async find(take: number, skip: number) {
     return this.propertyFindService.find(take, skip, {})
   }
 
@@ -71,7 +77,6 @@ export class PropertyService {
 
   private async emitUpdates(properties: Property[]) {
     const plainProperties = instanceToPlain(properties)
-    console.log(plainProperties)
     this.amqpConnection.publish('blockchain', 'update', {
       properties: plainProperties,
     })
