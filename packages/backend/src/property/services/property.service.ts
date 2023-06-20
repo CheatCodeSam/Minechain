@@ -71,13 +71,17 @@ export class PropertyService {
     return this.propertyFindService.find(take, skip, {})
   }
 
+  public async findAll() {
+    return this.propertyFindService.findAll()
+  }
+
   public async findOne(id: number) {
     return this.propertyFindService.findOne(id)
   }
 
   private async emitUpdates(properties: Property[]) {
     const plainProperties = instanceToPlain(properties)
-    this.amqpConnection.publish('blockchain', 'update', {
+    this.amqpConnection.publish('property', 'update', {
       properties: plainProperties,
     })
   }

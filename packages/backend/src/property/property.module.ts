@@ -12,6 +12,7 @@ import { PropertyEventsService } from './property-events.service'
 import { PropertyRenderModule } from '../property-render/property-render.module'
 import { PropertyFindService } from './services/property-find.service'
 import { PropertySyncService } from './services/property-sync.service'
+import { PropertyInitializeProvider } from './property-initialize-provider'
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PropertySyncService } from './services/property-sync.service'
     PropertyEventsService,
     PropertyFindService,
     PropertySyncService,
+    PropertyInitializeProvider
   ],
   exports: [PropertyService],
 })
