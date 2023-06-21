@@ -13,6 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
           { name: 'account-link', type: 'direct', options: { durable: false } },
           { name: 'minecraft', type: 'direct', options: { durable: false } },
           { name: 'blockchain', type: 'direct', options: { durable: false } },
+          { name: 'property', type: 'direct', options: { durable: false } },
         ],
       }),
     }),
