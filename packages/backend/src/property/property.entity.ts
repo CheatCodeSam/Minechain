@@ -40,11 +40,11 @@ export class Property extends BaseEntity {
   priceChangeCount: number
 
   @Column({ nullable: true })
-  propertyRenderKey: string
+  propertyRenderKey: string | null
 
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'timestamptz', nullable: true })
-  propertyRenderRefresh: Date
+  propertyRenderRefresh: Date | null
 
   private calculateTax(when: Date): bn {
     const SECONDS_IN_YEAR = 31536000
@@ -66,8 +66,8 @@ export class Property extends BaseEntity {
 
   @Expose()
   public get dueNext(): string {
-    const d = new Date();
-    d.setMonth(d.getMonth() + 1, 1);
+    const d = new Date()
+    d.setMonth(d.getMonth() + 1, 1)
     return this.calculateTax(d).toString()
   }
 }

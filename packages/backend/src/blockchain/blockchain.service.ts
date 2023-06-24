@@ -10,7 +10,7 @@ export class BlockchainService {
   constructor(
     @InjectContractProvider('lcl')
     private readonly ethersContract: EthersContract,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     const contractAddress = this.configService.get('CONTRACT_ADDRESS')
     this.contract = this.ethersContract.create(

@@ -14,16 +14,20 @@ describe('PlayerHeadController', () => {
       .useMocker(createMock)
       .compile()
 
-      playerHeadController = moduleRef.get(PlayerHeadController)
+    playerHeadController = moduleRef.get(PlayerHeadController)
     storageService = moduleRef.get(StorageService)
   })
   describe('getPlayerHead', () => {
     it('should call getStream with the correct key', async () => {
       const getStreamFunction = storageService.getStream
 
-      await playerHeadController.getPlayerHead("0x2061dd3a9f09186b5CD82436467dDB79dC737227.png")
+      await playerHeadController.getPlayerHead(
+        '0x2061dd3a9f09186b5CD82436467dDB79dC737227.png'
+      )
 
-      expect(getStreamFunction).toBeCalledWith('player-head/0x2061dd3a9f09186b5CD82436467dDB79dC737227.png')
+      expect(getStreamFunction).toBeCalledWith(
+        'player-head/0x2061dd3a9f09186b5CD82436467dDB79dC737227.png'
+      )
     })
   })
 })

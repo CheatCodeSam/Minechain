@@ -22,6 +22,6 @@ export class AccountLinkProvider {
     queueOptions: { autoDelete: true },
   })
   public async isLinked({ uuid }: MojangIdDto) {
-    return await this.accountLinkService.isLinked(uuid)    
+    return await this.accountLinkService.isLinked(uuid)
   }
 }

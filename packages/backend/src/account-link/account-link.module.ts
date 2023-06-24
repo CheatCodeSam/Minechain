@@ -1,18 +1,29 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigService } from '@nestjs/config'
 import { MessagingModule } from '../messaging/messaging.module'
 import { UserModule } from '../user/user.module'
 import { AccountLinkController } from './account-link.controller'
 import { AccountLinkProvider } from './account-link.provider'
 import { AccountLinkService } from './account-link.service'
 import { PropertyModule } from '../property/property.module'
+import { JwtModule } from '@nestjs/jwt'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({}),
     MessagingModule,
     UserModule,
-    PropertyModule
+    PropertyModule,
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: {
+          expiresIn: '15m',
+          issuer: 'minechain:backend',
+          audience: 'minechain:backend',
+        },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   providers: [AccountLinkProvider, AccountLinkService],
   controllers: [AccountLinkController],

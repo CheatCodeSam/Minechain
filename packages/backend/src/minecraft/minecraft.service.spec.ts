@@ -10,6 +10,7 @@ describe('MinecraftService', () => {
   let minecraftService: MinecraftService
   let userService: DeepMocked<UserService>
   let websocketGateway: DeepMocked<WebSocketGateway>
+  let mojangUUID: string
 
   let user: User
 
@@ -24,12 +25,13 @@ describe('MinecraftService', () => {
     userService = moduleRef.get(UserService)
     websocketGateway = moduleRef.get(WebSocketGateway)
     user = createUser()
+    mojangUUID = 'd772f296-60a0-4917-bf8f-7f33ffed41d9'
   })
 
   describe('getUser', () => {
     it('should find the user', async () => {
       const findOneFunction = userService.findOne.mockResolvedValueOnce(user)
-      const uuid = user.mojangId
+      const uuid = mojangUUID
       const foundUser = await minecraftService.getUser(uuid)
       expect(foundUser.id).toEqual(user.id)
       expect(findOneFunction).toBeCalledWith({ mojangId: uuid })
@@ -40,7 +42,7 @@ describe('MinecraftService', () => {
     it('should find the user', async () => {
       const findOneFunction = userService.findOne.mockResolvedValueOnce(user)
       const emitFunction = websocketGateway.emit
-      const uuid = user.mojangId
+      const uuid = mojangUUID
       const region = '1'
 
       await minecraftService.regionEnter(uuid, region)
@@ -57,7 +59,7 @@ describe('MinecraftService', () => {
     it('should user who left', async () => {
       const findOneFunction = userService.findOne.mockResolvedValueOnce(user)
       const emitFunction = websocketGateway.emit
-      const uuid = user.mojangId
+      const uuid = mojangUUID
 
       await minecraftService.playerLeave(uuid)
 

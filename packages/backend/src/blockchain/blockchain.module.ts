@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { EthersModule, MAINNET_NETWORK } from './nestjs-ethers'
 import { BlockchainProvider } from './blockchain.provider'

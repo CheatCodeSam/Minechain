@@ -33,7 +33,12 @@ export class PropertyProvider {
   }
 
   withdrawal(to: string, tokenId: bn, newAmount: bn, amountWithdrawn: bn) {
-    this.propertyEventsService.withdrawal(to, tokenId, newAmount, amountWithdrawn)
+    this.propertyEventsService.withdrawal(
+      to,
+      tokenId,
+      newAmount,
+      amountWithdrawn
+    )
   }
 
   deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {

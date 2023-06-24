@@ -4,9 +4,7 @@ import { RabbitRPC } from '@golevelup/nestjs-rabbitmq'
 
 @Injectable()
 export class PropertyInitializeProvider {
-  constructor(
-    private readonly propertyService: PropertyService
-  ) {}
+  constructor(private readonly propertyService: PropertyService) {}
 
   @RabbitRPC({
     exchange: 'property',
@@ -16,5 +14,4 @@ export class PropertyInitializeProvider {
   public async initialize() {
     return this.propertyService.findAll()
   }
-
 }

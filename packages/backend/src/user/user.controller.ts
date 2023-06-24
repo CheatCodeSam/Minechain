@@ -16,7 +16,9 @@ export class UserController {
 
   @Get(':publicaddress')
   async findOne(@Param('publicaddress') publicAddress: string) {
-    return this.userService.findOne({ publicAddress: publicAddress.toLowerCase() })
+    return this.userService.findOne({
+      publicAddress: publicAddress.toLowerCase(),
+    })
   }
 
   @Post('refresh-ens')

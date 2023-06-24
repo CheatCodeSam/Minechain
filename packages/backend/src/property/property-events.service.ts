@@ -21,7 +21,7 @@ export class PropertyEventsService {
 
   public async sold(_from: string, _to: string, tokenId: bn, _price: bn) {
     this.propertyService.sold(tokenId.toNumber())
-    console.log("sold")
+    console.log('sold')
   }
 
   public async repossessed(from: string, to: string, tokenId: bn) {

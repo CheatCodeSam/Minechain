@@ -68,7 +68,12 @@ export class BlockchainProvider {
       contract.on(
         contract.filters.Withdrawal(),
         (to: string, tokenId: bn, newAmount: bn, amountWithdrawn: bn) =>
-          this.withdrawalSubject.next({ to, tokenId, newAmount, amountWithdrawn })
+          this.withdrawalSubject.next({
+            to,
+            tokenId,
+            newAmount,
+            amountWithdrawn,
+          })
       )
     })
   }

@@ -27,22 +27,22 @@ export class User extends BaseEntity {
   publicAddress: string
 
   @Column({ nullable: true })
-  mojangId: string
+  mojangId: string | null
 
   @Column({ nullable: true })
-  lastKnownRegion: string
+  lastKnownRegion: string | null
 
   @CreateDateColumn()
   dateJoined: Date
 
   @Column({ nullable: true })
-  lastLogin: Date
+  lastLogin: Date | null
 
   @Column({ default: true })
   isSuperUser: boolean
 
   @Column({ nullable: true })
-  ensName: string
+  ensName: string | null
 
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'timestamptz' })
@@ -50,11 +50,11 @@ export class User extends BaseEntity {
 
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: true })
-  playerHeadKey: string
+  playerHeadKey: string | null
 
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'timestamptz', nullable: true })
-  playerHeadRefresh: Date
+  playerHeadRefresh: Date | null
 
   @OneToMany(() => Property, (property: Property) => property.owner)
   properties: Property[]
@@ -66,16 +66,16 @@ export class User extends BaseEntity {
 
   @Expose()
   public get displayName(): string {
-    return this.ensName || (
+    return (
+      this.ensName ||
       this.publicAddress.substring(0, 5) +
-      '...' +
-      this.publicAddress.substring(this.publicAddress.length - 4)
+        '...' +
+        this.publicAddress.substring(this.publicAddress.length - 4)
     )
   }
 
   @Expose()
   public get profilePicture(): string {
-    return "/api/player-head/" + this.playerHeadKey
+    return '/api/player-head/' + this.playerHeadKey
   }
-
 }

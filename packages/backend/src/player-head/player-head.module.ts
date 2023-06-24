@@ -5,10 +5,7 @@ import { PlayerHeadController } from './player-head.controller'
 import { StorageModule } from '../storage/storage.module'
 
 @Module({
-  imports: [
-    HttpModule,
-    StorageModule
-  ],
+  imports: [HttpModule, StorageModule],
   providers: [PlayerHeadService],
   exports: [PlayerHeadService],
   controllers: [PlayerHeadController],

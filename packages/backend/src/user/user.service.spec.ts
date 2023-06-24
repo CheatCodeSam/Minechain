@@ -153,7 +153,9 @@ describe('MinecraftService', () => {
       expect(getEnsNameFunction).not.toBeCalled()
       expect(getPlayerHeadFunction).toBeCalledWith(user)
       expect(foundUser?.playerHeadKey).toEqual('steve.png')
-      expect(foundUser?.playerHeadRefresh.getTime()).toBeGreaterThan(Date.now())
+      expect(foundUser?.playerHeadRefresh?.getTime()).toBeGreaterThan(
+        Date.now()
+      )
     })
   })
 
@@ -175,7 +177,7 @@ describe('MinecraftService', () => {
   describe('updateEns', () => {
     it('should update ens name', async () => {
       const getEnsNameFunction = ensService.getEnsName
-    
+
       await userService.updateEns(user)
 
       expect(getEnsNameFunction).toBeCalledWith(user.publicAddress)
@@ -186,11 +188,11 @@ describe('MinecraftService', () => {
   describe('updatePlayerHead', () => {
     it('should update player head', async () => {
       const getPlayerHeadFunction = playerHeadService.getPlayerHead
-    
+
       await userService.updatePlayerHead(user)
 
       expect(getPlayerHeadFunction).toBeCalledWith(user)
-      expect(user.playerHeadRefresh.getTime()).toBeGreaterThan(Date.now())
+      expect(user.playerHeadRefresh?.getTime()).toBeGreaterThan(Date.now())
     })
   })
 })

@@ -16,11 +16,15 @@ export class AuthService {
   ) {}
 
   async signIn(publicAddress: string) {
-    const existingUser = await this.userService.findOne({ publicAddress: publicAddress.toLowerCase() })
+    const existingUser = await this.userService.findOne({
+      publicAddress: publicAddress.toLowerCase(),
+    })
     if (existingUser) {
       return existingUser.nonce
     } else {
-      const user = await this.userService.createUser(publicAddress.toLowerCase())
+      const user = await this.userService.createUser(
+        publicAddress.toLowerCase()
+      )
       return user.nonce
     }
   }
@@ -35,9 +39,11 @@ export class AuthService {
     const decodedAddress = ethers.utils.verifyMessage(user.nonce, signedNonce)
     if (publicAddress.toLowerCase() === decodedAddress.toLowerCase()) {
       const authenticatedUser = await this.userService.activateUser(user.id)
-      const access_token = await this.jwtService.signAsync({ sub: authenticatedUser.id })
+      const access_token = await this.jwtService.signAsync({
+        sub: authenticatedUser.id,
+      })
       const plainuser = instanceToPlain(authenticatedUser)
-      const returnValue = {...plainuser, access_token }
+      const returnValue = { ...plainuser, access_token }
       return returnValue
     } else {
       throw new ForbiddenException('Invalid public address.')

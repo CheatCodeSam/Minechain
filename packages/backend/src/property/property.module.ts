@@ -30,7 +30,7 @@ import { PropertyInitializeProvider } from './property-initialize-provider'
     PropertyEventsService,
     PropertyFindService,
     PropertySyncService,
-    PropertyInitializeProvider
+    PropertyInitializeProvider,
   ],
   exports: [PropertyService],
 })

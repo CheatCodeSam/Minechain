@@ -1,20 +1,18 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
-import { createSecretKey } from 'crypto'
-import * as jose from 'jose'
 
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { User } from '../user/user.entity'
 import { UserService } from '../user/user.service'
-import { ConfigService } from '@nestjs/config'
 import { PropertyService } from '../property/services/property.service'
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AccountLinkService {
   constructor(
     private readonly amqpConnection: AmqpConnection,
     private readonly userService: UserService,
-    private readonly configService: ConfigService,
-    private readonly propertyService: PropertyService
+    private readonly propertyService: PropertyService,
+    private readonly jwtService: JwtService
   ) {}
 
   public async validateRegistration(token: string, user: User) {
@@ -44,30 +42,13 @@ export class AccountLinkService {
   }
 
   private async createJwt(mojangId: string): Promise<string> {
-    const privatekey = createSecretKey(
-      this.configService.get('JWT_SECRET'),
-      'utf-8'
-    )
-    return new jose.SignJWT({ mojangId })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setIssuer('minechain:backend')
-      .setAudience('minechain:backend')
-      .setExpirationTime('15m')
-      .sign(privatekey)
+    return this.jwtService.sign({ mojangId })
   }
 
   private async verifyJwt(token: string): Promise<string> {
     try {
-      const privatekey = createSecretKey(
-        this.configService.get('JWT_SECRET'),
-        'utf-8'
-      )
-      const verification = await jose.jwtVerify(token, privatekey, {
-        issuer: 'minechain:backend',
-        audience: 'minechain:backend',
-      })
-      return verification.payload.mojangId as string
+      const payload = this.jwtService.verify(token)
+      return payload.mojangId as string
     } catch (error) {
       return ''
     }

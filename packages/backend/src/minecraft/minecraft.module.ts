@@ -11,7 +11,7 @@ import { WebsocketModule } from '../websocket/websocket.module'
     ConfigModule.forRoot({}),
     MessagingModule,
     UserModule,
-    WebsocketModule
+    WebsocketModule,
   ],
   providers: [MinecraftProvider, MinecraftService],
 })

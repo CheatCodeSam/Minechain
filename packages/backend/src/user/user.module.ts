@@ -7,7 +7,11 @@ import { BlockchainModule } from '../blockchain/blockchain.module'
 import { PlayerHeadModule } from '../player-head/player-head.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), BlockchainModule, PlayerHeadModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    BlockchainModule,
+    PlayerHeadModule,
+  ],
   providers: [UserService],
   controllers: [UserController],
   exports: [UserService],
