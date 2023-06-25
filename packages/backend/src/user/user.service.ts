@@ -5,13 +5,15 @@ import { User } from './user.entity'
 import { generate as generateShortUuid } from 'short-uuid'
 import { EnsService } from '../blockchain/ens.service'
 import { PlayerHeadService } from '../player-head/player-head.service'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     private readonly ensService: EnsService,
-    private readonly playerHeadService: PlayerHeadService
+    private readonly playerHeadService: PlayerHeadService,
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   async activateUser(id: number): Promise<User> {
@@ -72,6 +74,7 @@ export class UserService {
     user.ensName = await this.ensService.getEnsName(user.publicAddress)
     // Three Days
     user.ensRefresh = new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000)
+    this.eventEmitter.emit('property.update', { properties: user.properties })
   }
 
   private async updatePlayerHeadIfNeeded(user: User) {
@@ -88,5 +91,6 @@ export class UserService {
     user.playerHeadRefresh = new Date(
       new Date().getTime() + 3 * 24 * 60 * 60 * 1000
     )
+    this.eventEmitter.emit('property.update', { properties: user.properties })
   }
 }

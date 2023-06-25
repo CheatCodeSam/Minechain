@@ -5,6 +5,9 @@ import { PropertySyncService } from './property-sync.service'
 import { instanceToPlain } from 'class-transformer'
 import { User } from '../../user/user.entity'
 import { Property } from '../property.entity'
+import { OnEvent } from '@nestjs/event-emitter'
+import { PropertyUpdateEvent } from '../events/property-update.event'
+import { In } from 'typeorm'
 
 @Injectable()
 export class PropertyService {
@@ -84,5 +87,18 @@ export class PropertyService {
     this.amqpConnection.publish('property', 'update', {
       properties: plainProperties,
     })
+  }
+
+  @OnEvent('property.update', { async: true })
+  async handlePropertyUpdate(payload: PropertyUpdateEvent) {
+
+    this.propertySyncService.syncProperties(payload.properties)
+
+    const ids = payload.properties.map(prop => prop.id)
+    const properties = await this.propertyFindService.find(1024, 0, {
+      id: In(ids),
+    })
+
+    this.emitUpdates(properties.data)
   }
 }

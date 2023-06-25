@@ -14,6 +14,7 @@ import { Property } from './property/property.entity'
 import { WebsocketModule } from './websocket/websocket.module'
 import { PropertyRenderModule } from './property-render/property-render.module'
 import { StorageModule } from './storage/storage.module'
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { StorageModule } from './storage/storage.module'
         entities: [User, Property],
       }),
     }),
+    EventEmitterModule.forRoot(),
     AuthModule,
     BlockchainModule,
     PropertyModule,

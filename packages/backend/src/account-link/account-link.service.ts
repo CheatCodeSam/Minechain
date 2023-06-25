@@ -1,17 +1,16 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
-
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { User } from '../user/user.entity'
 import { UserService } from '../user/user.service'
-import { PropertyService } from '../property/services/property.service'
 import { JwtService } from '@nestjs/jwt'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 
 @Injectable()
 export class AccountLinkService {
   constructor(
     private readonly amqpConnection: AmqpConnection,
     private readonly userService: UserService,
-    private readonly propertyService: PropertyService,
+    private readonly eventEmitter: EventEmitter2,
     private readonly jwtService: JwtService
   ) {}
 
@@ -24,7 +23,7 @@ export class AccountLinkService {
     const mojangId = await this.verifyJwt(token)
     if (!mojangId) throw new ForbiddenException('Token is invalid.')
     this.userService.updateUserMojangId(user.id, mojangId)
-    await this.propertyService.accountLink(user)
+    this.eventEmitter.emit('property.update', { properties: user.properties })
     this.authorizeJoin(mojangId)
   }
 

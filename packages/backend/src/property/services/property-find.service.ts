@@ -1,7 +1,7 @@
 import { Injectable, Logger, RequestTimeoutException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Property } from '../property.entity'
-import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm'
+import { FindOneOptions, FindOptionsWhere, In, Repository } from 'typeorm'
 
 import { PropertyRenderService } from '../../property-render/property-render.service'
 import { instanceToPlain } from 'class-transformer'
@@ -68,6 +68,13 @@ export class PropertyFindService {
       data: result,
       count: total,
     }
+  }
+
+  public async findByIds(ids: number[]) {
+    const result = await this.propertyRepo.findBy({
+      id: In(ids),
+    })
+    return result
   }
 
   private async updatePropertyRenderIfNeeded(property: Property) {
