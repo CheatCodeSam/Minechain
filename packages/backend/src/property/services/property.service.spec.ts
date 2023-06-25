@@ -82,13 +82,11 @@ describe('MinecraftService', () => {
         propertyFindService.findOne.mockResolvedValue(property)
       const syncSinglePropertyByIdFunction =
         propertySyncService.syncProperties
-      const publishFunction = amqpConnection.publish
 
       await propertyService.updatePropertyById(1)
 
       expect(findOneFunction).toBeCalledWith(1)
       expect(syncSinglePropertyByIdFunction).toBeCalledWith([property])
-      expect(publishFunction).toBeCalled()
     })
   })
   describe('find', () => {

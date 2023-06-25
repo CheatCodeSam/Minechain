@@ -38,7 +38,7 @@ export class PropertyService {
 
   public async updatePropertyById(tokenId: number) {
     const retVal = await this.propertyFindService.findOne(tokenId)
-    this.handlePropertyUpdate({properties: [retVal]})
+    this.handlePropertyUpdate({ properties: [retVal] })
   }
 
   public async find(take: number, skip: number) {
@@ -59,14 +59,14 @@ export class PropertyService {
       properties: plainProperties,
     })
     this.webSocketGateway.emit('property', 'update', {
-      properties: plainProperties
+      properties: plainProperties,
     })
   }
 
   @OnEvent('property.update', { async: true })
   async handlePropertyUpdate(payload: PropertyUpdateEvent) {
     await this.propertySyncService.syncProperties(payload.properties)
-    const ids = payload.properties.map(prop => prop.id)
+    const ids = payload.properties.map((prop) => prop.id)
     const properties = await this.propertyFindService.find(1024, 0, {
       id: In(ids),
     })
