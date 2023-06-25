@@ -2,9 +2,6 @@
   "name": "minechain",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "postinstall": "node ./tools/scripts/patch-nx-cli.js"
-  },
   "private": true,
   "dependencies": {
     "@aws-sdk/client-s3": "^3.352.0",
