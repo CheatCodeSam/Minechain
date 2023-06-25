@@ -9,7 +9,7 @@ import com.google.inject.Guice;
 import com.minechain.minechain.di.InjectModule;
 import com.minechain.minechain.listeners.PlayerEntry;
 import com.minechain.minechain.messaging.RabbitMQ;
-import com.minechain.minechain.subscribers.BlockchainSoldSubscriber;
+import com.minechain.minechain.subscribers.PropertyUpdateSubscriber;
 
 public class App extends JavaPlugin implements Listener {
 
@@ -29,7 +29,7 @@ public class App extends JavaPlugin implements Listener {
             this.getLogger().warning(e.getMessage());
         }
 
-        this.mqqt.addConsumer(injector.getInstance(BlockchainSoldSubscriber.class), "property", "update");
+        this.mqqt.addConsumer(injector.getInstance(PropertyUpdateSubscriber.class), "property", "update");
         Bukkit.getPluginManager().registerEvents(injector.getInstance(PlayerEntry.class), this);
     }
 

@@ -5,16 +5,16 @@ import java.io.UnsupportedEncodingException;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.minechain.minechain.services.PropertyService;
-import com.minechain.minechain.types.SoldDto;
+import com.minechain.minechain.types.dtos.PropertyList;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
 
-public class BlockchainSoldSubscriber implements ISubscriber {
+public class PropertyUpdateSubscriber implements ISubscriber {
 
     private PropertyService propertyService;
 
     @Inject
-    public BlockchainSoldSubscriber(PropertyService propertyService) {
+    public PropertyUpdateSubscriber(PropertyService propertyService) {
         this.propertyService = propertyService;
     }
 
@@ -33,8 +33,10 @@ public class BlockchainSoldSubscriber implements ISubscriber {
     private void handleData(String data) {
         try {
             System.out.println(data);
-            // var gson = new Gson();
-            // var sold = gson.fromJson(data, SoldDto.class);
+            var gson = new Gson();
+            var propertyList = gson.fromJson(data, PropertyList.class);
+
+            System.out.println(propertyList.getProperties().get(0).getOwner().getDisplayName());
 
             // this.propertyService.sold(sold);
 
