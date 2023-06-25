@@ -7,6 +7,7 @@ import { Property } from '../property.entity'
 import { OnEvent } from '@nestjs/event-emitter'
 import { PropertyUpdateEvent } from '../events/property-update.event'
 import { In } from 'typeorm'
+import { WebSocketGateway } from '../../websocket/websocket.gateway'
 
 @Injectable()
 export class PropertyService {
@@ -15,7 +16,8 @@ export class PropertyService {
   constructor(
     private readonly propertyFindService: PropertyFindService,
     private readonly propertySyncService: PropertySyncService,
-    private readonly amqpConnection: AmqpConnection
+    private readonly amqpConnection: AmqpConnection,
+    private readonly webSocketGateway: WebSocketGateway
   ) {}
 
   public async initialize() {
@@ -55,6 +57,9 @@ export class PropertyService {
     const plainProperties = instanceToPlain(properties)
     this.amqpConnection.publish('property', 'update', {
       properties: plainProperties,
+    })
+    this.webSocketGateway.emit('property', 'update', {
+      properties: plainProperties
     })
   }
 
