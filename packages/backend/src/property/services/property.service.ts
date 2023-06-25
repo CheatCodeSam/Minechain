@@ -3,7 +3,6 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 import { PropertyFindService } from './property-find.service'
 import { PropertySyncService } from './property-sync.service'
 import { instanceToPlain } from 'class-transformer'
-import { User } from '../../user/user.entity'
 import { Property } from '../property.entity'
 import { OnEvent } from '@nestjs/event-emitter'
 import { PropertyUpdateEvent } from '../events/property-update.event'
@@ -35,25 +34,9 @@ export class PropertyService {
     }
   }
 
-  public async sold(tokenId: number) {
-    await this.propertySyncService.syncSinglePropertyById(tokenId)
+  public async updatePropertyById(tokenId: number) {
     const retVal = await this.propertyFindService.findOne(tokenId)
-    this.emitUpdates([retVal])
-    return retVal
-  }
-
-  public async repossessed(tokenId: number) {
-    await this.propertySyncService.syncSinglePropertyById(tokenId)
-    const retVal = await this.propertyFindService.findOne(tokenId)
-    this.emitUpdates([retVal])
-    return retVal
-  }
-
-  public async priceChange(tokenId: number) {
-    await this.propertySyncService.syncSinglePropertyById(tokenId)
-    const retVal = await this.propertyFindService.findOne(tokenId)
-    this.emitUpdates([retVal])
-    return retVal
+    this.handlePropertyUpdate({properties: [retVal]})
   }
 
   public async find(take: number, skip: number) {
@@ -77,14 +60,11 @@ export class PropertyService {
 
   @OnEvent('property.update', { async: true })
   async handlePropertyUpdate(payload: PropertyUpdateEvent) {
-
-    this.propertySyncService.syncProperties(payload.properties)
-
+    await this.propertySyncService.syncProperties(payload.properties)
     const ids = payload.properties.map(prop => prop.id)
     const properties = await this.propertyFindService.find(1024, 0, {
       id: In(ids),
     })
-
     this.emitUpdates(properties.data)
   }
 }

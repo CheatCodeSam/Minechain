@@ -16,16 +16,15 @@ export class PropertyEventsService {
     _oldPrice: bn,
     _newPrice: bn
   ) {
-    this.propertyService.priceChange(tokenId.toNumber())
+    this.propertyService.updatePropertyById(tokenId.toNumber())
   }
 
   public async sold(_from: string, _to: string, tokenId: bn, _price: bn) {
-    this.propertyService.sold(tokenId.toNumber())
-    console.log('sold')
+    this.propertyService.updatePropertyById(tokenId.toNumber())
   }
 
   public async repossessed(from: string, to: string, tokenId: bn) {
-    this.propertyService.repossessed(tokenId.toNumber())
+    this.propertyService.updatePropertyById(tokenId.toNumber())
   }
 
   async deposit(from: string, tokenId: bn, newAmount: bn, amountAdded: bn) {

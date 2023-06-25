@@ -5,7 +5,6 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq'
 import { PropertyFindService } from './property-find.service'
 import { PropertySyncService } from './property-sync.service'
 import { createUser } from '../../testing/utils'
-import { User } from '../../user/user.entity'
 import { Property } from '../property.entity'
 
 const createProperty = (): Property => {
@@ -31,7 +30,6 @@ describe('MinecraftService', () => {
   let propertySyncService: DeepMocked<PropertySyncService>
   let amqpConnection: DeepMocked<AmqpConnection>
 
-  let user: User
   let property: Property
 
   beforeEach(async () => {
@@ -46,7 +44,6 @@ describe('MinecraftService', () => {
     propertySyncService = moduleRef.get(PropertySyncService)
     amqpConnection = moduleRef.get(AmqpConnection)
 
-    user = createUser()
     property = createProperty()
   })
 
@@ -79,52 +76,19 @@ describe('MinecraftService', () => {
       expect(syncSinglePropertyByIdFunction).not.toBeCalled()
     })
   })
-  describe('sold', () => {
+  describe('updatePropertyById', () => {
     it('should synchronize property and emit update', async () => {
       const findOneFunction =
         propertyFindService.findOne.mockResolvedValue(property)
       const syncSinglePropertyByIdFunction =
-        propertySyncService.syncSinglePropertyById
+        propertySyncService.syncProperties
       const publishFunction = amqpConnection.publish
 
-      const retVal = await propertyService.sold(1)
+      await propertyService.updatePropertyById(1)
 
       expect(findOneFunction).toBeCalledWith(1)
-      expect(syncSinglePropertyByIdFunction).toBeCalledWith(1)
+      expect(syncSinglePropertyByIdFunction).toBeCalledWith([property])
       expect(publishFunction).toBeCalled()
-      expect(retVal).toEqual(property)
-    })
-  })
-  describe('repossessed', () => {
-    it('should should synchronize property and emit update', async () => {
-      const findOneFunction =
-        propertyFindService.findOne.mockResolvedValue(property)
-      const syncSinglePropertyByIdFunction =
-        propertySyncService.syncSinglePropertyById
-      const publishFunction = amqpConnection.publish
-
-      const retVal = await propertyService.repossessed(1)
-
-      expect(findOneFunction).toBeCalledWith(1)
-      expect(syncSinglePropertyByIdFunction).toBeCalledWith(1)
-      expect(publishFunction).toBeCalled()
-      expect(retVal).toEqual(property)
-    })
-  })
-  describe('priceChange', () => {
-    it('should synchronize property and emit update', async () => {
-      const findOneFunction =
-        propertyFindService.findOne.mockResolvedValue(property)
-      const syncSinglePropertyByIdFunction =
-        propertySyncService.syncSinglePropertyById
-      const publishFunction = amqpConnection.publish
-
-      const retVal = await propertyService.priceChange(1)
-
-      expect(findOneFunction).toBeCalledWith(1)
-      expect(syncSinglePropertyByIdFunction).toBeCalledWith(1)
-      expect(publishFunction).toBeCalled()
-      expect(retVal).toEqual(property)
     })
   })
   describe('find', () => {
