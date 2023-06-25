@@ -35,20 +35,6 @@ export class PropertyService {
     }
   }
 
-  public async accountLink(owner: User) {
-    const { data: properties, count } = await this.propertyFindService.find(
-      1024,
-      0,
-      {
-        ownerAddress: owner.publicAddress,
-      }
-    )
-    if (count !== 0) {
-      await this.propertySyncService.syncProperties(properties)
-      this.emitUpdates(properties)
-    }
-  }
-
   public async sold(tokenId: number) {
     await this.propertySyncService.syncSinglePropertyById(tokenId)
     const retVal = await this.propertyFindService.findOne(tokenId)

@@ -79,38 +79,6 @@ describe('MinecraftService', () => {
       expect(syncSinglePropertyByIdFunction).not.toBeCalled()
     })
   })
-  describe('accountLink', () => {
-    it('should synchronize properties and emit updates', async () => {
-      const propertyArray = [property]
-      const findFunction = propertyFindService.find.mockResolvedValue({
-        data: propertyArray,
-        count: 1,
-      })
-      const syncPropertiesFunction = propertySyncService.syncProperties
-      const publishFunction = amqpConnection.publish
-
-      await propertyService.accountLink(user)
-
-      expect(findFunction).toBeCalledWith(1024, 0, {
-        ownerAddress: user.publicAddress,
-      })
-      expect(syncPropertiesFunction).toBeCalledWith(propertyArray)
-      expect(publishFunction).toBeCalled()
-    })
-    it('should not properties if none are found', async () => {
-      propertyFindService.find.mockResolvedValue({
-        data: [],
-        count: 0,
-      })
-      const syncPropertiesFunction = propertySyncService.syncProperties
-      const publishFunction = amqpConnection.publish
-
-      await propertyService.accountLink(user)
-
-      expect(publishFunction).not.toBeCalled()
-      expect(syncPropertiesFunction).not.toBeCalled()
-    })
-  })
   describe('sold', () => {
     it('should synchronize property and emit update', async () => {
       const findOneFunction =
