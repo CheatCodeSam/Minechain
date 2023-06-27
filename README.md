@@ -2,6 +2,12 @@
 
 Minechain is a captivating combination of Minecraft's immersive virtual world and the innovative realm of blockchain. Our unique project transforms the Minecraft universe into 1024 distinct plots, each of these represented by a token within a custom-built smart contract on the Sepolia Blockchain.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/CheatCodeSam/Minechain/main/readme/screenshot.png" />
+</p>
+
+## ℹ️ About The Project
+
 In the core of our project lies the innovative concept of digital ownership. Users can link their Minecraft account with their digital wallet, facilitating the purchase and ownership of unique plots within the Minecraft universe. Once a user acquires a plot, they can freely build and interact within their own virtual property, introducing a whole new dimension of personalized experience and immersion in the world of Minecraft.
 
 Our smart contract does more than just mapping ownership; it also serves a practical role in our ecosystem. By implementing a Harberger Tax mechanism, the smart contract helps to maintain the operational costs of running the Minecraft servers, ensuring the project's sustainability and introducing users to fascinating real-world economic models in a gaming context.
@@ -14,8 +20,6 @@ In addition, Minechain brings a host of cool features:
 * __Full Web 3.0 Authentication__ : Secure, decentralized user authentication using Web 3.0 standards.
 
 Moreover, Minechain comes with a live view of the Minecraft map on our web interface. Leveraging the Leaflet library, we provide users with a real-time visual representation of the game world, further enriching the sense of digital ownership and community.
-
-![Product screenshot](readme\screenshot.png "Product screenshot")
 
 ## ⚒️ Technical Overview
 
@@ -49,7 +53,7 @@ These servers interact with the backend using RabbitMQ, ensuring real-time commu
 ### DevOps
 We harness the power of Docker for containerization of services, ensuring their isolated and consistent execution. Kubernetes and AWS EKS handle the orchestration of these containers, providing automatic deployment, scaling, and management of containerized applications. Terraform is used as an infrastructure as code (IaC) tool for providing, versioning, and managing our cloud resources in a safe, predictable manner.
 
-![Technical Overview](readme\diagram.png "Technical Overview")
+![Technical Overview](readme/diagram.png "Technical Overview")
 
 In essence, Minechain merges the immersive world of gaming with the revolutionary technology of blockchain, introducing a new era of digital ownership and immersive gaming experiences.
 
