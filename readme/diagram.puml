@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+actor User
+
+User -- [Nginx Ingress]
+
+component [Nest.js] 
+
+database Postgres
+database Redis
+queue "RabbitMQ" as RabbitMQ
+cloud "Sepolia Blockchain"
+storage S3
+
+[Nest.js] --> Postgres: Uses for data storage
+[Nest.js] --> Redis: Uses for scaling Socket.io
+[Nest.js] --> RabbitMQ: Propagates messages
+
+[Nest.js] --> [Sepolia Blockchain]: Receives live events
+[Nest.js] --> S3: Stores large files
+[Nest.js] -- [Next.js Frontend]: Connects via HTTP & Socket.io
+
+
+[Nginx Ingress] -- [Nest.js]: Proxies backend requests
+[Nginx Ingress] -- [Next.js Frontend]: Proxies frontend requests
+
+package "Minecraft Servers" {
+    component [Registration Server]
+    component [Game Server]
+    component [Velocity Server]
+
+    User -- [Velocity Server]
+
+    [Velocity Server] -- [Registration Server]
+    [Velocity Server] -- [Game Server]
+    RabbitMQ --> [Minecraft Servers]: Propagates messages
+}
+
+[Next.js Frontend] --> [Sepolia Blockchain]: Interacts with blockchain
+@enduml
