@@ -2,10 +2,6 @@
 
 Minechain is a captivating combination of Minecraft's immersive virtual world and the innovative realm of blockchain. Our unique project transforms the Minecraft universe into 1024 distinct plots, each of these represented by a token within a custom-built smart contract on the Sepolia Blockchain.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/CheatCodeSam/Minechain/main/readme/screenshot.png" />
-</p>
-
 ## ℹ️ About The Project
 
 In the core of our project lies the innovative concept of digital ownership. Users can link their Minecraft account with their digital wallet, facilitating the purchase and ownership of unique plots within the Minecraft universe. Once a user acquires a plot, they can freely build and interact within their own virtual property, introducing a whole new dimension of personalized experience and immersion in the world of Minecraft.
@@ -51,7 +47,7 @@ Our Minecraft component incorporates two servers and uses Velocity, a Minecraft 
 These servers interact with the backend using RabbitMQ, ensuring real-time communication and user authentication. The main server is designed to listen to messages, emit messages, make RPC calls, and provide an RPC endpoint. This endpoint enables the backend to collect real-time data on property layout, allowing it to render an image representing the property.
 
 ### DevOps
-We harness the power of Docker for containerization of services, ensuring their isolated and consistent execution. Kubernetes and AWS EKS handle the orchestration of these containers, providing automatic deployment, scaling, and management of containerized applications. Terraform is used as an infrastructure as code (IaC) tool for providing, versioning, and managing our cloud resources in a safe, predictable manner.
+We harness the power of Docker for containerization of services, ensuring their isolated and consistent execution. Kubernetes and AWS EKS handle the orchestration of these containers, providing automatic deployment, scaling, and management of containerized applications.
 
 ![Technical Overview](readme/diagram.png "Technical Overview")
 
